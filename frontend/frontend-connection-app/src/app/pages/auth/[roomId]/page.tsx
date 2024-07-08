@@ -8,26 +8,33 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FormEvent } from "react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import io, { Socket } from "socket.io-client";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const Auth: React.FC = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [userPhoto, setUserPhoto] = useState<string>(
     "https://wp-s.ru/wallpapers/16/17/364199592708062/siluet-xameleona-iz-multika.jpg"
   );
   const [roomId, setRoomId] = useState<string>("");
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const pathname = usePathname();
+  const roomName = pathname.split("/").pop();
+
+  console.log(`ROOMNAME - ${roomName}`);
+
+  const avatars = [
+    "https://i.pinimg.com/originals/36/fe/14/36fe14c1732b4315af4c46b142fa29a8.jpg",
+    "https://sneg.top/uploads/posts/2023-06/1687601562_sneg-top-p-avatarka-negra-krasivo-54.jpg",
+    "https://wp-s.ru/wallpapers/16/17/364199592708062/siluet-xameleona-iz-multika.jpg",
+    "https://wallpapers.com/images/hd/weird-profile-pictures-k7dzvlzmlq8q6eib.jpg",
+  ];
 
   const handlePhotoChange = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    const avatars = [
-      "https://i.pinimg.com/originals/36/fe/14/36fe14c1732b4315af4c46b142fa29a8.jpg",
-      "https://sneg.top/uploads/posts/2023-06/1687601562_sneg-top-p-avatarka-negra-krasivo-54.jpg",
-      "https://wp-s.ru/wallpapers/16/17/364199592708062/siluet-xameleona-iz-multika.jpg",
-      "https://wallpapers.com/images/hd/weird-profile-pictures-k7dzvlzmlq8q6eib.jpg",
-    ];
-    const randomIndex = Math.floor(Math.random() * avatars.length);
-    setUserPhoto(avatars[randomIndex]);
+    const nextIndex = (currentIndex + 1) % avatars.length;
+    setCurrentIndex(nextIndex);
+    setUserPhoto(avatars[nextIndex]);
   };
 
   const generateRoomId = () => {
@@ -45,6 +52,11 @@ const Auth: React.FC = () => {
     const data = new FormData(form);
     const username = data.get("username") as string;
 
+    const currentUserId = localStorage.getItem("userId");
+    if (currentUserId) {
+      localStorage.clear();
+    }
+
     try {
       const response = await axios.post("http://localhost:3005/auth/login", {
         username,
@@ -52,11 +64,14 @@ const Auth: React.FC = () => {
       });
       console.log("Success:", response.data);
 
-      localStorage.setItem("userId", response.data.userId)
+      localStorage.setItem("userId", response.data.userId);
 
-      if (response) {
-        router.push(`/pages/settings/${roomId}`);
-        console.log();
+      if (roomName === "") {
+        const redirectTo = `/pages/settings/${roomId}`;
+        router.push(redirectTo);
+      } else {
+        const redirectTo = `/pages/settings/${roomName}`;
+        router.push(redirectTo);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -67,7 +82,7 @@ const Auth: React.FC = () => {
     <div className="px-5 py-3">
       <div className="flex justify-between">
         <FontAwesomeIcon icon={faBars} size="2x" />
-        <p className="text-2xl font-bold mt-8">Word Nerd</p>
+        <p className="text-2xl font-bold mt-8">BaiLic</p>
         <FontAwesomeIcon icon={faCircleInfo} className="text-4xl" />
       </div>
       <form action="" onSubmit={onSubmitAuth}>

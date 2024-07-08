@@ -62,7 +62,6 @@ const Chat = () => {
   const [countLetter, setCountLetter] = useState(1);
   const [isGameWonByUsers, setIsGameWonByUsers] = useState(false);
 
-  // Initialize user and room information
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
     const storedRoomId = localStorage.getItem("roomId");
@@ -75,7 +74,16 @@ const Chat = () => {
     if (storedSecretWord) setSecretWord(storedSecretWord.toLowerCase());
   }, []);
 
-  // Initialize socket connection and event listeners
+  const fetchRoomDetails = async (roomId: string) => {
+    try {
+      const response = await axios.get(`http://localhost:3005/rooms/${roomId}`);
+      return response.data.users; //array
+    } catch (error) {
+      console.error("Error fetching room details:", error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     if (userId && roomId && !socketRef.current) {
       const fetchUserDetails = async (userId: string) => {
@@ -94,156 +102,191 @@ const Chat = () => {
         }
       };
 
-      fetchUserDetails(userId).then((user) => {
-        if (user) {
-          setUsername(user.username);
-          setUserPhoto(user.userPhoto);
-          const socket = io("http://localhost:3005", {
-            transports: ["websocket"],
-          });
-          socketRef.current = socket;
+      fetchRoomDetails(roomId).then((arrayOfUsers) => {
+        console.log("ЭТО МАССИВ ЮЗЕРОВ -", arrayOfUsers);
 
-          socket.emit("join-room", roomName, userId, user.username);
+        fetchUserDetails(userId).then((user) => {
+          if (user) {
+            setUsername(user.username);
+            setUserPhoto(user.userPhoto);
+            const socket = io("http://localhost:3005", {
+              transports: ["websocket"],
+            });
+            socketRef.current = socket;
 
-          socket.on("newModerator", (moderator: any) => {
-            setModerator({
-              username: moderator.username,
-              userPhoto: moderator.userPhoto,
-              userId: moderator._id,
+            // socket.on("newModerator", (moderator) => {
+            //   console.log(`New moderator: ${moderator.username} with ID: ${moderator._id}`);
+            //   setModerator({
+            //     username: moderator.username,
+            //     userPhoto: moderator.userPhoto,
+            //     userId: moderator._id,
+            //   });
+  
+            //   localStorage.setItem("moderatorId", moderator._id);
+            //   setModeratorId(moderator._id);
+            //   setShowModeratorModal(true);
+            //   console.log(`New host: ${moderator.username}; ${moderator.userId}`);
+            // });  
+
+            socket.emit(
+              "join-room",
+              roomName,
+              userId,
+              user.username,
+              userPhoto
+            );
+            console.log(`ROOM NAME !!!! - ${roomName}`);
+
+            socket.emit("listOfUsers", arrayOfUsers, roomName);
+
+            socket.on("newModerator", (moderator: any) => {
+              console.log(`MODERATOR NAME: ${moderator.username}`);
+              setModerator({
+                username: moderator.username,
+                userPhoto: moderator.userPhoto,
+                userId: moderator._id,
+              });
+
+              localStorage.setItem("moderatorId", moderator._id);
+              setModeratorId(moderator._id);
+              setShowModeratorModal(true);
+              console.log(
+                `New host: ${moderator.username}; ${moderator.userId}`
+              );
             });
 
-            localStorage.setItem("moderatorId", moderator._id);
-            setModeratorId(moderator._id);
-            setShowModeratorModal(true);
-            console.log(`New host: ${moderator.username}; ${moderator.userId}`);
-          });
-
-          socket.on("setSecretWord", (word) => {
-            localStorage.setItem("secretWord", word);
-            setSecretWord(word.toLowerCase());
-          });
-
-          socket.on("newMessage", (data: any) => {
-            console.log("New message received:", data);
-
-            if (data.userId === moderatorId) {
-              setModeratorMessages((prevModeratorMessages) => [
-                ...prevModeratorMessages,
-                data,
-              ]);
-            } else {
-              setMessages((prevMessages) => [...prevMessages, data]);
-            }
-
-            setTimeout(() => {
-              socket.emit("ExpiredMessage", { ...data, roomName });
-            }, 10000);
-          });
-
-          socket.on("connectToPlayers", (data) => {
-            setShowContact(true);
-            console.log(
-              `ASKED USER ID: ${data.askedUserId}, CLICKED USER: ${data.clickedUserId}`
-            );
-            if (data.askedUserId === userId) {
-              setShowAskedUser(true);
-              console.log(data.messageToAsked);
-            }
-
-            if (data.clickedUserId === userId) {
-              setShowClickedUser(true);
-              console.log(data.messageToCkick);
-            }
-
-            if (moderatorId === userId) {
-              setShowClickedModerator(true);
-              console.log(data.messageToModerator);
-            }
-
-            if (
-              data.askedUserId !== userId &&
-              data.clickedUserId !== userId &&
-              moderatorId !== userId
-            ) {
-              setShowOtherUsers(true);
-            }
-          });
-
-          socket.on("DeleteMessage", (targetMessage) => {
-            console.log(`DELETE MESSAGE FROM FRONT: ${targetMessage}`);
-            setMessages((prevMessages) =>
-              prevMessages.filter(
-                (message) => message.messageId !== targetMessage.messageId
-              )
-            );
-            setModeratorMessages((prevModeratorMessages) =>
-              prevModeratorMessages.filter(
-                (message) => message.messageId !== targetMessage.messageId
-              )
-            );
-            socket.emit("DeleteFromDB", targetMessage);
-          });
-
-          socket.on("allWords", (data) => {
-            console.log(
-              `checkAndEmitGameData CHECK: ${data.moderatorWord}; ${data.askedWord}, ${data.clickedWord}`
-            );
-            setAllWords({
-              moderatorWord: data.moderatorWord.toLowerCase(),
-              askedWord: data.askedWord.toLowerCase(),
-              clickedWord: data.clickedWord.toLowerCase(),
-              moderatorUserName: data.moderatorUserName,
-              moderatorUserPhoto: data.moderatorUserPhoto,
-              clickedUserName: data.clickedUserName,
-              clickedUserPhoto: data.clickedUserPhoto,
-              secretWord: data.secretWord,
+            socket.on("setSecretWord", (word) => {
+              localStorage.setItem("secretWord", word);
+              setSecretWord(word.toLowerCase());
             });
-            if (
-              data.secretWord &&
-              data.askedWord.toLowerCase() === data.clickedWord.toLowerCase() &&
-              data.askedWord.toLowerCase() === data.secretWord.toLowerCase() &&
-              data.clickedWord.toLowerCase() === data.secretWord.toLowerCase()
-            ) {
-              if (
-                data.moderatorWord.toLowerCase() ===
-                  data.secretWord.toLowerCase() ||
-                data.moderatorWord.toLowerCase() !==
-                  data.secretWord.toLowerCase()
-              ) {
-                setIsGameWonByUsers(true);
-                console.log(`Game is over congr`);
-                // alert(`GAME IS OVER !!!!!`);
+
+            socket.on("newMessage", (data: any) => {
+              console.log("New message received:", data);
+
+              if (data.userId === moderatorId) {
+                setModeratorMessages((prevModeratorMessages) => [
+                  ...prevModeratorMessages,
+                  data,
+                ]);
+              } else {
+                setMessages((prevMessages) => [...prevMessages, data]);
               }
-            } else if (
-              data.askedWord.toLowerCase() ===
-                data.moderatorWord.toLowerCase() &&
-              data.askedWord.toLowerCase() === data.clickedWord.toLowerCase()
-            ) {
-              setCountLetter((prevCount) => prevCount);
-            } else if (
-              data.askedWord.toLowerCase() === data.clickedWord.toLowerCase() &&
-              data.askedWord.toLowerCase() !== data.moderatorWord.toLowerCase()
-            ) {
-              setCountLetter((prevCount) => prevCount + 1);
-              console.log(`COUNT LETTER: ${countLetter} `);
-            } else {
-              setCountLetter((prevCount) => prevCount);
-            }
-          });
 
-          axios
-            .get(`http://localhost:3005/messages/${roomId}`)
-            .then((response) => {
-              setMessages(response.data);
+              setTimeout(() => {
+                socket.emit("ExpiredMessage", { ...data, roomName });
+              }, 10000);
             });
 
-          return () => {
-            socket.off("newModerator");
-            socket.off("newMessage");
-            socket.off("DeleteMessage");
-            socket.disconnect();
-          };
-        }
+            socket.on("connectToPlayers", (data) => {
+              setShowContact(true);
+              if (data.askedUserId === userId) {
+                setShowAskedUser(true);
+                console.log(data.messageToAsked);
+              }
+
+              if (data.clickedUserId === userId) {
+                setShowClickedUser(true);
+                console.log(data.messageToCkick);
+              }
+
+              if (moderatorId === userId) {
+                setShowClickedModerator(true);
+                console.log(data.messageToModerator);
+              }
+
+              if (
+                data.askedUserId !== userId &&
+                data.clickedUserId !== userId &&
+                moderatorId !== userId
+              ) {
+                setShowOtherUsers(true);
+              }
+            });
+
+            socket.on("DeleteMessage", (targetMessage) => {
+              console.log(`DELETE MESSAGE FROM FRONT: ${targetMessage}`);
+              setMessages((prevMessages) =>
+                prevMessages.filter(
+                  (message) => message.messageId !== targetMessage.messageId
+                )
+              );
+              setModeratorMessages((prevModeratorMessages) =>
+                prevModeratorMessages.filter(
+                  (message) => message.messageId !== targetMessage.messageId
+                )
+              );
+              socket.emit("DeleteFromDB", targetMessage);
+            });
+
+            socket.on("allWords", (data) => {
+              console.log(
+                `checkAndEmitGameData CHECK: ${data.moderatorWord}; ${data.askedWord}, ${data.clickedWord}`
+              );
+              setAllWords({
+                moderatorWord: data.moderatorWord.toLowerCase(),
+                askedWord: data.askedWord.toLowerCase(),
+                clickedWord: data.clickedWord.toLowerCase(),
+                moderatorUserName: data.moderatorUserName,
+                moderatorUserPhoto: data.moderatorUserPhoto,
+                clickedUserName: data.clickedUserName,
+                clickedUserPhoto: data.clickedUserPhoto,
+                secretWord: data.secretWord,
+              });
+              if (
+                data.secretWord &&
+                data.askedWord.toLowerCase() ===
+                  data.clickedWord.toLowerCase() &&
+                data.askedWord.toLowerCase() ===
+                  data.secretWord.toLowerCase() &&
+                data.clickedWord.toLowerCase() === data.secretWord.toLowerCase()
+              ) {
+                if (
+                  data.moderatorWord.toLowerCase() ===
+                    data.secretWord.toLowerCase() ||
+                  data.moderatorWord.toLowerCase() !==
+                    data.secretWord.toLowerCase()
+                ) {
+                  setIsGameWonByUsers(true);
+                  console.log(`Game is over congr`);
+                }
+              } else if (
+                data.askedWord.toLowerCase() ===
+                  data.moderatorWord.toLowerCase() &&
+                data.askedWord.toLowerCase() === data.clickedWord.toLowerCase()
+              ) {
+                setCountLetter((prevCount) => prevCount);
+              } else if (
+                data.askedWord.toLowerCase() ===
+                  data.clickedWord.toLowerCase() &&
+                data.askedWord.toLowerCase() !==
+                  data.moderatorWord.toLowerCase()
+              ) {
+                setCountLetter((prevCount) => prevCount + 1);
+                console.log(`COUNT LETTER: ${countLetter} `);
+              } else {
+                setCountLetter((prevCount) => prevCount);
+              }
+            });
+
+            axios
+              .get(`http://localhost:3005/messages/${roomId}`)
+              .then((response) => {
+                setMessages(response.data);
+              });
+
+            return () => {
+              if (socketRef.current) {
+                socketRef.current.off("newModerator");
+                socketRef.current.off("setSecretWord");
+                socketRef.current.off("newMessage");
+                socketRef.current.off("connectToPlayers");
+                socketRef.current.off("DeleteMessage");
+                socketRef.current.off("allWords");
+                socketRef.current.disconnect();
+              }
+            };
+          }
+        });
       });
     }
   }, [userId, roomId, roomName, moderatorId, secretWord]);
@@ -253,6 +296,7 @@ const Chat = () => {
       setShowAllWords(true);
     }
   }, [allWords]);
+
 
   useEffect(() => {
     if (secretWord && countLetter >= secretWord.length) {

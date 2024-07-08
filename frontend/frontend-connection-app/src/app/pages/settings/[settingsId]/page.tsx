@@ -11,12 +11,15 @@ import axios from "axios";
 interface User {
   userId: string | null;
   userName: string | null;
+  _id: string | null;
+  userPhoto: string | null;
 }
 
 interface UserW {
   userId: string | null;
   username: string | null;
   _id: string | null;
+  userPhoto: string | null;
 }
 
 const Settings = () => {
@@ -29,6 +32,8 @@ const Settings = () => {
   >("");
   const [socket, setSocket] = useState<Socket | null>(null);
   const [username, setUsername] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const pathname = usePathname();
   const roomName = pathname.split("/").pop();
@@ -58,7 +63,9 @@ const Settings = () => {
 
   const fetchUserDetails = async (userId: string) => {
     try {
-      const response = await axios.get(`http://localhost:3005/auth/${userId}`);
+      const response = await axios.get(
+        `http://localhost:3005/auth/user/${userId}`
+      );
       return response.data.user;
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -67,15 +74,21 @@ const Settings = () => {
   };
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      fetchUsername(userId).then((username) => {
+    const currentUserId = localStorage.getItem("userId");
+    if (!currentUserId) {
+      router.push(`/pages/auth/${roomName}`);
+      return;
+    }
+
+    setUserId(currentUserId);
+    if (currentUserId) {
+      fetchUsername(currentUserId).then((username) => {
         if (username) {
           setUsername(username);
         }
       });
     }
-  }, []);
+  }, [roomName, router]);
 
   useEffect(() => {
     if (username) {
@@ -88,6 +101,7 @@ const Settings = () => {
       newSocket.on("getRoomId", (roomId: string) => {
         localStorage.setItem("roomId", roomId);
         setRoomId(roomId);
+        console.log(`THIS IS A ROOM ID -- ${roomId}`);
         console.log(`Room ID received: ${roomId}`);
       });
 
@@ -98,17 +112,40 @@ const Settings = () => {
   }, [username]);
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (socket && roomName && username) {
-      socket.emit("join-room", roomName, userId, username);
-      socket.on("userJoined", (data) => {
-        setJoinedUserArray((prevArray) => [
-          ...prevArray,
-          { userId: data.userId, userName: data.userName },
-        ]);
+    if (userId) {
+      fetchUserDetails(userId).then((user) => {
+        if (user) {
+          console.log(`ЭТО ИНФА ПРО ЮЗЕРА -${user.userPhoto}`);
+          setUserPhoto(user.userPhoto);
+        }
       });
     }
-  }, [socket, roomName, username]);
+  }, [userId]);
+
+  useEffect(() => {
+    if (socket && roomName && username && userId && userPhoto) {
+      socket.emit("join-room", roomName, userId, username, userPhoto,);
+      socket.on("userJoined", (data) => {
+        setJoinedUserArray((prevArray) => {
+          const userExists = prevArray.some(
+            (user) => user.userId === data.userId
+          );
+          if (!userExists) {
+            return [
+              ...prevArray,
+              {
+                userId: data.userId,
+                userName: data.userName,
+                userPhoto: data.userPhoto,
+                _id: data.userId,
+              },
+            ];
+          }
+          return prevArray;
+        });
+      });
+    }
+  }, [socket, roomName, username, userId, userPhoto]);
 
   const fetchRoomDetails = async () => {
     if (roomId) {
@@ -117,11 +154,11 @@ const Settings = () => {
           `http://localhost:3005/rooms/${roomId}`
         );
         const room = response.data;
-        const userDetailsPromises = room.users.map((userId: string) =>
-          fetchUserDetails(userId)
+        const currentUserId = localStorage.getItem("userId");
+        const filteredUsers = room.users.filter(
+          (user: UserW) => user._id !== currentUserId
         );
-        const userDetails = await Promise.all(userDetailsPromises);
-        setWaitingUsers(userDetails);
+        setWaitingUsers(filteredUsers);
       } catch (error) {
         console.error("Error fetching room details:", error);
       }
@@ -130,7 +167,8 @@ const Settings = () => {
 
   useEffect(() => {
     fetchRoomDetails();
-  }, []);
+    console.log(waitingUsers);
+  }, [roomId]);
 
   useEffect(() => {
     if (joinedUserArray) {
@@ -158,7 +196,8 @@ const Settings = () => {
   );
 
   const handlePlay = () => {
-    if (socket && roomId) {
+    if (socket) {
+      console.log(`roomname- ${roomName}`);
       axios.post("http://localhost:3005/game/create", {
         difficultyLevel: selectedOptionDifficulty,
         areaOfVocab: selectedOptionAreaVocab,
@@ -185,21 +224,15 @@ const Settings = () => {
     );
   };
 
-  // {joinedUserArray.map((joinedUser, index) => (
-  //   <div key={index}>
-  //     <p>{joinedUser.userName}</p>
-  //     <p>{joinedUser.userId}</p>
-  //   </div>
-  // ))}
-  // {waitingUsers.map((joinedUser, index) => (
-  //   <div key={index}>
-  //     <p>{joinedUser.username}</p>
-  //     {/* <p>{joinedUser.userId}</p> */}
-  //   </div>
-  // ))}
+  const combinedUsersMap = new Map();
+  [...waitingUsers, ...joinedUserArray].forEach((user) => {
+    combinedUsersMap.set(user.userId || user._id, user);
+  });
+  const combinedUsers = Array.from(combinedUsersMap.values());
+
   return (
     <div className="px-5 py-3 h-screen">
-      <UsersTop />
+      <UsersTop combinedUsers={combinedUsers} />
       <div className="w-[100%] h-[70%] bg-[#f7f7f7] mt-10 overflow-auto rounded-xl">
         <div className="flex justify-between bg-red-700 ">
           <div

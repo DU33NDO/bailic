@@ -15,7 +15,7 @@ const GameSchema: Schema = new Schema({
   difficultyLevel: { type: String, required: true },
   areaOfVocab: { type: String },
   roomId: { type: String },
-  moderatorId: { type: String },
+  moderatorId: { type: String, default: null },
   secretWord: { type: String },
   clickedMessage: { type: String, default: null },
   participants: { type: [String], default: [] },

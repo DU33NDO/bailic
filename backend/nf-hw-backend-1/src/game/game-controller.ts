@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import GameService from "./game-service";
 import { IGame } from "../models/Game";
-import { io } from "../index";
 
 class GameController {
   async setModerator(req: Request, res: Response): Promise<void> {
@@ -25,20 +24,13 @@ class GameController {
   async createGame(req: Request, res: Response): Promise<void> {
     try {
       const { difficultyLevel, areaOfVocab, roomId, roomName } = req.body;
-
-      const moderator = await GameService.createModerator(roomId);
-
       const game = await GameService.createGame(
         difficultyLevel,
         areaOfVocab,
-        moderator._id,
         roomId
       );
       if (game) {
-        io.on("connection", (socket) => {
-          socket.emit("newModerator", moderator); // WAS TO.(ROOMNAME)
-        });
-
+        console.log(`ROOMNAME: ${roomName}`);
         res.status(200).json(game);
       } else {
         res.status(404).json("Error while creating a game");
@@ -76,10 +68,6 @@ class GameController {
     }
   }
 
-  //   async getModeratoId(req: Request, res: Response): Promise<void> {
-  //     const { roomId } = req.params;
-  //     const moderator = await GameService.getModerator(roomId)
-  //   }
 }
 
 export default new GameController();

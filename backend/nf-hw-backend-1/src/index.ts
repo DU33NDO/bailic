@@ -15,6 +15,7 @@ import roomRouter from "./room/room-router";
 import gameRouter from "./game/game-router";
 import "./types/express-session";
 import RoomService from "./room/room-service";
+import { authMiddleware } from "./middleware/auth-middleware";
 
 const app = express();
 const server = createServer(app);
@@ -59,7 +60,14 @@ app.use("/messages", messagesRouter);
 app.use("/rooms", roomRouter);
 app.use("/game", gameRouter);
 
-const userRooms = new Map<string, { room: string; userId: string }>();
+app.use("/pages/settings/:roomId", authMiddleware, (req, res) => {
+  res.json({ message: "Authorized" });
+});
+
+const userRooms = new Map<
+  string,
+  { room: string; userId: string; roomName: string }
+>();
 
 let gameData = {
   moderatorWord: null,
@@ -75,7 +83,7 @@ let gameData = {
 io.on("connection", (socket) => {
   console.log(`user connected with socket id ${socket.id}`);
 
-  socket.on("join-room", async (roomName, userId, username) => {
+  socket.on("join-room", async (roomName, userId, username, userPhoto) => {
     console.log(`User with ID ${userId} (${username}) joined room ${roomName}`);
     try {
       const room = await RoomService.joinRoom(roomName, userId);
@@ -83,18 +91,25 @@ io.on("connection", (socket) => {
         console.error("Error: Room not found or could not be created");
         return;
       }
+
       socket.join(roomName);
+
       io.to(roomName).emit("userJoined", {
         userId: userId,
         userName: username,
+        userPhoto: userPhoto,
       });
 
       socket.emit("getRoomId", room._id);
-      console.log(`roomd._id: ${room._id}`);
+      // console.log(`roomd._id: ${room._id}`);
       const roomId: any = room._id;
 
-      userRooms.set(socket.id, { room: roomId, userId: userId });
-      const users = io.sockets.adapter.rooms.get(roomId);
+      userRooms.set(socket.id, {
+        room: roomId,
+        userId: userId,
+        roomName: roomName,
+      });
+      const users = io.sockets.adapter.rooms.get(roomName); //WIR WAS roomId DAMN
       console.log(users);
       if (users) {
         io.to(roomId).emit("NumberOfUsers", { len: users.size });
@@ -102,6 +117,15 @@ io.on("connection", (socket) => {
     } catch (error: any) {
       console.error("Error joining room:", error.message);
     }
+  });
+
+  socket.on("listOfUsers", (arrayUsers, roomName) => {
+    console.log(`Received list of users for room: ${roomName}`);
+    const randomNum = Math.floor(Math.random() * arrayUsers.length);
+    const newModerator = arrayUsers[randomNum];
+    console.log(`New moderator selected: ${newModerator.username}`);
+    io.to(roomName).emit("newModerator", newModerator);  
+    // socket.emit("newModerator", newModerator)
   });
 
   socket.on("sendMessage", async (message, roomName) => {

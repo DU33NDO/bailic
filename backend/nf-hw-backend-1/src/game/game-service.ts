@@ -16,7 +16,7 @@ class GameService {
   async createGame(
     difficultyLevel: string,
     areaOfVocab: string,
-    moderatorId: string,
+    // moderatorId: string,
     roomId: string
   ): Promise<IGame> {
     const existingRoom = await Game.findOne({ roomId });
@@ -27,7 +27,7 @@ class GameService {
       difficultyLevel,
       areaOfVocab,
       roomId,
-      moderatorId,
+      // moderatorId,
     });
     return await game.save();
   }

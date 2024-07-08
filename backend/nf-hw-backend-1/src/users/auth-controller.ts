@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
+import { Session } from "express-session";
 import AuthService from "./auth-service";
-import User from "../models/User";
+import User, { IUser } from "../models/User";
 
 class AuthController {
   async login(req: Request, res: Response): Promise<void> {
@@ -27,6 +28,7 @@ class AuthController {
       }
       req.session.username = user.username;
       req.session.userPhoto = user.userPhoto;
+      // req.session.userId = user._id.toString();
 
       res.json({
         success: true,

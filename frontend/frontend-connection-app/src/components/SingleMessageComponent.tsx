@@ -63,8 +63,8 @@ const SingleMessageComponent: React.FC<{
         >
           {isCurrentUser ? "You" : message.username}
         </p>
-        <div className=" h-12 bg-white rounded-[21px] px-6 py-3">
-          <p className="text-black text-left">{message.content}</p>
+        <div className="bg-white rounded-[21px] px-6 py-3">
+          <p className="text-black text-left break-words">{message.content}</p>
         </div>
       </div>
     </div>

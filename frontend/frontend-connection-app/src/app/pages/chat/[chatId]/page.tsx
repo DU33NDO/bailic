@@ -746,7 +746,7 @@ const Chat = () => {
             )}
           </div>
         </div>
-        <div className="w-full mb-6">
+        <div className="w-full">
           <form
             onSubmit={onSubmitMessage}
             className="w-full flex items-center justify-center"

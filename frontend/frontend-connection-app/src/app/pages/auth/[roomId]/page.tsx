@@ -8,11 +8,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FormEvent } from "react";
 import axios from "axios";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const Auth: React.FC = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [userPhoto, setUserPhoto] = useState<string>("/avatar/userPhoto.jpg");
   const [roomId, setRoomId] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState<number>(0);

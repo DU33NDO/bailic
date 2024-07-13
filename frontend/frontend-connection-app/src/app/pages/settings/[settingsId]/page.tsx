@@ -46,7 +46,7 @@ const Settings = () => {
   const fetchUsername = async (userId: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:3005/auth/username/${userId}`
+        `${process.env.BACKEND_URL}/auth/username/${userId}`
       );
       if (response.data.success) {
         return response.data.username;
@@ -62,7 +62,7 @@ const Settings = () => {
   const fetchUserDetails = async (userId: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:3005/auth/user/${userId}`
+        `${process.env.BACKEND_URL}/auth/user/${userId}`
       );
       return response.data.user;
     } catch (error) {
@@ -97,7 +97,7 @@ const Settings = () => {
 
   useEffect(() => {
     if (username) {
-      const newSocket: any = io("http://localhost:3005", {
+      const newSocket: any = io(`${process.env.BACKEND_URL}`, {
         transports: ["websocket"],
       });
       setSocket(newSocket);
@@ -156,7 +156,7 @@ const Settings = () => {
     if (roomId) {
       try {
         const response = await axios.get(
-          `http://localhost:3005/rooms/${roomId}`
+          `${process.env.BACKEND_URL}/rooms/${roomId}`
         );
         const room = response.data;
         const currentUserId = localStorage.getItem("userId");
@@ -208,7 +208,7 @@ const Settings = () => {
     if (socket) {
       console.log(`roomname- ${roomName}`);
       try {
-        await axios.post("http://localhost:3005/game/create", {
+        await axios.post(`${process.env.BACKEND_URL}/game/create`, {
           difficultyLevel: selectedOptionDifficulty,
           areaOfVocab: selectedOptionAreaVocab,
           roomId: roomId,
@@ -216,7 +216,7 @@ const Settings = () => {
         });
 
         const moderatorResponse = await axios.post(
-          "http://localhost:3005/game/set-moderator",
+          `${process.env.BACKEND_URL}/game/set-moderator`,
           {
             roomId: roomId,
           }

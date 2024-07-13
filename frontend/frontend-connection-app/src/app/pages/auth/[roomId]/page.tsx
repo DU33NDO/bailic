@@ -55,10 +55,13 @@ const Auth: React.FC = () => {
     const username = data.get("username") as string;
 
     try {
-      const response = await axios.post("http://localhost:3005/auth/login", {
-        username,
-        userPhoto,
-      });
+      const response = await axios.post(
+        `${process.env.BACKEND_URL}/auth/login`,
+        {
+          username,
+          userPhoto,
+        }
+      );
       console.log("Success:", response.data);
 
       localStorage.setItem("userId", response.data.userId);

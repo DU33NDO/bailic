@@ -100,7 +100,9 @@ const Chat = () => {
 
   const fetchRoomDetails = async (roomId: string) => {
     try {
-      const response = await axios.get(`http://localhost:3005/rooms/${roomId}`);
+      const response = await axios.get(
+        `${process.env.BACKEND_URL}/rooms/${roomId}`
+      );
       return response.data.users; //array
     } catch (error) {
       console.error("Error fetching room details:", error);
@@ -113,7 +115,7 @@ const Chat = () => {
       const fetchUserDetails = async (userId: string) => {
         try {
           const response = await axios.get(
-            `http://localhost:3005/auth/user/${userId}`
+            `${process.env.BACKEND_URL}/auth/user/${userId}`
           );
           if (response.data.success) {
             return response.data.user;
@@ -133,7 +135,7 @@ const Chat = () => {
           if (user) {
             setUsername(user.username);
             setUserPhoto(user.userPhoto);
-            const socket = io("http://localhost:3005", {
+            const socket = io(`${process.env.BACKEND_URL}`, {
               transports: ["websocket"],
             });
             socketRef.current = socket;
@@ -148,13 +150,15 @@ const Chat = () => {
             console.log(`ROOM NAME !!!! - ${roomName}`);
 
             axios
-              .get(`http://localhost:3005/game/get-moderator/${roomId}`)
+              .get(`${process.env.BACKEND_URL}/game/get-moderator/${roomId}`)
               .then((response) => {
                 const moderatorIdQuery = response.data;
                 console.log(moderatorIdQuery);
 
                 axios
-                  .get(`http://localhost:3005/auth/user/${moderatorIdQuery}`)
+                  .get(
+                    `${process.env.BACKEND_URL}/auth/user/${moderatorIdQuery}`
+                  )
                   .then((res: any) => {
                     console.log(`MODERATOR NAME: ${res.data.user.username}`);
                     setModerator({
@@ -387,7 +391,7 @@ const Chat = () => {
             });
 
             axios
-              .get(`http://localhost:3005/messages/${roomId}`)
+              .get(`${process.env.BACKEND_URL}/messages/${roomId}`)
               .then((response) => {
                 setMessages(response.data);
               });
@@ -537,7 +541,7 @@ const Chat = () => {
     if (secretWord) {
       //need to delete from all users secret Word !!!!
     }
-    await axios.post("http://localhost:3005/game/set-moderator", {
+    await axios.post(`${process.env.BACKEND_URL}/game/set-moderator`, {
       roomId: roomId,
     });
     setIsGameWonByUsers(false);

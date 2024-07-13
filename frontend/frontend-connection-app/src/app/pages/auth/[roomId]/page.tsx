@@ -11,7 +11,6 @@ import axios from "axios";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const Auth: React.FC = () => {
-  localStorage.clear();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [userPhoto, setUserPhoto] = useState<string>("/avatar/userPhoto.jpg");
@@ -46,6 +45,7 @@ const Auth: React.FC = () => {
   };
 
   useEffect(() => {
+    localStorage.clear();
     generateRoomId();
   }, []);
 

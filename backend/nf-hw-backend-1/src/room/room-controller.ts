@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import RoomService from "./room-service";
-import { io } from "../index"; // Ensure this import points to your main server file
+import { io } from "../index"; 
 
 class RoomController {
   async joinRoom(req: Request, res: Response): Promise<void> {
@@ -10,9 +10,9 @@ class RoomController {
     try {
       const room: any = await RoomService.joinRoom(roomName, userId);
       if (room) {
-        const roomId = room._id.toString(); // Ensure roomId is a string
-        const users = room.users as unknown as string[]; // Ensure users is an array of strings
-        io.to(roomId).emit("topUsersUpdated", users); // Emit the update
+        const roomId = room._id.toString(); 
+        const users = room.users as unknown as string[]; 
+        // io.to(roomName).emit("topUsersUpdated", users); 
         res.json(room);
       } else {
         res.status(404).send("Room not found");
@@ -29,9 +29,9 @@ class RoomController {
     try {
       const room: any = await RoomService.leaveRoom(roomName, userId);
       if (room) {
-        const roomId = room._id.toString(); // Ensure roomId is a string
-        const users = room.users as unknown as string[]; // Ensure users is an array of strings
-        io.to(roomId).emit("topUsersUpdated", users); // Emit the update
+        const roomId = room._id.toString();
+        const users = room.users as unknown as string[]; 
+        // io.to(roomName).emit("topUsersUpdated", users); 
         res.json(room);
       } else {
         res.status(404).send("Room not found");

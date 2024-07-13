@@ -4,12 +4,14 @@ interface ModalConnectAskedProps {
   onClose: () => void;
   onSubmit: (word: string) => void;
   revealedLetters: string;
+  revealedWords: string[]; // Add revealedWords prop
 }
 
 const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
   onClose,
   onSubmit,
   revealedLetters,
+  revealedWords, 
 }) => {
   const [word, setWord] = useState("");
   const [error, setError] = useState("");
@@ -32,11 +34,17 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
 
   const handleSubmit = (event?: FormEvent) => {
     if (event) event.preventDefault();
-    if (word.toLowerCase().startsWith(revealedLetters.toLowerCase())) {
+    const lowerCaseWord = word.toLowerCase();
+
+    if (!lowerCaseWord.startsWith(revealedLetters.toLowerCase())) {
+      setError(`The word must start with "${revealedLetters}"`);
+    } else if (revealedWords.includes(lowerCaseWord)) {
+      setError(
+        `The word "${word}" has already been used. Please choose another word.`
+      );
+    } else {
       onSubmit(word);
       onClose();
-    } else {
-      setError(`The word must start with "${revealedLetters}"`);
     }
   };
 

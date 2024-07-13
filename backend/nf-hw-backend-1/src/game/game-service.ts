@@ -7,6 +7,7 @@ class GameService {
     if (currentRoom) {
       const allUsers = currentRoom.users;
       const randomNum = Math.floor(Math.random() * allUsers.length);
+      console.log(`MODERATOR!!!! - ${allUsers[randomNum]}`);
       return allUsers[randomNum];
     } else {
       return null;
@@ -16,7 +17,6 @@ class GameService {
   async createGame(
     difficultyLevel: string,
     areaOfVocab: string,
-    // moderatorId: string,
     roomId: string
   ): Promise<IGame> {
     const existingRoom = await Game.findOne({ roomId });
@@ -27,7 +27,6 @@ class GameService {
       difficultyLevel,
       areaOfVocab,
       roomId,
-      // moderatorId,
     });
     return await game.save();
   }
@@ -51,15 +50,6 @@ class GameService {
       { new: true }
     );
     return updatedGame;
-  }
-
-  async getModerator(roomId: string): Promise<IGame | null> {
-    const moderator = await Game.findOne({ roomId });
-    if (moderator) {
-      return moderator;
-    } else {
-      return null;
-    }
   }
 }
 

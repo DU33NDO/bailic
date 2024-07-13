@@ -80,6 +80,14 @@ let gameData = {
   secretWord: null,
 };
 
+let gameDataSecond = {
+  moderatorWord: null,
+  askedWord: null,
+  moderatorUserName: null,
+  moderatorUserPhoto: null,
+  secretWord: null,
+};
+
 io.on("connection", (socket) => {
   console.log(`user connected with socket id ${socket.id}`);
 
@@ -101,7 +109,6 @@ io.on("connection", (socket) => {
       });
 
       socket.emit("getRoomId", room._id);
-      // console.log(`roomd._id: ${room._id}`);
       const roomId: any = room._id;
 
       userRooms.set(socket.id, {
@@ -109,6 +116,9 @@ io.on("connection", (socket) => {
         userId: userId,
         roomName: roomName,
       });
+
+      io.to(roomName).emit("syncUsers");
+
       const users = io.sockets.adapter.rooms.get(roomName); //WIR WAS roomId DAMN
       console.log(users);
       if (users) {
@@ -124,8 +134,8 @@ io.on("connection", (socket) => {
     const randomNum = Math.floor(Math.random() * arrayUsers.length);
     const newModerator = arrayUsers[randomNum];
     console.log(`New moderator selected: ${newModerator.username}`);
-    io.to(roomName).emit("newModerator", newModerator);  
-    // socket.emit("newModerator", newModerator)
+    // io.to(roomName).emit("newModerator", newModerator);
+    socket.emit("newModerator", newModerator);
   });
 
   socket.on("sendMessage", async (message, roomName) => {
@@ -191,11 +201,16 @@ io.on("connection", (socket) => {
   socket.on("connectStarts", (data) => {
     console.log("Connect starts received:", data);
     io.to(data.roomName).emit("connectToPlayers", {
-      messageToAsked: "PRIVATE TO ASKED USER тот на кого нажали",
-      messageToCkick: "PRIVATE TO CLICKED USER тот кто нажал",
-      messageToModerator: "PRIVATE TO MODERATOR",
       askedUserId: data.askedUserId,
       clickedUserId: data.clickedUserId,
+      moderatorId: data.moderatorId,
+    });
+  });
+
+  socket.on("noConnectStarts", (data) => {
+    console.log("NO connect starts received:", data);
+    io.to(data.roomName).emit("noConnectionData", {
+      askedUserId: data.askedUserId,
     });
   });
 
@@ -220,6 +235,29 @@ io.on("connection", (socket) => {
     gameData.clickedUserName = data.userName;
     gameData.clickedUserPhoto = data.userPhoto;
     checkAndEmitGameData(io, socket, data.roomName);
+  });
+
+  socket.on("sendTargetWordSecondCase", (data) => {
+    console.log("Received target word:", data.word);
+    gameDataSecond.askedWord = data.word;
+    checkAndEmitGameDataSecond(io, socket, data.roomName);
+  });
+
+  socket.on("sendModeratorWordGameSecond", (data) => {
+    console.log("Received moderator word:", data.word);
+    gameDataSecond.moderatorWord = data.word;
+    gameDataSecond.moderatorUserName = data.userName;
+    gameDataSecond.moderatorUserPhoto = data.userPhoto;
+    gameDataSecond.secretWord = data.secretWord;
+    checkAndEmitGameDataSecond(io, socket, data.roomName);
+  });
+
+  socket.on("gameContinue", (roomName) => {
+    io.to(roomName).emit("continueToAll");
+  });
+
+  socket.on("exitToSettings", (roomName) => {
+    io.to(roomName).emit("exitToAll", roomName);
   });
 
   socket.on("disconnect", () => {
@@ -255,6 +293,27 @@ const checkAndEmitGameData = (io, socket, roomName) => {
       moderatorUserPhoto: null,
       clickedUserName: null,
       clickedUserPhoto: null,
+      secretWord: null,
+    };
+  }
+};
+
+const checkAndEmitGameDataSecond = (io, socket, roomName) => {
+  console.log(
+    `checkAndEmitGameData CHECK: ${gameDataSecond.moderatorWord}; ${gameDataSecond.askedWord}`
+  );
+  if (
+    gameDataSecond.moderatorWord &&
+    gameDataSecond.askedWord &&
+    gameDataSecond.moderatorUserName &&
+    gameDataSecond.moderatorUserPhoto
+  ) {
+    io.to(roomName).emit("allWordsSecond", gameDataSecond);
+    gameDataSecond = {
+      moderatorWord: null,
+      askedWord: null,
+      moderatorUserName: null,
+      moderatorUserPhoto: null,
       secretWord: null,
     };
   }

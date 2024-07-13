@@ -13,8 +13,17 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      boxShadow: {
+        'custom': '4px 0px 66px 0px rgba(0, 0, 0, 0.2)',
+      },
     },
   },
   plugins: [],
+  variants: {
+    extend: {
+      boxShadow: ['focus'],
+    },
+  },
 };
+
 export default config;

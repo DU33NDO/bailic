@@ -33,20 +33,20 @@ const UsersTop: React.FC<UsersTopProps> = ({ combinedUsers }) => {
             key={user.userId || user._id || index}
             className="flex flex-col gap-1 items-center"
           >
-            <div className="w-[40px] h-[40px] rounded-[80px] bg-white">
+            <div className="w-[40px] h-[40px] rounded-[80px] bg-[#9A7B6E]">
               <img
                 src={user.userPhoto || ""}
                 alt={user.userName || user.username || ""}
                 className="w-full h-full rounded-full"
               />
             </div>
-            <p className="text-[10px]">{user.userName || user.username}</p>
+            <p className="text-[10px] text-[#9A7B6E] font-extrabold">{user.userName || user.username}</p>
           </div>
         ))}
         <FontAwesomeIcon
           icon={faPlus}
           style={{ fontSize: "1.5em" }}
-          className="absolute right-[10px] top-[15px] text-white cursor-pointer"
+          className="absolute right-[10px] top-[15px] text-[#F24236] cursor-pointer"
           onClick={handleClickPushMessage}
         />
       </div>

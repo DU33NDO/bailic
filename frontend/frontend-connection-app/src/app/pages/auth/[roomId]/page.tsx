@@ -11,6 +11,7 @@ import axios from "axios";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const Auth: React.FC = () => {
+  localStorage.clear();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [userPhoto, setUserPhoto] = useState<string>(
@@ -52,11 +53,6 @@ const Auth: React.FC = () => {
     const data = new FormData(form);
     const username = data.get("username") as string;
 
-    const currentUserId = localStorage.getItem("userId");
-    if (currentUserId) {
-      localStorage.clear();
-    }
-
     try {
       const response = await axios.post("http://localhost:3005/auth/login", {
         username,
@@ -65,6 +61,7 @@ const Auth: React.FC = () => {
       console.log("Success:", response.data);
 
       localStorage.setItem("userId", response.data.userId);
+      localStorage.setItem("hostId", response.data.userId);
 
       if (roomName === "") {
         const redirectTo = `/pages/settings/${roomId}`;
@@ -81,13 +78,17 @@ const Auth: React.FC = () => {
   return (
     <div className="px-5 py-3">
       <div className="flex justify-between">
-        <FontAwesomeIcon icon={faBars} size="2x" />
-        <p className="text-2xl font-bold mt-8">BaiLic</p>
-        <FontAwesomeIcon icon={faCircleInfo} className="text-4xl" />
+        <FontAwesomeIcon icon={faBars} size="2x" color="#F24236" />
+        <img src="/photos/Artboard.png" className="w-44 h-30" alt="Artboard" />
+        <FontAwesomeIcon
+          icon={faCircleInfo}
+          className="text-4xl"
+          color="#F24236"
+        />
       </div>
       <form action="" onSubmit={onSubmitAuth}>
-        <div className="flex flex-col justify-center mt-32 items-center gap-40 relative">
-          <div className="w-[300px] h-[230px] bg-gray-200 flex flex-col items-center justify-between px-4 py-6 rounded-xl">
+        <div className="flex flex-col justify-center mt-32 items-center gap-24 relative">
+          <div className="w-[300px] h-[230px] bg-[#E2D5D0] flex flex-col items-center justify-between px-4 py-6 rounded-xl">
             <div className="w-[120px] h-[120px] rounded-[80px] bg-white relative">
               <img
                 src={userPhoto}
@@ -110,16 +111,19 @@ const Auth: React.FC = () => {
               required
             />
           </div>
+          <div className="flex justify-center bg-[#E2D5D0] px-4 py-4 rounded-xl bg-opacity-40">
+            <p className="text-xl text-black font-bold opacity-70">псс правила?</p>
+          </div>
           <button
             type="submit"
-            className="w-[150px] h-[40px] bg-gray-700 rounded-xl relative text-right px-8 py-2"
+            className="w-[150px] h-[40px] bg-[#EB3A53] rounded-xl text-right px-6 py-2 text-lg flex gap-4 items-center"
           >
-            Начать
-            <FontAwesomeIcon
+              <FontAwesomeIcon
               icon={faPlay}
-              style={{ fontSize: "1.5em" }}
-              className="absolute left-[15px]"
+              style={{ fontSize: "1.3em" }}
+              className=""
             />
+            Начать
           </button>
         </div>
       </form>

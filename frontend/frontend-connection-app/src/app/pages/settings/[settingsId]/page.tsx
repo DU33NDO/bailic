@@ -36,14 +36,12 @@ const Settings = () => {
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const pathname = usePathname();
-  const roomName = pathname.split("/").pop();
+  const roomName: any = pathname.split("/").pop();
   const router = useRouter();
-  const [joinedUserId, setJoinedUserId] = useState(null);
-  const [joinedUserName, setJoinedUserName] = useState(null);
-  const [joinedUserPhoto, setJoinedUserPhoto] = useState(null);
   const [joinedUserArray, setJoinedUserArray] = useState<User[]>([]);
   const [waitingUsers, setWaitingUsers] = useState<UserW[]>([]);
   const [roomId, setRoomId] = useState("");
+  const [hostId, setHostId] = useState("");
 
   const fetchUsername = async (userId: string) => {
     try {
@@ -88,6 +86,13 @@ const Settings = () => {
         }
       });
     }
+
+    const storedHostId = localStorage.getItem("hostId");
+    if (storedHostId) {
+      setHostId(storedHostId);
+    }
+
+    localStorage.removeItem("secretWord");
   }, [roomName, router]);
 
   useEffect(() => {
@@ -124,7 +129,7 @@ const Settings = () => {
 
   useEffect(() => {
     if (socket && roomName && username && userId && userPhoto) {
-      socket.emit("join-room", roomName, userId, username, userPhoto,);
+      socket.emit("join-room", roomName, userId, username, userPhoto);
       socket.on("userJoined", (data) => {
         setJoinedUserArray((prevArray) => {
           const userExists = prevArray.some(
@@ -195,22 +200,39 @@ const Settings = () => {
     `Difficulty: ${selectedOptionDifficulty}, areaOfVocab: ${selectedOptionAreaVocab}`
   );
 
-  const handlePlay = () => {
+  const handlePlay = async () => {
+    if (userId !== hostId) {
+      alert("Only the host can start the game.");
+      return;
+    }
     if (socket) {
       console.log(`roomname- ${roomName}`);
-      axios.post("http://localhost:3005/game/create", {
-        difficultyLevel: selectedOptionDifficulty,
-        areaOfVocab: selectedOptionAreaVocab,
-        roomId: roomId,
-        roomName: roomName,
-      });
+      try {
+        await axios.post("http://localhost:3005/game/create", {
+          difficultyLevel: selectedOptionDifficulty,
+          areaOfVocab: selectedOptionAreaVocab,
+          roomId: roomId,
+          roomName: roomName,
+        });
 
-      socket.emit("play-game", roomName, `/pages/chat/${roomName}`);
+        const moderatorResponse = await axios.post(
+          "http://localhost:3005/game/set-moderator",
+          {
+            roomId: roomId,
+          }
+        );
+
+        const moderator = moderatorResponse.data;
+
+        socket.emit("play-game", roomName, `/pages/chat/${roomName}`);
+      } catch (error) {
+        console.error("Error during game setup:", error);
+      }
     }
   };
 
-  const defaultStyle = { fontSize: "18px", color: "black", fontWeight: "bold" };
-  const activeStyle = { fontSize: "20px", color: "yellow", fontWeight: "bold" };
+  const defaultStyle = { fontSize: "18px", color: "gray", fontWeight: "400" };
+  const activeStyle = { fontSize: "20px", color: "black", fontWeight: "900" };
 
   const handleCopyUrl = () => {
     const url = `${window.location.origin}/pages/settings/${roomName}`;
@@ -230,13 +252,25 @@ const Settings = () => {
   });
   const combinedUsers = Array.from(combinedUsersMap.values());
 
+  useEffect(() => {
+    const currentRoomName = localStorage.getItem("currentRoomName");
+    if (currentRoomName && currentRoomName !== roomName) {
+      localStorage.removeItem("hostId");
+    }
+    localStorage.setItem("currentRoomName", roomName);
+  }, [roomName]);
+
   return (
     <div className="px-5 py-3 h-screen">
       <UsersTop combinedUsers={combinedUsers} />
-      <div className="w-[100%] h-[70%] bg-[#f7f7f7] mt-10 overflow-auto rounded-xl">
-        <div className="flex justify-between bg-red-700 ">
+      <div className="w-[100%] h-[70%] bg-[#E9DED9] mt-10 overflow-auto rounded-xl overflow-x-hidden">
+        <div className="flex justify-between sticky top-0 bg-[#E9DED9] z-10 ">
           <div
-            className="bg-gray-400 w-[49%] h-[40px] rounded-t-xl flex justify-center items-center cursor-pointer"
+            className={`w-[49%] h-[40px] rounded-xl flex justify-center items-center cursor-pointer ${
+              active === "difficulty"
+                ? "border-solid border-4 border-[#FFF9E3] ml-[-5px]"
+                : ""
+            }`}
             onClick={() => handleClick("vocabArea")}
           >
             <p style={active === "vocabArea" ? activeStyle : defaultStyle}>
@@ -244,7 +278,11 @@ const Settings = () => {
             </p>
           </div>
           <div
-            className="bg-gray-400 w-[49%] h-[40px] rounded-t-xl flex justify-center items-center cursor-pointer"
+            className={`w-[49%] h-[40px] rounded-xl flex justify-center items-center cursor-pointer ${
+              active === "vocabArea"
+                ? "border-solid border-4 border-[#FFF9E3] mr-[-5px]"
+                : ""
+            }`}
             onClick={() => handleClick("difficulty")}
           >
             <p style={active === "difficulty" ? activeStyle : defaultStyle}>
@@ -267,13 +305,13 @@ const Settings = () => {
       </div>
       <div className="flex text-black gap-4 justify-center mt-8">
         <button
-          className="font-bold text-2xl bg-gray-700 w-[150px] h-[40px] rounded-xl"
+          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white"
           onClick={handleCopyUrl}
         >
           Invite
         </button>
         <button
-          className="font-bold text-2xl bg-gray-700 w-[150px] h-[40px] rounded-xl"
+          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white"
           onClick={handlePlay}
         >
           Play

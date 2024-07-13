@@ -1,0 +1,56 @@
+@keyframes swipeLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes swipeRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.circular-progress-complete {
+  animation: swipeLeft 0.5s ease-out forwards;
+}
+
+.circular-progress-complete-right {
+    animation: swipeRight 0.5s ease-out forwards;
+  }
+
+@keyframes fillProgress {
+  0% {
+    stroke-dasharray: 220 0;
+  }
+  50% {
+    stroke: yellow;
+  }
+  75% {
+    stroke: red;
+  }
+  100% {
+    stroke: red;
+    stroke-dasharray: 0 220;
+  }
+}
+
+.circular-progress {
+  width: 70px;
+  height: 70px;
+  transform: rotate(-90deg);
+}
+
+.progress-ring__circle {
+  fill: transparent;
+  stroke: green;
+  stroke-width: 4;
+  stroke-dasharray: 220; /* Full circumference */
+  stroke-dashoffset: 220;
+  animation: fillProgress 8s linear forwards;
+}

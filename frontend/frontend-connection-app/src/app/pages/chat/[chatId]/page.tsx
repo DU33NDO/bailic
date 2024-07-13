@@ -2,9 +2,10 @@
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import React from "react";
+import { useRouter } from "next/navigation";
 import { Socket, io } from "socket.io-client";
 import { usePathname } from "next/navigation";
-import MessageComponent from "@/components/MessageComponent";
+import SingleMessageComponent from "@/components/SingleMessageComponent";
 import ModalModeratorInput from "@/components/ModalModeratorInput";
 import ModalModerator from "@/components/ModalModerator";
 import ModalConnectPopUp from "@/components/ModalConnectPopUp";
@@ -13,6 +14,9 @@ import ModalConnectAnswer from "@/components/ModalConnectAnswer";
 import ModalConnectOthers from "@/components/ModalConnectOthers";
 import ModalResults from "@/components/ModalResults";
 import ModalConnectGameOver from "@/components/ModalConnectGameOver";
+import ModalConnectModeratorCase from "@/components/ModalConnectModeratorCase";
+import ModalResultsSecond from "@/components/ModalResultsSecond";
+import "../../../../../for_scroll.css";
 
 interface Message {
   userId: string;
@@ -21,6 +25,7 @@ interface Message {
   content: string;
   timestamp: string;
   messageId: string;
+  isExpiring?: boolean;
 }
 
 const Chat = () => {
@@ -31,6 +36,7 @@ const Chat = () => {
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
+  const [hostId, setHostId] = useState<string | null>(null);
   const [moderator, setModerator] = useState<{
     username: string;
     userPhoto: string;
@@ -44,6 +50,9 @@ const Chat = () => {
   const pathname = usePathname();
   const roomName = pathname.split("/").pop();
   const [showContact, setShowContact] = useState(false);
+  const [showNoContact, setShowNoContact] = useState(false);
+  const [showClickedModeratorSecond, setShowClickedModeratorSecond] =
+    useState(false);
   const [showAskedUser, setShowAskedUser] = useState(false);
   const [showClickedUser, setShowClickedUser] = useState(false);
   const [showClickedModerator, setShowClickedModerator] = useState(false);
@@ -58,18 +67,33 @@ const Chat = () => {
     clickedUserPhoto: string;
     secretWord: string;
   } | null>(null);
+  const [allWordsSecond, setAllWordsSecond] = useState<{
+    moderatorWord: string;
+    askedWord: string;
+    moderatorUserName: string;
+    moderatorUserPhoto: string;
+    secretWord: string;
+  } | null>(null);
   const [showAllWords, setShowAllWords] = useState(false);
+  const [showAllWordsSecond, setShowAllWordsSecond] = useState(false);
   const [countLetter, setCountLetter] = useState(1);
   const [isGameWonByUsers, setIsGameWonByUsers] = useState(false);
+  const [showAskedUserSecond, setShowAskedUserSecond] = useState(false);
+  const [showOtherUsersSecond, setShowOtherUsersSecond] = useState(false);
+  const [storedWords, setStoredWords] = useState<string[]>([]);
+
+  const router = useRouter();
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
     const storedRoomId = localStorage.getItem("roomId");
     const storedModeratorId = localStorage.getItem("moderatorId");
     const storedSecretWord = localStorage.getItem("secretWord");
+    const storedHostId = localStorage.getItem("hostId");
 
     if (storedUserId) setUserId(storedUserId);
     if (storedRoomId) setRoomId(storedRoomId);
+    if (storedHostId) setHostId(storedHostId);
     if (storedModeratorId) setModeratorId(storedModeratorId);
     if (storedSecretWord) setSecretWord(storedSecretWord.toLowerCase());
   }, []);
@@ -114,20 +138,6 @@ const Chat = () => {
             });
             socketRef.current = socket;
 
-            // socket.on("newModerator", (moderator) => {
-            //   console.log(`New moderator: ${moderator.username} with ID: ${moderator._id}`);
-            //   setModerator({
-            //     username: moderator.username,
-            //     userPhoto: moderator.userPhoto,
-            //     userId: moderator._id,
-            //   });
-  
-            //   localStorage.setItem("moderatorId", moderator._id);
-            //   setModeratorId(moderator._id);
-            //   setShowModeratorModal(true);
-            //   console.log(`New host: ${moderator.username}; ${moderator.userId}`);
-            // });  
-
             socket.emit(
               "join-room",
               roomName,
@@ -137,69 +147,116 @@ const Chat = () => {
             );
             console.log(`ROOM NAME !!!! - ${roomName}`);
 
-            socket.emit("listOfUsers", arrayOfUsers, roomName);
+            axios
+              .get(`http://localhost:3005/game/get-moderator/${roomId}`)
+              .then((response) => {
+                const moderatorIdQuery = response.data;
+                console.log(moderatorIdQuery);
 
-            socket.on("newModerator", (moderator: any) => {
-              console.log(`MODERATOR NAME: ${moderator.username}`);
-              setModerator({
-                username: moderator.username,
-                userPhoto: moderator.userPhoto,
-                userId: moderator._id,
+                axios
+                  .get(`http://localhost:3005/auth/user/${moderatorIdQuery}`)
+                  .then((res: any) => {
+                    console.log(`MODERATOR NAME: ${res.data.user.username}`);
+                    setModerator({
+                      username: res.data.user.username,
+                      userPhoto: res.data.user.userPhoto,
+                      userId: res.data.user._id,
+                    });
+
+                    localStorage.setItem("moderatorId", res.data.user._id);
+                    setModeratorId(res.data.user._id);
+                    setShowModeratorModal(true);
+
+                    socket.on("newMessage", (data: any) => {
+                      console.log("New message received:", data);
+                      console.log(
+                        `Проверка - ${data.userId} отправитель сообщения`
+                      );
+
+                      const message = { ...data, isExpiring: false };
+
+                      if (data.userId === res.data.user._id) {
+                        console.log("CHEcK 1");
+                        setModeratorMessages((prevModeratorMessages) => [
+                          ...prevModeratorMessages,
+                          message,
+                        ]);
+                      } else {
+                        console.log(
+                          `CHEcK 2, data.userId = ${data.userId} AND moderatorId = ${moderatorId}`
+                        );
+                        setMessages((prevMessages) => [
+                          ...prevMessages,
+                          message,
+                        ]);
+                      }
+
+                      setTimeout(() => {
+                        setMessages((prevMessages) =>
+                          prevMessages.map((msg) =>
+                            msg.messageId === data.messageId
+                              ? { ...msg, isExpiring: true }
+                              : msg
+                          )
+                        );
+
+                        setTimeout(() => {
+                          setMessages((prevMessages) =>
+                            prevMessages.filter(
+                              (msg) => msg.messageId !== data.messageId
+                            )
+                          );
+                          setModeratorMessages((prevModeratorMessages) =>
+                            prevModeratorMessages.filter(
+                              (msg) => msg.messageId !== data.messageId
+                            )
+                          );
+                          socket.emit("ExpiredMessage", { ...data, roomName });
+                        }, 500);
+                      }, 8000);
+                    });
+                  });
               });
-
-              localStorage.setItem("moderatorId", moderator._id);
-              setModeratorId(moderator._id);
-              setShowModeratorModal(true);
-              console.log(
-                `New host: ${moderator.username}; ${moderator.userId}`
-              );
-            });
 
             socket.on("setSecretWord", (word) => {
               localStorage.setItem("secretWord", word);
               setSecretWord(word.toLowerCase());
             });
 
-            socket.on("newMessage", (data: any) => {
-              console.log("New message received:", data);
-
-              if (data.userId === moderatorId) {
-                setModeratorMessages((prevModeratorMessages) => [
-                  ...prevModeratorMessages,
-                  data,
-                ]);
-              } else {
-                setMessages((prevMessages) => [...prevMessages, data]);
-              }
-
-              setTimeout(() => {
-                socket.emit("ExpiredMessage", { ...data, roomName });
-              }, 10000);
-            });
-
             socket.on("connectToPlayers", (data) => {
               setShowContact(true);
               if (data.askedUserId === userId) {
                 setShowAskedUser(true);
-                console.log(data.messageToAsked);
               }
 
               if (data.clickedUserId === userId) {
                 setShowClickedUser(true);
-                console.log(data.messageToCkick);
               }
 
-              if (moderatorId === userId) {
+              if (data.moderatorId === userId) {
                 setShowClickedModerator(true);
-                console.log(data.messageToModerator);
               }
 
               if (
                 data.askedUserId !== userId &&
                 data.clickedUserId !== userId &&
-                moderatorId !== userId
+                data.moderatorId !== userId
               ) {
                 setShowOtherUsers(true);
+              }
+            });
+
+            socket.on("noConnectionData", (data) => {
+              setShowNoContact(true);
+
+              if (data.askedUserId === userId) {
+                setShowAskedUserSecond(true);
+              }
+              if (moderatorId === userId) {
+                setShowClickedModeratorSecond(true);
+              }
+              if (moderatorId !== userId && data.askedUserId !== userId) {
+                setShowOtherUsersSecond(true);
               }
             });
 
@@ -255,17 +312,78 @@ const Chat = () => {
                 data.askedWord.toLowerCase() === data.clickedWord.toLowerCase()
               ) {
                 setCountLetter((prevCount) => prevCount);
+                setStoredWords((prevWords) => [
+                  ...prevWords,
+                  data.askedWord.toLowerCase(),
+                ]);
+                console.log(`STORED WORDS: ${storedWords}`);
               } else if (
                 data.askedWord.toLowerCase() ===
                   data.clickedWord.toLowerCase() &&
                 data.askedWord.toLowerCase() !==
                   data.moderatorWord.toLowerCase()
               ) {
+                setStoredWords((prevWords) => [
+                  ...prevWords,
+                  data.askedWord.toLowerCase(),
+                ]);
+                console.log(`STORED WORDS: ${storedWords}`);
                 setCountLetter((prevCount) => prevCount + 1);
                 console.log(`COUNT LETTER: ${countLetter} `);
               } else {
                 setCountLetter((prevCount) => prevCount);
               }
+            });
+
+            socket.on("allWordsSecond", (data) => {
+              console.log(
+                `checkAndEmitGameData CHECK: ${data.moderatorWord}; ${data.askedWord}`
+              );
+              setAllWordsSecond({
+                moderatorWord: data.moderatorWord.toLowerCase(),
+                askedWord: data.askedWord.toLowerCase(),
+                moderatorUserName: data.moderatorUserName,
+                moderatorUserPhoto: data.moderatorUserPhoto,
+                secretWord: data.secretWord,
+              });
+              if (
+                data.askedWord.toLowerCase() === data.secretWord.toLowerCase()
+              ) {
+                if (
+                  data.askedWord.toLowerCase() ===
+                  data.moderatorWord.toLowerCase()
+                ) {
+                  console.log(`АГА связи не будет`);
+                  console.log(`STORED WORDS: ${storedWords}`);
+                } else {
+                  console.log(`о нет хост не так подумал(`);
+                }
+              } else if (
+                (data.askedWord.toLowerCase() !== data.secretWord.toLowerCase(),
+                data.askedWord.toLowerCase() ===
+                  data.moderatorWord.toLowerCase())
+              ) {
+                console.log(`АГА связи не будет`);
+                setStoredWords((prevWords) => [
+                  ...prevWords,
+                  data.askedWord.toLowerCase(),
+                ]);
+                console.log(`STORED WORDS: ${storedWords}`);
+              } else {
+                console.log(`о нет хост не так подумал(`);
+              }
+            });
+
+            socket.on("continueToAll", () => {
+              console.log(`socket reload from front to front??`);
+
+              // router.push(`http://localhost:3000/pages/chat/${roomName}`);
+              window.location.reload();
+            });
+
+            socket.on("exitToAll", (roomName) => {
+              console.log(`socket exit from front to front??`);
+              router.push(`http://localhost:3000/pages/settings/${roomName}`);
             });
 
             axios
@@ -282,6 +400,10 @@ const Chat = () => {
                 socketRef.current.off("connectToPlayers");
                 socketRef.current.off("DeleteMessage");
                 socketRef.current.off("allWords");
+                socketRef.current.off("allWordsSecond");
+                socketRef.current.off("noConnectionData");
+                socketRef.current.off("continueToAll");
+                socketRef.current.off("exitToAll");
                 socketRef.current.disconnect();
               }
             };
@@ -297,6 +419,11 @@ const Chat = () => {
     }
   }, [allWords]);
 
+  useEffect(() => {
+    if (allWordsSecond) {
+      setShowAllWordsSecond(true);
+    }
+  }, [allWordsSecond]);
 
   useEffect(() => {
     if (secretWord && countLetter >= secretWord.length) {
@@ -314,11 +441,11 @@ const Chat = () => {
     if (socketRef.current) {
       const message = {
         text: messageContent,
-        roomId,
-        userPhoto,
-        username,
-        userId,
-        roomName,
+        roomId: roomId,
+        userPhoto: userPhoto,
+        username: username,
+        userId: userId,
+        roomName: roomName,
       };
       socketRef.current.emit("sendMessage", message, roomName);
     }
@@ -343,7 +470,20 @@ const Chat = () => {
   const handleClickMessage = (message: any) => {
     if (message.userId !== userId) {
       setIsClicked(true);
-      if (isClicked === true && socketRef.current && moderatorId) {
+      if (isClicked === true && socketRef.current && userId === moderatorId) {
+        socketRef.current.emit("noConnectStarts", {
+          roomId: roomId,
+          roomName: roomName,
+          askedUserId: message.userId,
+          moderatorId: moderatorId,
+        });
+      }
+      if (
+        isClicked === true &&
+        socketRef.current &&
+        moderatorId &&
+        userId !== moderatorId
+      ) {
         socketRef.current.emit("connectStarts", {
           roomId: roomId,
           roomName: roomName,
@@ -361,18 +501,62 @@ const Chat = () => {
     setShowAskedUser(false);
   };
 
+  const handleCloseModalAskedSecondCase = () => {
+    setShowAskedUserSecond(false);
+  };
+
+  const handleCloseModalAnswerModeratorSecond = (word: string) => {
+    setShowClickedModeratorSecond(false);
+    if (socketRef.current) {
+      socketRef.current.emit("sendModeratorWordGameSecond", {
+        word: word,
+        roomName: roomName,
+        userName: username,
+        userPhoto: userPhoto,
+        secretWord: secretWord,
+      });
+    }
+  };
+
   const handleCloseModalAllWords = () => {
     setShowAllWords(false);
   };
 
+  const handleCloseModalAllWordsSecond = () => {
+    setShowAllWordsSecond(false);
+  };
+
   const closeIsGameOver = () => {
+    if (secretWord) {
+      localStorage.removeItem("secretWord");
+    }
     setIsGameWonByUsers(false);
-    window.location.reload();
+  };
+
+  const handleGameContinue = async () => {
+    if (secretWord) {
+      localStorage.removeItem("secretWord");
+    }
+    await axios.post("http://localhost:3005/game/set-moderator", {
+      roomId: roomId,
+    });
+    setIsGameWonByUsers(false);
   };
 
   const handleSubmitWord = (word: string) => {
     if (socketRef.current) {
       socketRef.current.emit("sendTargetWord", {
+        word: word.toLowerCase(),
+        roomName: roomName,
+        userName: username,
+        userPhoto: userPhoto,
+      });
+    }
+  };
+
+  const handleSubmitWordSecondCase = (word: string) => {
+    if (socketRef.current) {
+      socketRef.current.emit("sendTargetWordSecondCase", {
         word: word.toLowerCase(),
         roomName: roomName,
         userName: username,
@@ -407,7 +591,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="px-5 py-3">
+    <div className="px-5 md:px-20 md:py-0">
       {showModeratorModal && moderator && (
         <ModalModerator
           username={moderator.username}
@@ -426,27 +610,51 @@ const Chat = () => {
       {showContact && (
         <ModalConnectPopUp onClose={() => setShowContact(false)} />
       )}
+      {showNoContact && (
+        <ModalConnectModeratorCase onClose={() => setShowNoContact(false)} />
+      )}
       {showAskedUser && showContact === false && secretWord && (
         <ModalConnectAsked
           onClose={handleCloseModalAsked}
           onSubmit={handleSubmitWord}
           revealedLetters={secretWord.slice(0, countLetter)}
+          revealedWords={storedWords}
         />
       )}
       {showClickedUser && showContact === false && secretWord && (
         <ModalConnectAnswer
           onClose={handleCloseModalAnswerUser}
           revealedLetters={secretWord.slice(0, countLetter)}
+          revealedWords={storedWords}
         />
       )}
       {showClickedModerator && showContact === false && secretWord && (
         <ModalConnectAnswer
           onClose={handleCloseModalAnswerModerator}
           revealedLetters={secretWord.slice(0, countLetter)}
+          revealedWords={storedWords}
+        />
+      )}
+      {showAskedUserSecond && showNoContact === false && secretWord && (
+        <ModalConnectAsked
+          onClose={handleCloseModalAskedSecondCase}
+          onSubmit={handleSubmitWordSecondCase}
+          revealedLetters={secretWord.slice(0, countLetter)}
+          revealedWords={storedWords}
+        />
+      )}
+      {showClickedModeratorSecond && showNoContact === false && secretWord && (
+        <ModalConnectAnswer
+          onClose={handleCloseModalAnswerModeratorSecond}
+          revealedLetters={secretWord.slice(0, countLetter)}
+          revealedWords={storedWords}
         />
       )}
       {showOtherUsers && showContact === false && (
         <ModalConnectOthers onClose={() => setShowOtherUsers(false)} />
+      )}
+      {showOtherUsersSecond && showNoContact === false && (
+        <ModalConnectOthers onClose={() => setShowOtherUsersSecond(false)} />
       )}
       {showAllWords && allWords && (
         <ModalResults
@@ -460,57 +668,92 @@ const Chat = () => {
           onClose={handleCloseModalAllWords}
         />
       )}
-      {isGameWonByUsers && (
-        <ModalConnectGameOver onClose={() => closeIsGameOver()} />
+      {showAllWordsSecond && allWordsSecond && (
+        <ModalResultsSecond
+          moderatorUsername={allWordsSecond.moderatorUserName}
+          moderatorUserPhoto={allWordsSecond.moderatorUserPhoto}
+          moderatorWord={allWordsSecond.moderatorWord}
+          targetWord={allWordsSecond.askedWord}
+          onClose={handleCloseModalAllWordsSecond}
+        />
       )}
-      <div className="flex justify-center mt-6">
-        <div className="flex bg-gray-300 w-80 h-[60px] items-center justify-center rounded-xl">
-          <p className="text-black font-bold text-center text-5xl tracking-[.25em]">
-            {secretWord && secretWord.slice(0, countLetter)}
-          </p>
-        </div>
-      </div>
-      <div className="flex justify-between items-center mt-12">
-        <div className="w-[50%] h-[90px] bg-white rounded-[21px]">
-          {moderatorMessages.map((message, index) => (
-            <p className="text-black text-xl px-5 py-2" key={index}>
-              {message.content}
-            </p>
-          ))}
-        </div>
-        <div className="w-[120px] h-[120px] rounded-[80px] bg-red-700">
-          {moderator && (
-            <img
-              className="w-full h-full object-cover rounded-[80px]"
-              src={moderator.userPhoto}
-              alt="Moderator"
-            />
-          )}
-        </div>
-      </div>
-      <div className="flex flex-col gap-[24px] mt-14 w-[100%] h-[40vh] bg-gray-400 rounded-xl overflow-scroll py-3">
-        {messages.map((message, index) => (
-          <div className="" key={index}>
-            <MessageComponent
-              message={message}
-              onClick={handleClickMessage}
-            ></MessageComponent>
+      {isGameWonByUsers && roomName && (
+        <ModalConnectGameOver
+          onClose={closeIsGameOver}
+          onContinue={handleGameContinue}
+          roomName={roomName}
+          isHost={userId === hostId}
+          socket={socketRef.current}
+        />
+      )}
+      <div className="h-screen flex flex-col justify-between">
+        <div>
+          <div className="flex justify-center mt-6">
+            <div className="flex bg-[#CC0B0D] w-80 md:w-[600px] px-6 py-4 items-center justify-center rounded-xl">
+              <p className="text-[#fff] font-bold text-center text-5xl break-all tracking-[.25em] capitalize max-w-[10ch]">
+                {secretWord && secretWord.slice(0, countLetter)}
+              </p>
+            </div>
           </div>
-        ))}
-      </div>
-      <div className="flex">
-        <form action="" onSubmit={onSubmitMessage} className="mt-10">
-          <input
-            type="text"
-            name="message"
-            id="message"
-            placeholder="text: "
-            className="text-gray-700 w-[75%] h-10 rounded-xl px-5 py-4"
-          />
-          <button type="submit" className="ml-4 ">
-            Send
-          </button>
-        </form>
+          <div className="flex justify-between items-center mt-12 relative">
+            <p className="absolute text-xl text-black font-bold -top-4 left-4">
+              Ведущий
+            </p>
+            <div className="w-[50%] h-[90px] bg-[#E2D5D0] rounded-[21px] overflow-scroll hide-scrollbar">
+              {moderatorMessages.map((message, index) => (
+                <p className="text-black text-xl px-5 py-2" key={index}>
+                  {message.content}
+                </p>
+              ))}
+            </div>
+            <div className="w-[120px] h-[120px] rounded-[80px] bg-red-700">
+              {moderator && (
+                <img
+                  className="w-full h-full object-cover rounded-[80px]"
+                  src={moderator.userPhoto}
+                  alt="Moderator"
+                />
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col gap-[24px] mt-14 w-full h-[40vh] bg-[#D4C0B8] rounded-xl overflow-scroll py-5 px-5 md:px-8 hide-scrollbar">
+            {messages.length === 0 ? (
+              <div className="flex items-center justify-center h-[20vh] text-[#F24236] font-black text-2xl text-center opacity-50 bg-[#EAE5E3] rounded-lg px-6 py-4">
+                Введите свое первое сообщение!
+              </div>
+            ) : (
+              messages.map((message) => (
+                <SingleMessageComponent
+                  key={message.messageId}
+                  message={message}
+                  onClick={handleClickMessage}
+                />
+              ))
+            )}
+          </div>
+        </div>
+        <div className="w-full mb-6">
+          <form
+            onSubmit={onSubmitMessage}
+            className="w-full flex items-center justify-center"
+          >
+            <div className="relative w-full max-w-lg md:max-w-full">
+              <input
+                type="text"
+                name="message"
+                id="message"
+                placeholder="Send Message..."
+                className="text-gray-700 w-full h-12 md:h-16 rounded-xl pl-5 pr-10 py-2 border focus:border-gray-500"
+              />
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#EB3A53] text-2xl"
+              >
+                ➤
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

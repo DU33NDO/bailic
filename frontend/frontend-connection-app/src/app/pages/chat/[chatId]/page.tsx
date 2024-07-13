@@ -389,7 +389,9 @@ const Chat = () => {
 
             socket.on("exitToAll", (roomName) => {
               console.log(`socket exit from front to front??`);
-              router.push(`http://localhost:3000/pages/settings/${roomName}`);
+              router.push(
+                `${process.env.FRONTEND_URL}/pages/settings/${roomName}`
+              );
             });
 
             axios

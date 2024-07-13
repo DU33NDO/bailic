@@ -101,7 +101,7 @@ const Chat = () => {
   const fetchRoomDetails = async (roomId: string) => {
     try {
       const response = await axios.get(
-        `${process.env.BACKEND_URL}/rooms/${roomId}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms/${roomId}`
       );
       return response.data.users; //array
     } catch (error) {
@@ -115,7 +115,7 @@ const Chat = () => {
       const fetchUserDetails = async (userId: string) => {
         try {
           const response = await axios.get(
-            `${process.env.BACKEND_URL}/auth/user/${userId}`
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/user/${userId}`
           );
           if (response.data.success) {
             return response.data.user;
@@ -135,7 +135,7 @@ const Chat = () => {
           if (user) {
             setUsername(user.username);
             setUserPhoto(user.userPhoto);
-            const socket = io(`${process.env.BACKEND_URL}`, {
+            const socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}`, {
               transports: ["websocket"],
             });
             socketRef.current = socket;
@@ -150,14 +150,16 @@ const Chat = () => {
             console.log(`ROOM NAME !!!! - ${roomName}`);
 
             axios
-              .get(`${process.env.BACKEND_URL}/game/get-moderator/${roomId}`)
+              .get(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/game/get-moderator/${roomId}`
+              )
               .then((response) => {
                 const moderatorIdQuery = response.data;
                 console.log(moderatorIdQuery);
 
                 axios
                   .get(
-                    `${process.env.BACKEND_URL}/auth/user/${moderatorIdQuery}`
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/user/${moderatorIdQuery}`
                   )
                   .then((res: any) => {
                     console.log(`MODERATOR NAME: ${res.data.user.username}`);
@@ -391,7 +393,7 @@ const Chat = () => {
             });
 
             axios
-              .get(`${process.env.BACKEND_URL}/messages/${roomId}`)
+              .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/messages/${roomId}`)
               .then((response) => {
                 setMessages(response.data);
               });
@@ -541,9 +543,12 @@ const Chat = () => {
     if (secretWord) {
       //need to delete from all users secret Word !!!!
     }
-    await axios.post(`${process.env.BACKEND_URL}/game/set-moderator`, {
-      roomId: roomId,
-    });
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/game/set-moderator`,
+      {
+        roomId: roomId,
+      }
+    );
     setIsGameWonByUsers(false);
   };
 

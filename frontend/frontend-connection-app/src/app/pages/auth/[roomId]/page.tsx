@@ -56,7 +56,7 @@ const Auth: React.FC = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.BACKEND_URL}/auth/login`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
         {
           username,
           userPhoto,

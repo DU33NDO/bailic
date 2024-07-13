@@ -9,7 +9,7 @@ import cors from "cors";
 import session from "express-session";
 import Message from "./models/Message";
 import User from "./models/User";
-import messagesRouter from "../src/messages/messages-router";
+import messagesRouter from "./messages/messages-router";
 import authRouter from "./users/auth-router";
 import roomRouter from "./room/room-router";
 import gameRouter from "./game/game-router";

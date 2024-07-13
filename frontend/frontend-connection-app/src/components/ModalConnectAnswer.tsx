@@ -3,16 +3,16 @@ import React, { useEffect, useState, FormEvent } from "react";
 interface ModalConnectAnswerProps {
   onClose: (word: string) => void;
   revealedLetters: string;
-  revealedWords: string[]; 
+  revealedWords: string[];
 }
 
 const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
   onClose,
   revealedLetters,
-  revealedWords, 
+  revealedWords,
 }) => {
   const [word, setWord] = useState("");
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(5);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -35,11 +35,9 @@ const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
     const lowerCaseWord = word.toLocaleLowerCase();
 
     if (!lowerCaseWord.startsWith(revealedLetters)) {
-      setError(`The word must start with "${revealedLetters}"`);
+      setError(`Слово должно начинаться с "${revealedLetters}"`);
     } else if (revealedWords.includes(lowerCaseWord)) {
-      setError(
-        `The word "${word}" has already been used. Please choose another word.`
-      );
+      setError(`Айайай, "${word}" уже было использовано! Напиши другое слово.`);
     } else {
       onClose(word);
     }

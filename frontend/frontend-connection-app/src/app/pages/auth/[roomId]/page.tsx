@@ -14,9 +14,7 @@ const Auth: React.FC = () => {
   localStorage.clear();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [userPhoto, setUserPhoto] = useState<string>(
-    "https://wp-s.ru/wallpapers/16/17/364199592708062/siluet-xameleona-iz-multika.jpg"
-  );
+  const [userPhoto, setUserPhoto] = useState<string>("/avatar/userPhoto.jpg");
   const [roomId, setRoomId] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const pathname = usePathname();
@@ -25,10 +23,14 @@ const Auth: React.FC = () => {
   console.log(`ROOMNAME - ${roomName}`);
 
   const avatars = [
-    "https://i.pinimg.com/originals/36/fe/14/36fe14c1732b4315af4c46b142fa29a8.jpg",
-    "https://sneg.top/uploads/posts/2023-06/1687601562_sneg-top-p-avatarka-negra-krasivo-54.jpg",
-    "https://wp-s.ru/wallpapers/16/17/364199592708062/siluet-xameleona-iz-multika.jpg",
-    "https://wallpapers.com/images/hd/weird-profile-pictures-k7dzvlzmlq8q6eib.jpg",
+    "/avatar/userPhoto2.jpg",
+    "/avatar/userPhoto3.jpg",
+    "/avatar/userPhoto4.jpg",
+    "/avatar/userPhoto5.jpg",
+    "/avatar/userPhoto6.jpg",
+    "/avatar/userPhoto7.jpg",
+    "/avatar/userPhoto8.jpg",
+    "/avatar/userPhoto.jpg",
   ];
 
   const handlePhotoChange = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -112,13 +114,15 @@ const Auth: React.FC = () => {
             />
           </div>
           <div className="flex justify-center bg-[#E2D5D0] px-4 py-4 rounded-xl bg-opacity-40">
-            <p className="text-xl text-black font-bold opacity-70">псс правила?</p>
+            <p className="text-xl text-black font-bold opacity-70">
+              псс правила?
+            </p>
           </div>
           <button
             type="submit"
             className="w-[150px] h-[40px] bg-[#EB3A53] rounded-xl text-right px-6 py-2 text-lg flex gap-4 items-center"
           >
-              <FontAwesomeIcon
+            <FontAwesomeIcon
               icon={faPlay}
               style={{ fontSize: "1.3em" }}
               className=""

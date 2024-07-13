@@ -211,6 +211,7 @@ io.on("connection", (socket) => {
     console.log("NO connect starts received:", data);
     io.to(data.roomName).emit("noConnectionData", {
       askedUserId: data.askedUserId,
+      moderatorId: data.moderatorId,
     });
   });
 

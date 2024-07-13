@@ -183,7 +183,7 @@ const Chat = () => {
                         ]);
                       } else {
                         console.log(
-                          `CHEcK 2, data.userId = ${data.userId} AND moderatorId = ${moderatorId}`
+                          `CHEcK 2, data.userId = ${data.userId} AND moderatorId = ${moderatorIdQuery}, stored moderatorId - ${moderatorId}`
                         );
                         setMessages((prevMessages) => [
                           ...prevMessages,
@@ -252,10 +252,10 @@ const Chat = () => {
               if (data.askedUserId === userId) {
                 setShowAskedUserSecond(true);
               }
-              if (moderatorId === userId) {
+              if (data.moderatorId === userId) {
                 setShowClickedModeratorSecond(true);
               }
-              if (moderatorId !== userId && data.askedUserId !== userId) {
+              if (data.moderatorId !== userId && data.askedUserId !== userId) {
                 setShowOtherUsersSecond(true);
               }
             });
@@ -376,8 +376,8 @@ const Chat = () => {
 
             socket.on("continueToAll", () => {
               console.log(`socket reload from front to front??`);
+              localStorage.removeItem("secretWord");
 
-              // router.push(`http://localhost:3000/pages/chat/${roomName}`);
               window.location.reload();
             });
 
@@ -535,7 +535,7 @@ const Chat = () => {
 
   const handleGameContinue = async () => {
     if (secretWord) {
-      localStorage.removeItem("secretWord");
+      //need to delete from all users secret Word !!!!
     }
     await axios.post("http://localhost:3005/game/set-moderator", {
       roomId: roomId,
@@ -701,7 +701,10 @@ const Chat = () => {
             </p>
             <div className="w-[50%] h-[90px] bg-[#E2D5D0] rounded-[21px] overflow-scroll hide-scrollbar">
               {moderatorMessages.map((message, index) => (
-                <p className="text-black text-xl px-5 py-2" key={index}>
+                <p
+                  className="text-red-500 text-xl px-8 py-4 font-bold "
+                  key={index}
+                >
                   {message.content}
                 </p>
               ))}

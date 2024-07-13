@@ -36,7 +36,7 @@ const SingleMessageComponent: React.FC<{
             ? "circular-progress-complete-right"
             : "circular-progress-complete"
           : ""
-      } ${isCurrentUser ? "flex-row-reverse" : ""}`} // Add flex-row-reverse if the message is from the current user
+      } ${isCurrentUser ? "flex-row-reverse" : ""}`}
       onClick={() => onClick(message)}
     >
       <div className="relative w-[70px] h-[70px]">

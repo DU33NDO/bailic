@@ -43,11 +43,12 @@ const ModalResultsSecond: React.FC<ModalResultsSecondProps> = ({
         </div>
         {targetWord === moderatorWord ? (
           <p className="text-black font-bold text-center text-2xl mt-6">
-            Черт, ведущий был прав, это был {targetWord}
+            Черт, ведущий был прав:{" "}
+            <span className="text-red-700">{targetWord}</span>
           </p>
         ) : (
           <p className="text-black font-bold text-center text-2xl mt-6">
-            Опа, неправильно думаешь ведущий 
+            Опа, неправильно думаешь, ведущий
           </p>
         )}
       </div>

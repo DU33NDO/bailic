@@ -16,7 +16,7 @@ const ModalConnectModeratorCase: React.FC<ModalConnectModeratorCaseProps> = ({
         className="bg-gray-300 p-10 py-15 rounded-xl flex flex-col items-center"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-black p-4 rounded-xl flex items-center justify-center mb-4">
+        <div className="bg-[#CC0B0D] p-4 rounded-xl flex items-center justify-center mb-4">
           <p className="text-3xl font-bold text-white">МИНУС КОНТАКТ?</p>
         </div>
       </div>

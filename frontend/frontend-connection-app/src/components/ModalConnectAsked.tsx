@@ -11,11 +11,11 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
   onClose,
   onSubmit,
   revealedLetters,
-  revealedWords, 
+  revealedWords,
 }) => {
   const [word, setWord] = useState("");
   const [error, setError] = useState("");
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(5);
 
   useEffect(() => {
     const countdown = setInterval(() => {
@@ -37,11 +37,9 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
     const lowerCaseWord = word.toLowerCase();
 
     if (!lowerCaseWord.startsWith(revealedLetters.toLowerCase())) {
-      setError(`The word must start with "${revealedLetters}"`);
+      setError(`Слово должно начинаться с "${revealedLetters}"`);
     } else if (revealedWords.includes(lowerCaseWord)) {
-      setError(
-        `The word "${word}" has already been used. Please choose another word.`
-      );
+      setError(`Айайай, "${word}" уже было использовано! Напиши другое слово.`);
     } else {
       onSubmit(word);
       onClose();
@@ -66,7 +64,7 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
             value={word}
             onChange={(e) => setWord(e.target.value)}
             placeholder="Аватар"
-            className="text-gray-700 w-full h-10 rounded-l-xl px-5 py-2"
+            className="text-[#CC0B0D] w-full h-10 rounded-l-xl px-5 py-2"
           />
           <button
             type="submit"

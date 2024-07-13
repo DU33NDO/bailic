@@ -58,11 +58,11 @@ const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
             value={word}
             onChange={(e) => setWord(e.target.value)}
             placeholder="Введите слово"
-            className="text-gray-700 w-full h-10 rounded-l-xl px-5 py-2"
+            className="text-black w-full h-10 rounded-l-xl px-5 py-2"
           />
           <button
             type="submit"
-            className="bg-black text-white h-10 rounded-r-xl px-4"
+            className="bg-[#CC0B0D] text-white h-10 rounded-r-xl px-4"
           >
             ➤
           </button>

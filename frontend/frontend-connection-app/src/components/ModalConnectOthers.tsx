@@ -5,7 +5,7 @@ interface ModalConnectOthersProps {
 }
 
 const ModalConnectOthers: React.FC<ModalConnectOthersProps> = ({ onClose }) => {
-  const [timer, setTimer] = useState(3);
+  const [timer, setTimer] = useState(5);
 
   useEffect(() => {
     const countdown = setInterval(() => {
@@ -31,7 +31,7 @@ const ModalConnectOthers: React.FC<ModalConnectOthersProps> = ({ onClose }) => {
         className="bg-white p-6 rounded-xl flex flex-col items-center"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-black w-60 h-60 rounded-xl flex items-center justify-center mb-4">
+        <div className="bg-[#CC0B0D] w-60 h-60 rounded-xl flex items-center justify-center mb-4">
           <p className="text-white font-bold text-9xl">{timer}</p>
         </div>
       </div>

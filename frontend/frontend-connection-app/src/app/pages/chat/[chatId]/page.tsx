@@ -710,27 +710,27 @@ const Chat = () => {
             <p className="absolute text-xl text-black font-bold -top-4 left-4">
               Ведущий
             </p>
-            <div className="w-[50%] h-[90px] bg-[#E2D5D0] rounded-[21px] overflow-scroll hide-scrollbar">
+            <div className="w-[50%] h-auto max-h-[90px] bg-[#E2D5D0] rounded-[21px] overflow-y-auto hide-scrollbar">
               {moderatorMessages.map((message, index) => (
                 <p
-                  className="text-red-500 text-xl px-8 py-4 font-bold "
+                  className="text-red-500 text-xl px-8 py-4 font-bold"
                   key={index}
                 >
                   {message.content}
                 </p>
               ))}
             </div>
-            <div className="w-[120px] h-[120px] rounded-[80px] bg-red-700">
+            <div className="w-[120px] h-[120px] rounded-full bg-red-700">
               {moderator && (
                 <img
-                  className="w-full h-full object-cover rounded-[80px]"
+                  className="w-full h-full object-cover rounded-full"
                   src={moderator.userPhoto}
                   alt="Moderator"
                 />
               )}
             </div>
           </div>
-          <div className="flex flex-col gap-[24px] mt-14 w-full h-[40vh] bg-[#D4C0B8] rounded-xl overflow-scroll py-5 px-5 md:px-8 hide-scrollbar">
+          <div className="flex flex-col gap-[24px] mt-14 w-full h-full max-h-[40vh] bg-[#D4C0B8] rounded-xl overflow-y-auto py-5 px-5 md:px-8 hide-scrollbar">
             {messages.length === 0 ? (
               <div className="flex items-center justify-center h-[20vh] text-[#F24236] font-black text-2xl text-center opacity-50 bg-[#EAE5E3] rounded-lg px-6 py-4">
                 Введите свое первое сообщение!
@@ -746,7 +746,7 @@ const Chat = () => {
             )}
           </div>
         </div>
-        <div className="w-full">
+        <div className="w-full mb-6">
           <form
             onSubmit={onSubmitMessage}
             className="w-full flex items-center justify-center"

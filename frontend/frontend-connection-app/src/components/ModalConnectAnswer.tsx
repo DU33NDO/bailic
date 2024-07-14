@@ -20,7 +20,7 @@ const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
       setTimer((prevTimer) => {
         if (prevTimer <= 1) {
           clearInterval(countdown);
-          onClose(word);
+          onClose(`${revealedLetters}didNotSend`);
           return 0;
         }
         return prevTimer - 1;
@@ -28,11 +28,11 @@ const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
     }, 1000);
 
     return () => clearInterval(countdown);
-  }, [onClose, word]);
+  }, [onClose, revealedLetters]);
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    const lowerCaseWord = word.toLocaleLowerCase();
+    const lowerCaseWord = word.toLowerCase();
 
     if (!lowerCaseWord.startsWith(revealedLetters)) {
       setError(`Слово должно начинаться с "${revealedLetters}"`);

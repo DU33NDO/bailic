@@ -8,6 +8,7 @@ interface ModalResultsProps {
   clickedUserPhoto: string;
   clickedWord: string;
   targetWord: string;
+  revealedLetters: string;
   onClose: () => void;
 }
 
@@ -19,6 +20,7 @@ const ModalResults: React.FC<ModalResultsProps> = ({
   clickedUserPhoto,
   clickedWord,
   targetWord,
+  revealedLetters,
   onClose,
 }) => {
   return (
@@ -45,9 +47,14 @@ const ModalResults: React.FC<ModalResultsProps> = ({
                 {moderatorWord}
               </p>
             </div>
+            {targetWord === moderatorWord ? (
+              <img src="/photos/done.svg" className="w-10 ml-6" alt="done" />
+            ) : (
+              <img src="/photos/cross.png" className="w-10 ml-6" alt="cross" />
+            )}
           </div>
           <div className="flex items-center gap-4">
-            <div className="bg-black opacity-70 w-160 h-16 rounded-full mr-2">
+            <div className="bg-black w-16 h-16 rounded-full mr-2">
               <img
                 src={clickedUserPhoto}
                 className="rounded-full w-16 h-16"
@@ -62,6 +69,11 @@ const ModalResults: React.FC<ModalResultsProps> = ({
                 {clickedWord}
               </p>
             </div>
+            {targetWord === clickedWord ? (
+              <img src="/photos/done.svg" className="w-10 ml-6" alt="done" />
+            ) : (
+              <img src="/photos/cross.png" className="w-10 ml-6" alt="cross" />
+            )}
           </div>
         </div>
         <p className="text-black font-bold text-center text-2xl mt-6">

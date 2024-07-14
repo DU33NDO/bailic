@@ -4,7 +4,7 @@ interface ModalConnectAskedProps {
   onClose: () => void;
   onSubmit: (word: string) => void;
   revealedLetters: string;
-  revealedWords: string[]; // Add revealedWords prop
+  revealedWords: string[];
 }
 
 const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
@@ -22,7 +22,7 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
       setTimer((prevTimer) => {
         if (prevTimer <= 1) {
           clearInterval(countdown);
-          handleSubmit();
+          handleAutoSubmit();
           return 0;
         }
         return prevTimer - 1;
@@ -38,18 +38,25 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
 
     if (!lowerCaseWord.startsWith(revealedLetters.toLowerCase())) {
       setError(`Слово должно начинаться с "${revealedLetters}"`);
+      return;
     } else if (revealedWords.includes(lowerCaseWord)) {
       setError(`Айайай, "${word}" уже было использовано! Напиши другое слово.`);
+      return;
     } else {
       onSubmit(word);
       onClose();
     }
   };
 
+  const handleAutoSubmit = () => {
+    onSubmit(`${revealedLetters}didNotSend`);
+    onClose();
+  };
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 py-5 px-3 z-50"
-      onClick={onClose}
+      onClick={handleAutoSubmit}
     >
       <div
         className="bg-white p-6 rounded-xl flex flex-col items-center"

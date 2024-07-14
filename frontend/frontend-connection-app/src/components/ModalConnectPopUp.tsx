@@ -1,14 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 interface ModalConnectPopUpProps {
   onClose: () => void;
 }
 
 const ModalConnectPopUp: React.FC<ModalConnectPopUpProps> = ({ onClose }) => {
+  const [timerComplete, setTimerComplete] = useState(false);
+
   useEffect(() => {
     const timer = setTimeout(() => {
+      setTimerComplete(true);
       onClose();
-    }, 2000);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [onClose]);
@@ -16,7 +19,7 @@ const ModalConnectPopUp: React.FC<ModalConnectPopUpProps> = ({ onClose }) => {
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 py-5 px-3 z-50"
-      onClick={onClose}
+      onClick={() => timerComplete && onClose()}
     >
       <div
         className="bg-gray-300 p-10 py-15 rounded-xl flex flex-col items-center"

@@ -23,10 +23,7 @@ const ModalConnectOthers: React.FC<ModalConnectOthersProps> = ({ onClose }) => {
   }, [onClose]);
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 py-5 px-3 z-50"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 py-5 px-3 z-50">
       <div
         className="bg-white p-6 rounded-xl flex flex-col items-center"
         onClick={(e) => e.stopPropagation()}

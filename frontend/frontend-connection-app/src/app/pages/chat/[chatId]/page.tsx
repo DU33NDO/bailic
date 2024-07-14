@@ -85,6 +85,8 @@ const Chat = () => {
   const [hasShownConnectPopUp, setHasShownConnectPopUp] = useState(false);
   const [hasShownConnectModeratorCase, setHasShownConnectModeratorCase] =
     useState(false);
+  const [askedUserIdState, setAskedUserIdState] = useState("");
+  const [clickedUserIdState, setClickedUserIdState] = useState("");
 
   const router = useRouter();
 
@@ -235,7 +237,7 @@ const Chat = () => {
 
             socket.on("connectToPlayers", (data) => {
               // setShowContact(true);
-              handleShowContact();
+              handleShowContact(data.askedUserId, data.clickedUserId);
               if (data.askedUserId === userId) {
                 setShowAskedUser(true);
               }
@@ -259,7 +261,7 @@ const Chat = () => {
 
             socket.on("noConnectionData", (data) => {
               // setShowNoContact(true);
-              handleShowNoContact();
+              handleShowNoContact(data.askedUserId); // хз как исправить()()()
 
               if (data.askedUserId === userId) {
                 setShowAskedUserSecond(true);
@@ -465,19 +467,23 @@ const Chat = () => {
     form.reset();
   };
 
-  const handleShowContact = () => {
-    if (activeModal === null) {
+  const handleShowContact = (askedUserId: string, clickedUserId: string) => {
+    if (activeModal === null && !hasShownConnectPopUp) {
       setActiveModal("ModalConnectPopUp");
       setShowContact(true);
       setHasShownConnectPopUp(true);
+      setAskedUserIdState(askedUserId);
+      setClickedUserIdState(clickedUserId);
     }
   };
 
-  const handleShowNoContact = () => {
-    if (activeModal === null) {
+  const handleShowNoContact = (askedUserId: string) => {
+    console.log(`asked UserId - ${askedUserId}`);
+    if (activeModal === null && !hasShownConnectModeratorCase) {
       setActiveModal("ModalConnectModeratorCase");
       setShowNoContact(true);
       setHasShownConnectModeratorCase(true);
+      setAskedUserIdState(askedUserId);
     }
   };
 
@@ -491,6 +497,8 @@ const Chat = () => {
   const handleCloseContact = () => {
     setShowContact(false);
     setActiveModal(null);
+    setClickedUserIdState("");
+    setAskedUserIdState("");
     setTimeout(() => {
       setHasShownConnectPopUp(false);
     }, 500);
@@ -499,6 +507,8 @@ const Chat = () => {
   const handleCloseNoContact = () => {
     setShowNoContact(false);
     setActiveModal(null);
+    setClickedUserIdState("");
+    setAskedUserIdState("");
     setTimeout(() => {
       setHasShownConnectModeratorCase(false);
     }, 500);
@@ -579,6 +589,7 @@ const Chat = () => {
 
   const handleGameContinue = async () => {
     if (secretWord) {
+      localStorage.removeItem("secretWord");
       //need to delete from all users secret Word !!!!
     }
     await axios.post(
@@ -655,10 +666,18 @@ const Chat = () => {
         />
       )}
       {activeModal === "ModalConnectPopUp" && showContact && (
-        <ModalConnectPopUp onClose={handleCloseContact} />
+        <ModalConnectPopUp
+          onClose={handleCloseContact}
+          askedUserId={askedUserIdState}
+          clickedUserId={clickedUserIdState}
+        />
       )}
       {activeModal === "ModalConnectModeratorCase" && showNoContact && (
-        <ModalConnectModeratorCase onClose={handleCloseNoContact} />
+        <ModalConnectModeratorCase
+          onClose={handleCloseNoContact}
+          askedUserId={askedUserIdState}
+          clickedUserId={moderatorId}
+        />
       )}
       {showAskedUser && showContact === false && secretWord && (
         <ModalConnectAsked

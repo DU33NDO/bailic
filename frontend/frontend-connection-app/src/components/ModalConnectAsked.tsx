@@ -35,24 +35,26 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
 
   const handleSubmit = (event?: FormEvent) => {
     if (event) event.preventDefault();
-    const lowerCaseWord = word.toLowerCase();
+    const lowerCaseWord = word.trim().toLowerCase();
 
     if (!lowerCaseWord.startsWith(revealedLetters.toLowerCase())) {
       setError(`Слово должно начинаться с "${revealedLetters}"`);
       return;
     } else if (revealedWords.includes(lowerCaseWord)) {
-      setError(`Айайай, "${word}" уже было использовано! Напиши другое слово.`);
+      setError(
+        `Айайай, "${word.trim()}" уже было использовано! Напиши другое слово.`
+      );
       return;
     } else {
       clearInterval(countdownRef.current!);
-      onSubmit(word);
+      onSubmit(word.trim());
       onClose();
     }
   };
 
   const handleAutoSubmit = () => {
     const finalWord =
-      word.trim() === "" ? `${revealedLetters}didNotSend` : word;
+      word.trim() === "" ? `${revealedLetters}didNotSend` : word.trim();
     onSubmit(finalWord);
     onClose();
   };

@@ -21,7 +21,9 @@ const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
       setTimer((prevTimer) => {
         if (prevTimer <= 1) {
           clearInterval(countdownRef.current!);
-          onClose(word.trim() === "" ? `${revealedLetters}didNotSend` : word);
+          onClose(
+            word.trim() === "" ? `${revealedLetters}didNotSend` : word.trim()
+          );
           return 0;
         }
         return prevTimer - 1;
@@ -33,15 +35,17 @@ const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    const lowerCaseWord = word.toLowerCase();
+    const lowerCaseWord = word.trim().toLowerCase();
 
     if (!lowerCaseWord.startsWith(revealedLetters)) {
       setError(`Слово должно начинаться с "${revealedLetters}"`);
     } else if (revealedWords.includes(lowerCaseWord)) {
-      setError(`Айайай, "${word}" уже было использовано! Напиши другое слово.`);
+      setError(
+        `Айайай, "${word.trim()}" уже было использовано! Напиши другое слово.`
+      );
     } else {
       clearInterval(countdownRef.current!);
-      onClose(word);
+      onClose(word.trim());
     }
   };
 

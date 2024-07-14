@@ -395,9 +395,7 @@ const Chat = () => {
 
             socket.on("exitToAll", (roomName) => {
               console.log(`socket exit from front to front??`);
-              router.push(
-                `${process.env.FRONTEND_URL}/pages/settings/${roomName}`
-              );
+              router.push(`/pages/settings/${roomName}`); // ????
             });
 
             axios

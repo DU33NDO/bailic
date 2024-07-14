@@ -82,6 +82,9 @@ const Chat = () => {
   const [showOtherUsersSecond, setShowOtherUsersSecond] = useState(false);
   const [storedWords, setStoredWords] = useState<string[]>([]);
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [hasShownConnectPopUp, setHasShownConnectPopUp] = useState(false);
+  const [hasShownConnectModeratorCase, setHasShownConnectModeratorCase] =
+    useState(false);
 
   const router = useRouter();
 
@@ -468,6 +471,7 @@ const Chat = () => {
     if (activeModal === null) {
       setActiveModal("ModalConnectPopUp");
       setShowContact(true);
+      setHasShownConnectPopUp(true);
     }
   };
 
@@ -475,6 +479,7 @@ const Chat = () => {
     if (activeModal === null) {
       setActiveModal("ModalConnectModeratorCase");
       setShowNoContact(true);
+      setHasShownConnectModeratorCase(true);
     }
   };
 
@@ -488,11 +493,17 @@ const Chat = () => {
   const handleCloseContact = () => {
     setShowContact(false);
     setActiveModal(null);
+    setTimeout(() => {
+      setHasShownConnectPopUp(false);
+    }, 500);
   };
 
   const handleCloseNoContact = () => {
     setShowNoContact(false);
     setActiveModal(null);
+    setTimeout(() => {
+      setHasShownConnectModeratorCase(false);
+    }, 500);
   };
 
   const handleModeratorSubmit = (word: string) => {

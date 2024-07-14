@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FormEvent } from "react";
+import React, { useState, useEffect, useRef, FormEvent } from "react";
 
 interface ModalConnectAskedProps {
   onClose: () => void;
@@ -16,12 +16,13 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
   const [word, setWord] = useState("");
   const [error, setError] = useState("");
   const [timer, setTimer] = useState(8);
+  const countdownRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const countdown = setInterval(() => {
+    countdownRef.current = setInterval(() => {
       setTimer((prevTimer) => {
         if (prevTimer <= 1) {
-          clearInterval(countdown);
+          clearInterval(countdownRef.current!);
           handleAutoSubmit();
           return 0;
         }
@@ -29,7 +30,7 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
       });
     }, 1000);
 
-    return () => clearInterval(countdown);
+    return () => clearInterval(countdownRef.current!);
   }, []);
 
   const handleSubmit = (event?: FormEvent) => {
@@ -43,21 +44,21 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
       setError(`Айайай, "${word}" уже было использовано! Напиши другое слово.`);
       return;
     } else {
+      clearInterval(countdownRef.current!);
       onSubmit(word);
       onClose();
     }
   };
 
   const handleAutoSubmit = () => {
-    onSubmit(`${revealedLetters}didNotSend`);
+    const finalWord =
+      word.trim() === "" ? `${revealedLetters}didNotSend` : word;
+    onSubmit(finalWord);
     onClose();
   };
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 py-5 px-3 z-50"
-      onClick={handleAutoSubmit}
-    >
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 py-5 px-3 z-50">
       <div
         className="bg-white p-6 rounded-xl flex flex-col items-center"
         onClick={(e) => e.stopPropagation()}

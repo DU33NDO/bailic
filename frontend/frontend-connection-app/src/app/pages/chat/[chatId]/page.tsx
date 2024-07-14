@@ -81,6 +81,7 @@ const Chat = () => {
   const [showAskedUserSecond, setShowAskedUserSecond] = useState(false);
   const [showOtherUsersSecond, setShowOtherUsersSecond] = useState(false);
   const [storedWords, setStoredWords] = useState<string[]>([]);
+  const [activeModal, setActiveModal] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -230,7 +231,8 @@ const Chat = () => {
             });
 
             socket.on("connectToPlayers", (data) => {
-              setShowContact(true);
+              // setShowContact(true);
+              handleShowContact();
               if (data.askedUserId === userId) {
                 setShowAskedUser(true);
               }
@@ -253,7 +255,8 @@ const Chat = () => {
             });
 
             socket.on("noConnectionData", (data) => {
-              setShowNoContact(true);
+              // setShowNoContact(true);
+              handleShowNoContact();
 
               if (data.askedUserId === userId) {
                 setShowAskedUserSecond(true);
@@ -461,11 +464,35 @@ const Chat = () => {
     form.reset();
   };
 
+  const handleShowContact = () => {
+    if (activeModal === null) {
+      setActiveModal("ModalConnectPopUp");
+      setShowContact(true);
+    }
+  };
+
+  const handleShowNoContact = () => {
+    if (activeModal === null) {
+      setActiveModal("ModalConnectModeratorCase");
+      setShowNoContact(true);
+    }
+  };
+
   const onCloseModerator = (moderator: any) => {
     setShowModeratorModal(false);
     if (moderator.userId === userId) {
       setShowModeratorInput(true);
     }
+  };
+
+  const handleCloseContact = () => {
+    setShowContact(false);
+    setActiveModal(null);
+  };
+
+  const handleCloseNoContact = () => {
+    setShowNoContact(false);
+    setActiveModal(null);
   };
 
   const handleModeratorSubmit = (word: string) => {
@@ -618,11 +645,11 @@ const Chat = () => {
           onSubmit={handleModeratorSubmit}
         />
       )}
-      {showContact && (
-        <ModalConnectPopUp onClose={() => setShowContact(false)} />
+      {activeModal === "ModalConnectPopUp" && showContact && (
+        <ModalConnectPopUp onClose={handleCloseContact} />
       )}
-      {showNoContact && (
-        <ModalConnectModeratorCase onClose={() => setShowNoContact(false)} />
+      {activeModal === "ModalConnectModeratorCase" && showNoContact && (
+        <ModalConnectModeratorCase onClose={handleCloseNoContact} />
       )}
       {showAskedUser && showContact === false && secretWord && (
         <ModalConnectAsked

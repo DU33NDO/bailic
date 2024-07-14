@@ -28,6 +28,7 @@ const Auth: React.FC = () => {
     "/avatar/userPhoto6.jpg",
     "/avatar/userPhoto7.jpg",
     "/avatar/userPhoto8.jpg",
+    "/avatar/userPhoto9.jpg",
     "/avatar/userPhoto.jpg",
   ];
 

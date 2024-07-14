@@ -8,7 +8,6 @@ interface ModalResultsProps {
   clickedUserPhoto: string;
   clickedWord: string;
   targetWord: string;
-  revealedLetters: string;
   onClose: () => void;
 }
 
@@ -20,7 +19,6 @@ const ModalResults: React.FC<ModalResultsProps> = ({
   clickedUserPhoto,
   clickedWord,
   targetWord,
-  revealedLetters,
   onClose,
 }) => {
   return (

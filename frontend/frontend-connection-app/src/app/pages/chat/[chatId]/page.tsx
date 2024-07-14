@@ -667,7 +667,7 @@ const Chat = () => {
       {showOtherUsersSecond && showNoContact === false && (
         <ModalConnectOthers onClose={() => setShowOtherUsersSecond(false)} />
       )}
-      {showAllWords && allWords && secretWord && (
+      {showAllWords && allWords && (
         <ModalResults
           moderatorUsername={allWords.moderatorUserName}
           moderatorUserPhoto={allWords.moderatorUserPhoto}
@@ -676,7 +676,6 @@ const Chat = () => {
           clickedUserPhoto={allWords.clickedUserPhoto}
           clickedWord={allWords.clickedWord}
           targetWord={allWords.askedWord}
-          revealedLetters={secretWord.slice(0, countLetter)}
           onClose={handleCloseModalAllWords}
         />
       )}

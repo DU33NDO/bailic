@@ -5,7 +5,7 @@ interface ModalConnectOthersProps {
 }
 
 const ModalConnectOthers: React.FC<ModalConnectOthersProps> = ({ onClose }) => {
-  const [timer, setTimer] = useState(5);
+  const [timer, setTimer] = useState(8);
 
   useEffect(() => {
     const countdown = setInterval(() => {

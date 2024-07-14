@@ -15,7 +15,7 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
 }) => {
   const [word, setWord] = useState("");
   const [error, setError] = useState("");
-  const [timer, setTimer] = useState(5);
+  const [timer, setTimer] = useState(8);
 
   useEffect(() => {
     const countdown = setInterval(() => {

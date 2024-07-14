@@ -12,7 +12,7 @@ const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
   revealedWords,
 }) => {
   const [word, setWord] = useState("");
-  const [timer, setTimer] = useState(5);
+  const [timer, setTimer] = useState(8);
   const [error, setError] = useState("");
 
   useEffect(() => {

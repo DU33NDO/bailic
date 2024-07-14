@@ -1,77 +1,94 @@
-import React, { useEffect, useState, FormEvent } from "react";
+import React, { useState, useEffect, useRef, FormEvent } from "react";
 
-interface ModalConnectAnswerProps {
-  onClose: (word: string) => void;
+interface ModalConnectAskedProps {
+  onClose: () => void;
+  onSubmit: (word: string) => void;
   revealedLetters: string;
   revealedWords: string[];
 }
 
-const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
+const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
   onClose,
+  onSubmit,
   revealedLetters,
   revealedWords,
 }) => {
   const [word, setWord] = useState("");
-  const [timer, setTimer] = useState(8);
   const [error, setError] = useState("");
+  const [timer, setTimer] = useState(8);
+  const countdownRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const countdown = setInterval(() => {
+    countdownRef.current = setInterval(() => {
       setTimer((prevTimer) => {
         if (prevTimer <= 1) {
-          clearInterval(countdown);
-          onClose(`${revealedLetters}didNotSend`);
+          clearInterval(countdownRef.current!);
+          handleAutoSubmit();
           return 0;
         }
         return prevTimer - 1;
       });
     }, 1000);
 
-    return () => clearInterval(countdown);
-  }, [onClose, revealedLetters]);
+    return () => clearInterval(countdownRef.current!);
+  }, []);
 
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
+  const handleSubmit = (event?: FormEvent) => {
+    if (event) event.preventDefault();
     const lowerCaseWord = word.toLowerCase();
 
-    if (!lowerCaseWord.startsWith(revealedLetters)) {
+    if (!lowerCaseWord.startsWith(revealedLetters.toLowerCase())) {
       setError(`Слово должно начинаться с "${revealedLetters}"`);
+      return;
     } else if (revealedWords.includes(lowerCaseWord)) {
       setError(`Айайай, "${word}" уже было использовано! Напиши другое слово.`);
+      return;
     } else {
-      onClose(word);
+      clearInterval(countdownRef.current!);
+      onSubmit(word);
+      onClose();
     }
   };
 
+  const handleAutoSubmit = () => {
+    const finalWord =
+      word.trim() === "" ? `${revealedLetters}didNotSend` : word;
+    onSubmit(finalWord);
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 py-5 px-3 z-50">
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 py-5 px-3 z-50"
+      onClick={handleAutoSubmit}
+    >
       <div
         className="bg-white p-6 rounded-xl flex flex-col items-center"
         onClick={(e) => e.stopPropagation()}
       >
         <p className="text-black font-bold text-center text-3xl mb-4">
-          Быстрее вводи слово!!
+          Какое слово ты загадал?
         </p>
-        <form onSubmit={handleSubmit} className="flex items-center mb-4">
+        <form onSubmit={handleSubmit} className="flex items-center">
           <input
             type="text"
             value={word}
             onChange={(e) => setWord(e.target.value)}
-            placeholder="Введите слово"
-            className="text-black w-full h-10 rounded-l-xl px-5 py-2"
+            placeholder="Аватар"
+            className="text-[#CC0B0D] w-full h-10 rounded-l-xl px-5 py-2"
           />
           <button
             type="submit"
-            className="bg-[#CC0B0D] text-white h-10 rounded-r-xl px-4"
+            className="bg-black text-white h-10 rounded-r-xl px-4"
           >
             ➤
           </button>
         </form>
         {error && <p className="text-red-500 mt-2">{error}</p>}
-        <p className="text-red-500 font-bold text-3xl">{`00:0${timer}`}</p>
+        <p className="text-red-500 font-bold text-3xl mt-4">{`00:0${timer}`}</p>
       </div>
     </div>
   );
 };
 
-export default ModalConnectAnswer;
+export default ModalConnectAsked;

@@ -9,6 +9,7 @@ import {
 import { FormEvent } from "react";
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
+import { v4 as uuidv4 } from "uuid";
 
 const Auth: React.FC = () => {
   const router = useRouter();
@@ -40,7 +41,7 @@ const Auth: React.FC = () => {
   };
 
   const generateRoomId = () => {
-    const newRoomId = Math.random().toString(36).substr(2, 9);
+    const newRoomId = uuidv4();
     setRoomId(newRoomId);
   };
 

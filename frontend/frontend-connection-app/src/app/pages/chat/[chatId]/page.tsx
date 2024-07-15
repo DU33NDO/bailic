@@ -89,8 +89,7 @@ const Chat = () => {
   const [clickedUserIdState, setClickedUserIdState] = useState("");
   const [closeImmediately, setCloseImmediately] = useState(false);
   const [closeImmediatelySecond, setCloseImmediatelySecond] = useState(false);
-  // openAi 
-  
+  // openAi
 
   const router = useRouter();
 
@@ -330,10 +329,14 @@ const Chat = () => {
                 data.askedWord.toLowerCase() === data.clickedWord.toLowerCase()
               ) {
                 setCountLetter((prevCount) => prevCount);
-                setStoredWords((prevWords) => [
-                  ...prevWords,
-                  data.askedWord.toLowerCase(),
-                ]);
+                if (data.askedWord === "empty2280945") {
+                  setStoredWords((prevWords) => [...prevWords]);
+                } else {
+                  setStoredWords((prevWords) => [
+                    ...prevWords,
+                    data.askedWord.toLowerCase(),
+                  ]);
+                }
                 console.log(`STORED WORDS: ${storedWords}`);
               } else if (
                 data.askedWord.toLowerCase() ===
@@ -341,10 +344,14 @@ const Chat = () => {
                 data.askedWord.toLowerCase() !==
                   data.moderatorWord.toLowerCase()
               ) {
-                setStoredWords((prevWords) => [
-                  ...prevWords,
-                  data.askedWord.toLowerCase(),
-                ]);
+                if (data.askedWord === "empty2280945") {
+                  setStoredWords((prevWords) => [...prevWords]);
+                } else {
+                  setStoredWords((prevWords) => [
+                    ...prevWords,
+                    data.askedWord.toLowerCase(),
+                  ]);
+                }
                 console.log(`STORED WORDS: ${storedWords}`);
                 setCountLetter((prevCount) => prevCount + 1);
                 console.log(`COUNT LETTER: ${countLetter} `);
@@ -581,12 +588,12 @@ const Chat = () => {
 
   const handleCloseModalAllWords = () => {
     setShowAllWords(false);
-    setCloseImmediately(false)
+    setCloseImmediately(false);
   };
 
   const handleCloseModalAllWordsSecond = () => {
     setShowAllWordsSecond(false);
-    setCloseImmediatelySecond(false)
+    setCloseImmediatelySecond(false);
   };
 
   const closeIsGameOver = () => {
@@ -622,8 +629,11 @@ const Chat = () => {
 
   const handleSubmitWord = (word: string) => {
     if (socketRef.current) {
+      const wordToSend = word.endsWith("didNotSend")
+        ? "empty2280945"
+        : word.toLowerCase();
       socketRef.current.emit("sendTargetWord", {
-        word: word.toLowerCase(),
+        word: wordToSend,
         roomName: roomName,
         userName: username,
         userPhoto: userPhoto,
@@ -633,8 +643,12 @@ const Chat = () => {
 
   const handleSubmitWordSecondCase = (word: string) => {
     if (socketRef.current) {
+      const wordToSendSecond = word.endsWith("didNotSend")
+        ? "empty2280945"
+        : word.toLowerCase();
+
       socketRef.current.emit("sendTargetWordSecondCase", {
-        word: word.toLowerCase(),
+        word: wordToSendSecond,
         roomName: roomName,
         userName: username,
         userPhoto: userPhoto,

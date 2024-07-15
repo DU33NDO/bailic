@@ -30,6 +30,8 @@ const Auth: React.FC = () => {
     "/avatar/userPhoto7.jpg",
     "/avatar/userPhoto8.jpg",
     "/avatar/userPhoto9.jpg",
+    "/avatar/userPhoto10.jpg",
+    "/avatar/userPhoto11.jpg",
     "/avatar/userPhoto.jpg",
   ];
 
@@ -102,7 +104,7 @@ const Auth: React.FC = () => {
                 className="w-full h-full rounded-full"
               />
               <button
-                className="bg-black absolute right-[-10px] top-[80px] rounded-3xl w-8 h-8"
+                className="bg-black absolute text-white right-[-10px] top-[80px] rounded-3xl w-8 h-8"
                 onClick={handlePhotoChange}
               >
                 Go

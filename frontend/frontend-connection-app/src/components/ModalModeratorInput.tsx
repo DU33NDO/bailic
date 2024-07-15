@@ -18,12 +18,6 @@ const ModalModeratorInput: React.FC<ModalModeratorInputProps> = ({
     }
   };
 
-  const handleClose = () => {
-    if (word) {
-      onClose();
-    }
-  };
-
   const handleKeyPress = (event: KeyboardEvent) => {
     if (event.key === "Enter") {
       handleSubmit();
@@ -40,7 +34,6 @@ const ModalModeratorInput: React.FC<ModalModeratorInputProps> = ({
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 py-5 px-3 z-50"
-      onClick={handleClose}
     >
       <div
         className="bg-white p-6 rounded-lg flex flex-col items-center"

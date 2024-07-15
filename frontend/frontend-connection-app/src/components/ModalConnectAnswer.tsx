@@ -21,9 +21,8 @@ const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
       setTimer((prevTimer) => {
         if (prevTimer <= 1) {
           clearInterval(countdownRef.current!);
-          onClose(
-            word.trim() === "" ? `${revealedLetters}didNotSend` : word.trim()
-          );
+          const trimmedWord = word.trim();
+          onClose(trimmedWord === "" ? `${revealedLetters}didNotSend` : trimmedWord);
           return 0;
         }
         return prevTimer - 1;

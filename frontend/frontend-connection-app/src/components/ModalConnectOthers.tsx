@@ -9,7 +9,7 @@ const ModalConnectOthers: React.FC<ModalConnectOthersProps> = ({
   onClose,
   closeImmediately,
 }) => {
-  const [timer, setTimer] = useState(8);
+  const [timer, setTimer] = useState(1);
 
   useEffect(() => {
     if (closeImmediately) {
@@ -18,17 +18,17 @@ const ModalConnectOthers: React.FC<ModalConnectOthersProps> = ({
     }
     const countdown = setInterval(() => {
       setTimer((prevTimer) => {
-        if (prevTimer <= 1) {
+        if (prevTimer >= 8) {
           clearInterval(countdown);
           onClose();
-          return 0;
+          return 8;
         }
-        return prevTimer - 1;
+        return prevTimer + 1;
       });
     }, 1000);
 
     return () => clearInterval(countdown);
-  }, [onClose]);
+  }, [onClose, closeImmediately]);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 py-5 px-3 z-50">

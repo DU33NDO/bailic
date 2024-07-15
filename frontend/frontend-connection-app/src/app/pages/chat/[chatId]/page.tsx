@@ -89,6 +89,8 @@ const Chat = () => {
   const [clickedUserIdState, setClickedUserIdState] = useState("");
   const [closeImmediately, setCloseImmediately] = useState(false);
   const [closeImmediatelySecond, setCloseImmediatelySecond] = useState(false);
+  // openAi 
+  
 
   const router = useRouter();
 
@@ -579,10 +581,12 @@ const Chat = () => {
 
   const handleCloseModalAllWords = () => {
     setShowAllWords(false);
+    setCloseImmediately(false)
   };
 
   const handleCloseModalAllWordsSecond = () => {
     setShowAllWordsSecond(false);
+    setCloseImmediatelySecond(false)
   };
 
   const closeIsGameOver = () => {

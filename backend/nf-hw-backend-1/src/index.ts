@@ -56,7 +56,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use("/auth", authRouter);
-app.use("/messages", messagesRouter);
+app.use("/messages", messagesRouter); 
 app.use("/rooms", roomRouter);
 app.use("/game", gameRouter);
 

@@ -40,9 +40,11 @@ const ModalResults: React.FC<ModalResultsProps> = ({
               />
             </div>
             <div className="">
-              <p className="text-red-700 font-bold ">Ведущий</p>
+              <p className="text-red-700 font-bold">Ведущий</p>
               <p className="bg-[#FFD2CB] text-black rounded-full font-bold px-4 py-2 w-[100%]">
-                {moderatorWord}
+                {moderatorWord.endsWith("didnotsend")
+                  ? "юзер не успел"
+                  : moderatorWord}
               </p>
             </div>
             {targetWord === moderatorWord ? (
@@ -64,7 +66,9 @@ const ModalResults: React.FC<ModalResultsProps> = ({
                 {clickedUserName}
               </p>
               <p className="bg-[#FFD2CB] text-black font-bold rounded-full px-4 py-2">
-                {clickedWord}
+                {clickedWord.endsWith("didnotsend")
+                  ? "юзер не успел"
+                  : clickedWord}
               </p>
             </div>
             {targetWord === clickedWord ? (
@@ -75,7 +79,10 @@ const ModalResults: React.FC<ModalResultsProps> = ({
           </div>
         </div>
         <p className="text-black font-bold text-center text-2xl mt-6">
-          Загаданное слово: <span className="text-red-700">{targetWord}</span>
+          Загаданное слово:{" "}
+          <span className="text-red-700">
+            {targetWord === "empty2280945" ? "юзер не успел" : targetWord}
+          </span>
         </p>
       </div>
     </div>

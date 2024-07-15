@@ -545,6 +545,7 @@ const Chat = () => {
           askedUserId: message.userId,
           moderatorId: moderatorId,
         });
+        console.log(`CHECKINGGGG - ${message.userId}`);
       }
       if (
         isClicked === true &&
@@ -795,15 +796,13 @@ const Chat = () => {
         <div>
           <div className="flex justify-center mt-6">
             <div className="flex bg-[#CC0B0D] w-80 md:w-[600px] px-6 py-4 items-center justify-center rounded-xl">
-              <p className="text-[#fff] font-bold text-center text-5xl break-all tracking-[.25em] capitalize max-w-[10ch]">
-                {!secretWord ? (
-                  <p className="text-sm tracking-[.2em] opacity-50 ">
-                    Секретное слово
-                  </p>
-                ) : (
-                  secretWord && secretWord.slice(0, countLetter)
-                )}
-              </p>
+              {!secretWord ? (
+                <p className="text-sm tracking-[.2em] opacity-50 text-[#fff] font-bold text-center text-5xl break-all tracking-[.25em] capitalize max-w-[10ch] ">
+                  Секретное слово
+                </p>
+              ) : (
+                secretWord && secretWord.slice(0, countLetter)
+              )}
             </div>
           </div>
           <div className="flex justify-between items-center mt-12 relative">

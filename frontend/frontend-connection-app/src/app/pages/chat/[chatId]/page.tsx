@@ -87,6 +87,8 @@ const Chat = () => {
     useState(false);
   const [askedUserIdState, setAskedUserIdState] = useState("");
   const [clickedUserIdState, setClickedUserIdState] = useState("");
+  const [closeImmediately, setCloseImmediately] = useState(false);
+  const [closeImmediatelySecond, setCloseImmediatelySecond] = useState(false);
 
   const router = useRouter();
 
@@ -430,12 +432,15 @@ const Chat = () => {
   useEffect(() => {
     if (allWords) {
       setShowAllWords(true);
+      setCloseImmediately(true);
+      //hm, maybe set UserState
     }
   }, [allWords]);
 
   useEffect(() => {
     if (allWordsSecond) {
       setShowAllWordsSecond(true);
+      setCloseImmediatelySecond(true);
     }
   }, [allWordsSecond]);
 
@@ -587,6 +592,16 @@ const Chat = () => {
     setIsGameWonByUsers(false);
   };
 
+  const closeShowUsers = () => {
+    setShowOtherUsers(false);
+    setCloseImmediately(false);
+  };
+
+  const closeShowUsersSecond = () => {
+    setShowOtherUsersSecond(false);
+    setCloseImmediatelySecond(false);
+  };
+
   const handleGameContinue = async () => {
     if (secretWord) {
       localStorage.removeItem("secretWord");
@@ -717,10 +732,16 @@ const Chat = () => {
         />
       )}
       {showOtherUsers && showContact === false && (
-        <ModalConnectOthers onClose={() => setShowOtherUsers(false)} />
+        <ModalConnectOthers
+          onClose={closeShowUsers}
+          closeImmediately={closeImmediately}
+        /> // closeShowUsers
       )}
       {showOtherUsersSecond && showNoContact === false && (
-        <ModalConnectOthers onClose={() => setShowOtherUsersSecond(false)} />
+        <ModalConnectOthers
+          onClose={closeShowUsersSecond}
+          closeImmediately={closeImmediatelySecond}
+        /> // closeShowUsersSecond
       )}
       {showAllWords && allWords && (
         <ModalResults

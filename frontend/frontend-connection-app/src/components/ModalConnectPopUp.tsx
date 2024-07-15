@@ -22,7 +22,7 @@ const ModalConnectPopUp: React.FC<ModalConnectPopUpProps> = ({
     const timer = setTimeout(() => {
       setTimerComplete(true);
       onClose();
-    }, 3000);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [onClose]);

@@ -2,12 +2,20 @@ import React, { useEffect, useState } from "react";
 
 interface ModalConnectOthersProps {
   onClose: () => void;
+  closeImmediately: boolean;
 }
 
-const ModalConnectOthers: React.FC<ModalConnectOthersProps> = ({ onClose }) => {
-  const [timer, setTimer] = useState(5);
+const ModalConnectOthers: React.FC<ModalConnectOthersProps> = ({
+  onClose,
+  closeImmediately,
+}) => {
+  const [timer, setTimer] = useState(8);
 
   useEffect(() => {
+    if (closeImmediately) {
+      onClose();
+      return;
+    }
     const countdown = setInterval(() => {
       setTimer((prevTimer) => {
         if (prevTimer <= 1) {

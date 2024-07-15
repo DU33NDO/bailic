@@ -795,7 +795,7 @@ const Chat = () => {
       <div className="h-[94vh] flex flex-col justify-between">
         <div>
           <div className="flex justify-center mt-6">
-            <div className="flex bg-[#CC0B0D] w-80 md:w-[600px] px-6 py-4 items-center justify-center rounded-xl">
+            <div className="flex bg-[#CC0B0D] w-80 md:w-[600px] px-6 py-4 items-center justify-center rounded-xl text-sm tracking-[.2em] opacity-50 text-[#fff] font-bold text-center text-5xl break-all tracking-[.25em] capitalize max-w-[10ch]">
               {!secretWord ? (
                 <p className="text-sm tracking-[.2em] opacity-50 text-[#fff] font-bold text-center text-5xl break-all tracking-[.25em] capitalize max-w-[10ch] ">
                   Секретное слово

@@ -274,7 +274,7 @@ const Settings = () => {
             onClick={() => handleClick("vocabArea")}
           >
             <p style={active === "vocabArea" ? activeStyle : defaultStyle}>
-              Difficulty level
+              Difficulty
             </p>
           </div>
           <div
@@ -286,7 +286,7 @@ const Settings = () => {
             onClick={() => handleClick("difficulty")}
           >
             <p style={active === "difficulty" ? activeStyle : defaultStyle}>
-              Area of vocab
+              Vocabulary
             </p>
           </div>
         </div>

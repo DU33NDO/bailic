@@ -7,6 +7,7 @@ import UsersTop from "@/components/UsersTop";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import LoadingScreen from "@/components/LoadingScreen";
 
 interface User {
   userId: string | null;
@@ -42,6 +43,7 @@ const Settings = () => {
   const [waitingUsers, setWaitingUsers] = useState<UserW[]>([]);
   const [roomId, setRoomId] = useState("");
   const [hostId, setHostId] = useState("");
+  const [loading, setLoading] = useState<boolean>(true);
 
   const fetchUsername = async (userId: string) => {
     try {
@@ -93,6 +95,7 @@ const Settings = () => {
     }
 
     localStorage.removeItem("secretWord");
+    setLoading(false);
   }, [roomName, router]);
 
   useEffect(() => {
@@ -108,6 +111,7 @@ const Settings = () => {
         setRoomId(roomId);
         console.log(`THIS IS A ROOM ID -- ${roomId}`);
         console.log(`Room ID received: ${roomId}`);
+        setLoading(false);
       });
 
       return () => {
@@ -189,7 +193,11 @@ const Settings = () => {
 
   useEffect(() => {
     if (socket) {
+      socket.on("loadingEveryone", () => {
+        setLoading(true);
+      });
       socket.on("start-game", (url) => {
+        setLoading(true);
         console.log(url, "Это был url");
         router.push(url);
       });
@@ -206,8 +214,9 @@ const Settings = () => {
       return;
     }
     if (socket) {
-      console.log(`roomname- ${roomName}`);
       try {
+        setLoading(true); // LOADING
+        socket.emit("loadingTrue", roomName);
         await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/game/create`, {
           difficultyLevel: selectedOptionDifficulty,
           areaOfVocab: selectedOptionAreaVocab,
@@ -225,8 +234,10 @@ const Settings = () => {
         const moderator = moderatorResponse.data;
 
         socket.emit("play-game", roomName, `/pages/chat/${roomName}`);
+        setLoading(false);
       } catch (error) {
         console.error("Error during game setup:", error);
+        setLoading(false);
       }
     }
   };
@@ -262,6 +273,7 @@ const Settings = () => {
 
   return (
     <div className="px-5 py-3 h-screen">
+      {loading && <LoadingScreen />}
       <UsersTop combinedUsers={combinedUsers} />
       <div className="w-[100%] h-[70%] bg-[#E9DED9] mt-10 overflow-auto rounded-xl overflow-x-hidden">
         <div className="flex justify-between sticky top-0 bg-[#E9DED9] z-10 ">

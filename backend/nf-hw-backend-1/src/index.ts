@@ -56,7 +56,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use("/auth", authRouter);
-app.use("/messages", messagesRouter); 
+app.use("/messages", messagesRouter);
 app.use("/rooms", roomRouter);
 app.use("/game", gameRouter);
 
@@ -175,6 +175,10 @@ io.on("connection", (socket) => {
   socket.on("play-game", (roomName, url) => {
     console.log(`Starting game in room ${roomName}; url: ${url}`);
     io.to(roomName).emit("start-game", url);
+  });
+
+  socket.on("loadingTrue", (roomName) => {
+    io.to(roomName).emit("loadingEveryone");
   });
 
   socket.on("secretWord", (data) => {

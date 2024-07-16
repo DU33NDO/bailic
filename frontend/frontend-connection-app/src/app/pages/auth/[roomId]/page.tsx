@@ -10,6 +10,7 @@ import { FormEvent } from "react";
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
+import LoadingScreen from "@/components/LoadingScreen";
 
 const Auth: React.FC = () => {
   const router = useRouter();
@@ -18,6 +19,7 @@ const Auth: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const pathname = usePathname();
   const roomName = pathname.split("/").pop();
+  const [loading, setLoading] = useState<boolean>(false);
 
   console.log(`ROOMNAME - ${roomName}`);
 
@@ -59,6 +61,7 @@ const Auth: React.FC = () => {
     const username = data.get("username") as string;
 
     try {
+      setLoading(true);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
         {
@@ -67,27 +70,27 @@ const Auth: React.FC = () => {
         }
       );
       console.log("Success:", response.data);
-
       localStorage.setItem("userId", response.data.userId);
       localStorage.setItem("hostId", response.data.userId);
 
-      if (roomName === "") {
-        const redirectTo = `/pages/settings/${roomId}`;
-        router.push(redirectTo);
-      } else {
-        const redirectTo = `/pages/settings/${roomName}`;
-        router.push(redirectTo);
-      }
+      const redirectTo =
+        roomName === ""
+          ? `/pages/settings/${roomId}`
+          : `/pages/settings/${roomName}`;
+      router.push(redirectTo);
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="px-5 py-3">
+      {loading && <LoadingScreen />}
       <div className="flex justify-between">
         <FontAwesomeIcon icon={faBars} size="2x" color="#F24236" />
-        <img src="/photos/Artboard.png" className="w-44 h-30" alt="Artboard" />
+        <img src="/photos/logo.png" className="w-44 h-30 mt-8" alt="Artboard" />
         <FontAwesomeIcon
           icon={faCircleInfo}
           className="text-4xl"

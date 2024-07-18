@@ -5,6 +5,7 @@ const router = Router();
 
 router.post("/set-moderator", GameController.setModerator);
 router.get("/get-moderator/:roomId", GameController.getModerator);
+router.get("/get-game/:roomId", GameController.getGame);
 router.post("/create", GameController.createGame);
 router.post("/update", GameController.updateGame);
 

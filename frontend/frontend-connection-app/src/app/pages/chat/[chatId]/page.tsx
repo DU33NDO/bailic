@@ -89,8 +89,12 @@ const Chat = () => {
   const [clickedUserIdState, setClickedUserIdState] = useState("");
   const [closeImmediately, setCloseImmediately] = useState(false);
   const [closeImmediatelySecond, setCloseImmediatelySecond] = useState(false);
-  // openAi
+  const [difficultyLevelState, setDifficultyLevelState] = useState("");
+  const [areaOfVocabState, setAreaOfVocabState] = useState("");
+  const [isUserConnected, setIsUserConnected] = useState(false);
+  const showAIconnectRef = useRef(false);
 
+  const aiPhoto = "/avatar/aiPhoto.jpg";
   const router = useRouter();
 
   useEffect(() => {
@@ -113,6 +117,18 @@ const Chat = () => {
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms/${roomId}`
       );
       return response.data.users; //array
+    } catch (error) {
+      console.error("Error fetching room details:", error);
+      return null;
+    }
+  };
+
+  const fetchGameDetails = async (roomId: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/game/get-game/${roomId}`
+      );
+      return response.data;
     } catch (error) {
       console.error("Error fetching room details:", error);
       return null;
@@ -158,80 +174,131 @@ const Chat = () => {
             );
             console.log(`ROOM NAME !!!! - ${roomName}`);
 
-            axios
-              .get(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/game/get-moderator/${roomId}`
-              )
-              .then((response) => {
-                const moderatorIdQuery = response.data;
-                console.log(moderatorIdQuery);
+            fetchGameDetails(roomId).then((gameDetails: any) => {
+              if (gameDetails) {
+                console.log(`GAME DIFFICULTY: ${gameDetails.difficultyLevel}`); //wfwf
+                setDifficultyLevelState(gameDetails.difficultyLevel);
+                setAreaOfVocabState(gameDetails.areaOfVocab);
 
-                axios
-                  .get(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/user/${moderatorIdQuery}`
+                if (gameDetails.difficultyLevel === "No AI") {
+                  console.log("NO AI VERSION");
+                  axios
+                    .get(
+                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/game/get-moderator/${roomId}`
+                    )
+                    .then((response) => {
+                      const moderatorIdQuery = response.data;
+                      console.log(moderatorIdQuery);
+
+                      axios
+                        .get(
+                          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/user/${moderatorIdQuery}`
+                        )
+                        .then((res: any) => {
+                          setModerator({
+                            username: res.data.user.username,
+                            userPhoto: res.data.user.userPhoto,
+                            userId: res.data.user._id,
+                          });
+
+                          localStorage.setItem(
+                            "moderatorId",
+                            res.data.user._id
+                          );
+                          setModeratorId(res.data.user._id);
+                          setShowModeratorModal(true);
+                        });
+                    });
+                } else {
+                  socket.emit(
+                    "NewWordFromBack",
+                    gameDetails.areaOfVocab,
+                    roomName
+                  );
+                }
+              }
+            });
+
+            socket.on("setSecretWordFromBack", (word) => {
+              // from backend
+              console.log(`ПРИШЛО ЛИ СЛОВО? ${word}`);
+              localStorage.setItem("secretWord", word);
+              setSecretWord(word.toLowerCase());
+            });
+
+            socket.on("newMessage", async (data: any) => {
+              console.log("New message received:", data);
+              console.log(`Проверка - ${data.userId} отправитель сообщения`);
+
+              const message = { ...data, isExpiring: false };
+
+              if (difficultyLevelState !== "No AI") {
+                setMessages((prevMessages) => [...prevMessages, message]);
+                console.log("WITH AI VERSION");
+                // try {
+                //   const aiResponse = await axios.post(
+                //     `${process.env.NEXT_PUBLIC_BACKEND_URL}/openAI/sendMessageToAI/${roomId}`,
+                //     { message }
+                //   );
+                //   console.log(`${aiResponse.data} - MAYBE AI MESSAGE?`);
+                //   const aiMessage = aiResponse.data.aiResponse; //NEED TO CHECK
+                //   setModeratorMessages((prevModeratorAIMessages) => [
+                //     ...prevModeratorAIMessages,
+                //     aiMessage,
+                //   ]);
+                //   console.log(`ai messages list: ${moderatorMessages}`);
+                // } catch (error) {
+                //   console.error("Error sending message to AI:", error);
+                // }
+              } else {
+                if (data.userId === moderatorId) {
+                  setModeratorMessages((prevModeratorMessages) => [
+                    ...prevModeratorMessages,
+                    message,
+                  ]);
+                } else {
+                  setMessages((prevMessages) => [...prevMessages, message]);
+                }
+              }
+
+              setTimeout(() => {
+                setMessages((prevMessages) =>
+                  prevMessages.map((msg) =>
+                    msg.messageId === data.messageId
+                      ? { ...msg, isExpiring: true }
+                      : msg
                   )
-                  .then((res: any) => {
-                    console.log(`MODERATOR NAME: ${res.data.user.username}`);
-                    setModerator({
-                      username: res.data.user.username,
-                      userPhoto: res.data.user.userPhoto,
-                      userId: res.data.user._id,
-                    });
+                );
 
-                    localStorage.setItem("moderatorId", res.data.user._id);
-                    setModeratorId(res.data.user._id);
-                    setShowModeratorModal(true);
+                setTimeout(() => {
+                  setMessages((prevMessages) =>
+                    prevMessages.filter(
+                      (msg) => msg.messageId !== data.messageId
+                    )
+                  );
+                  setModeratorMessages((prevModeratorMessages) =>
+                    prevModeratorMessages.filter(
+                      (msg) => msg.messageId !== data.messageId
+                    )
+                  );
+                  socket.emit("ExpiredMessage", { ...data, roomName });
+                }, 300);
+              }, 8000);
+            });
 
-                    socket.on("newMessage", (data: any) => {
-                      console.log("New message received:", data);
-                      console.log(
-                        `Проверка - ${data.userId} отправитель сообщения`
-                      );
+            socket.on("AI_message", (aiResponse: any) => {
+              setModeratorMessages((prevModeratorAIMessages) => [
+                ...prevModeratorAIMessages,
+                aiResponse,
+              ]);
+              console.log(`AI moderator lis: ${moderatorMessages}`);
+              console.log(`AI MESSAGE FROM FRONT 80%<: ${aiResponse}`);
+            });
 
-                      const message = { ...data, isExpiring: false };
-
-                      if (data.userId === res.data.user._id) {
-                        console.log("CHEcK 1");
-                        setModeratorMessages((prevModeratorMessages) => [
-                          ...prevModeratorMessages,
-                          message,
-                        ]);
-                      } else {
-                        console.log(
-                          `CHEcK 2, data.userId = ${data.userId} AND moderatorId = ${moderatorIdQuery}, stored moderatorId - ${moderatorId}`
-                        );
-                        setMessages((prevMessages) => [
-                          ...prevMessages,
-                          message,
-                        ]);
-                      }
-
-                      setTimeout(() => {
-                        setMessages((prevMessages) =>
-                          prevMessages.map((msg) =>
-                            msg.messageId === data.messageId
-                              ? { ...msg, isExpiring: true }
-                              : msg
-                          )
-                        );
-
-                        setTimeout(() => {
-                          setMessages((prevMessages) =>
-                            prevMessages.filter(
-                              (msg) => msg.messageId !== data.messageId
-                            )
-                          );
-                          setModeratorMessages((prevModeratorMessages) =>
-                            prevModeratorMessages.filter(
-                              (msg) => msg.messageId !== data.messageId
-                            )
-                          );
-                          socket.emit("ExpiredMessage", { ...data, roomName });
-                        }, 300);
-                      }, 8000);
-                    });
-                  });
-              });
+            // socket.on("AI_answer", (aiResponse: any) => {
+            //   console.log(`${moderatorMessages} - ai moderator messages`);
+            //   console.log(`AI ANSWER: ${aiResponse}`);
+            // });
 
             socket.on("setSecretWord", (word) => {
               localStorage.setItem("secretWord", word);
@@ -277,20 +344,122 @@ const Chat = () => {
               }
             });
 
-            socket.on("DeleteMessage", (targetMessage) => {
-              console.log(`DELETE MESSAGE FROM FRONT: ${targetMessage}`);
-              setMessages((prevMessages) =>
-                prevMessages.filter(
-                  (message) => message.messageId !== targetMessage.messageId
-                )
-              );
-              setModeratorMessages((prevModeratorMessages) =>
-                prevModeratorMessages.filter(
-                  (message) => message.messageId !== targetMessage.messageId
-                )
-              );
-              socket.emit("DeleteFromDB", targetMessage);
+            socket.on("connectToPlayersAI", async (data) => {
+              showAIconnectRef.current = true;
+              // имбуличка 3
+              try {
+                setShowContact(true);
+                console.log(
+                  `connectToPlayersAI - ${data.askedUserId}; ${data.clickedUserId}; showContact: ${showContact}`
+                );
+                handleShowContact(data.askedUserId, data.clickedUserId);
+
+                if (data.askedUserId === userId) {
+                  setShowAskedUser(true);
+                }
+
+                if (data.clickedUserId === userId) {
+                  setShowClickedUser(true);
+                }
+
+                if (
+                  data.askedUserId !== userId &&
+                  data.clickedUserId !== userId
+                ) {
+                  setShowOtherUsers(true);
+                }
+                console.log(
+                  `setted roomID - ${roomId}, dataRoomId - ${data.roomId}; secretWord - ${data.secretWord}; countLetter - ${data.countLetter}; contentAskedUser: ${data.contentAskedUser}`
+                );
+
+                const aiResponse = await axios.post(
+                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/openAI/sendConnectMessage/${data.roomId}`,
+                  {
+                    secretWord: data.secretWord,
+                    countLetter: data.countLetter,
+                    contentAskedUser: data.contentAskedUser,
+                  },
+                  {
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+
+                const aiResponseWord = aiResponse.data.aiResponse
+                  .split(";")[1]
+                  .trim();
+
+                socket.emit("sendModeratorWordGame", {
+                  word: aiResponseWord,
+                  roomName: roomName,
+                  userName: "AI",
+                  userPhoto: aiPhoto,
+                  secretWord: secretWord,
+                });
+              } catch (error) {
+                console.error("Error handling connectToPlayersAI:", error);
+              }
             });
+
+            socket.on("AI_action", (aiResponse: any, askedUserId: any) => {
+              // щас будет имбуличка
+              console.log(
+                `ПРОВЕРКА ${showContact}; showAIconnectRef - ${showAIconnectRef.current}`
+              );
+              if (
+                !showContact &&
+                activeModal === null &&
+                !showAIconnectRef.current
+              ) {
+                setShowNoContact(true);
+                setActiveModal("ModalConnectModeratorCase");
+
+                setTimeout(() => {
+                  setShowNoContact(false);
+                }, 2000);
+
+                if (askedUserId === userId) {
+                  setShowAskedUserSecond(true);
+                } else {
+                  setShowOtherUsersSecond(true);
+                }
+
+                const extractedWord = aiResponse.split(";")[1]?.trim();
+                console.log(`${extractedWord} - фильтрованное слово`);
+
+                if (socketRef.current) {
+                  socketRef.current.emit("sendModeratorWordGameSecond", {
+                    word: extractedWord,
+                    roomName: roomName,
+                    userName: "AI",
+                    userPhoto: aiPhoto,
+                    secretWord: secretWord,
+                  });
+                }
+
+                console.log(`AI moderator lis: ${moderatorMessages}`);
+                console.log(`AI MESSAGE FROM FRONT 80%>: ${aiResponse}`);
+              } else {
+                console.log("showContact or activModal are not appropriate");
+              }
+            });
+
+            // socket.on("DeleteMessage", (targetMessage) => {
+            //   //потом удалю
+            //   console.log(`DELETE MESSAGE FROM FRONT: ${targetMessage}`);
+            //   setMessages((prevMessages) =>
+            //     prevMessages.filter(
+            //       (message) => message.messageId !== targetMessage.messageId
+            //     )
+            //   );
+            //   setModeratorMessages((prevModeratorMessages) =>
+            //     prevModeratorMessages.filter(
+            //       (message) => message.messageId !== targetMessage.messageId
+            //     )
+            //   );
+            //   socket.emit("DeleteFromDB", targetMessage);
+            // });
 
             socket.on("allWords", (data) => {
               console.log(
@@ -358,6 +527,7 @@ const Chat = () => {
               } else {
                 setCountLetter((prevCount) => prevCount);
               }
+              // setShowAIconnect(false); //имбуличка???
             });
 
             socket.on("allWordsSecond", (data) => {
@@ -425,6 +595,8 @@ const Chat = () => {
                 socketRef.current.off("connectToPlayers");
                 socketRef.current.off("DeleteMessage");
                 socketRef.current.off("allWords");
+                socketRef.current.off("AI_action");
+                socketRef.current.off("connectToPlayersAI");
                 socketRef.current.off("allWordsSecond");
                 socketRef.current.off("noConnectionData");
                 socketRef.current.off("continueToAll");
@@ -475,13 +647,20 @@ const Chat = () => {
         userId: userId,
         roomName: roomName,
       };
-      socketRef.current.emit("sendMessage", message, roomName);
+      socketRef.current.emit(
+        "sendMessage",
+        message,
+        roomName,
+        secretWord,
+        countLetter
+      );
     }
 
     form.reset();
   };
 
   const handleShowContact = (askedUserId: string, clickedUserId: string) => {
+    console.log(`PROVERKA - ${activeModal}, ${hasShownConnectPopUp}`);
     if (activeModal === null && !hasShownConnectPopUp) {
       setActiveModal("ModalConnectPopUp");
       setShowContact(true);
@@ -538,29 +717,58 @@ const Chat = () => {
   const handleClickMessage = (message: any) => {
     if (message.userId !== userId) {
       setIsClicked(true);
-      if (isClicked === true && socketRef.current && userId === moderatorId) {
-        socketRef.current.emit("noConnectStarts", {
-          roomId: roomId,
-          roomName: roomName,
-          askedUserId: message.userId,
-          moderatorId: moderatorId,
-        });
-      }
-      if (
-        isClicked === true &&
-        socketRef.current &&
-        moderatorId &&
-        userId !== moderatorId
-      ) {
-        socketRef.current.emit("connectStarts", {
-          roomId: roomId,
-          roomName: roomName,
-          askedUserId: message.userId,
-          clickedUserId: userId,
-          moderatorId: moderatorId,
-        });
+      if (difficultyLevelState === "No AI") {
+        if (isClicked === true && socketRef.current && userId === moderatorId) {
+          socketRef.current.emit("noConnectStarts", {
+            roomId: roomId,
+            roomName: roomName,
+            askedUserId: message.userId,
+            moderatorId: moderatorId,
+          });
+        } else if (
+          isClicked === true &&
+          socketRef.current &&
+          moderatorId &&
+          userId !== moderatorId
+        ) {
+          socketRef.current.emit("connectStarts", {
+            roomId: roomId,
+            roomName: roomName,
+            askedUserId: message.userId,
+            clickedUserId: userId,
+            moderatorId: moderatorId,
+          });
+        } else {
+          console.log("No moderator or isClicked or websocket");
+        }
       } else {
-        console.log("No moderator or isClicked or websocket");
+        if (isClicked && socketRef.current) {
+          // даже не приходит сюда
+          //имбуличка
+          setActiveModal("ModalConnectPopUp");
+          setShowContact(true);
+          showAIconnectRef.current = true;
+          // setHasShownConnectPopUp(true);
+          console.log(
+            `ASKEDUSER AI - ${message.userId}, CLICKED USED AI - ${userId}; secretWord: ${secretWord}; countLetter: ${countLetter}; showContact - ${showContact}`
+          );
+
+          socketRef.current.emit("connectStartsAI", {
+            roomId: roomId,
+            roomName: roomName,
+            askedUserId: message.userId,
+            clickedUserId: userId,
+            contentAskedUser: message.content,
+            secretWord: secretWord,
+            countLetter: countLetter,
+          });
+
+          setTimeout(() => {
+            setShowContact(false);
+          }, 1000);
+        } else {
+          console.log("isClicked or websocket not available");
+        }
       }
     }
   };
@@ -589,6 +797,10 @@ const Chat = () => {
   const handleCloseModalAllWords = () => {
     setShowAllWords(false);
     setCloseImmediately(false);
+    setIsUserConnected(false);
+    setIsClicked(false);
+    showAIconnectRef.current = false; //проверка имбулички
+    // setShowAIconnect(false);
   };
 
   const handleCloseModalAllWordsSecond = () => {

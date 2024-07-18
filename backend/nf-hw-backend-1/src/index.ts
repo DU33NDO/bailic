@@ -23,6 +23,8 @@ import openAIController from "./openAI/openAI-controller";
 import fs from "fs";
 import path from "path";
 
+import russian from "./vocab/russian.json";
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -138,28 +140,19 @@ io.on("connection", (socket) => {
 
   socket.on("NewWordFromBack", (areaOfVocab, roomName) => {
     console.log(`ДОБРАЛСЯ ДО ОТПРАВКИ НОВОГО СЛОВА`);
-    const vocabPath = path.resolve(__dirname, "./vocab/russian.json");
 
-    fs.readFile(vocabPath, "utf8", (err, data) => {
-      if (err) {
-        console.error("Failed to read vocab file:", err);
-        return;
-      }
+    const words = russian[areaOfVocab.toLowerCase()];
 
-      const vocab = JSON.parse(data);
-      const words = vocab[areaOfVocab.toLowerCase()];
+    if (!words || words.length === 0) {
+      console.error("No words found for the specified area of vocabulary.");
+      return;
+    }
 
-      if (!words || words.length === 0) {
-        console.error("No words found for the specified area of vocabulary.");
-        return;
-      }
+    const randomWord = words[Math.floor(Math.random() * words.length)];
+    console.log(`ПОСЛЕДНИЙ ЭТАП ${randomWord}`);
+    console.log(`ПРОВЕРКА СЕТ СЛОВА: ${roomName}`);
 
-      const randomWord = words[Math.floor(Math.random() * words.length)];
-      console.log(`ПОСЛЕДНИЙ ЭТАП ${randomWord}`);
-      console.log(`ПРОВЕРКА СЕТ СЛОВА: ${roomName}`);
-
-      io.emit("setSecretWordFromBack", randomWord); //to RoomName
-    });
+    io.emit("setSecretWordFromBack", randomWord); //to RoomName
   });
 
   socket.on("listOfUsers", (arrayUsers, roomName) => {

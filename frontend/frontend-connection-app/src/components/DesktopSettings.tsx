@@ -19,6 +19,7 @@ interface DesktopSettingsProps {
   handlePlay: () => void;
   setSelectedOptionAreaVocab: (option: any) => void;
   setSelectedOptionDifficulty: (option: any) => void;
+  roomName: string;
 }
 
 const DesktopSettings: React.FC<DesktopSettingsProps> = ({
@@ -30,6 +31,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
   handlePlay,
   setSelectedOptionAreaVocab,
   setSelectedOptionDifficulty,
+  roomName,
 }) => {
   const { isPlaying, toggleAudio, setAudioSource } = useAudio();
 
@@ -38,7 +40,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
   }, [setAudioSource]);
 
   const handleBackClick = () => {
-    window.location.href = `/pages/auth`;
+    window.location.href = `/pages/auth/${roomName}`;
   };
 
   const defaultStyle = { fontSize: "18px", color: "gray", fontWeight: "400" };

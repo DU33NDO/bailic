@@ -299,6 +299,7 @@ const Settings = () => {
             handlePlay={handlePlay}
             setSelectedOptionAreaVocab={setSelectedOptionAreaVocab}
             setSelectedOptionDifficulty={setSelectedOptionDifficulty}
+            roomName={roomName}
           />
         </div>
       </div>

@@ -38,7 +38,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
   }, [setAudioSource]);
 
   const handleBackClick = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_FRONTEND_URL}`;
+    window.location.href = `/pages/auth`;
   };
 
   const defaultStyle = { fontSize: "18px", color: "gray", fontWeight: "400" };

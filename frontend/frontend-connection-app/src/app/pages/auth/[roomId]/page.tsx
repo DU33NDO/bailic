@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
@@ -86,28 +86,43 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <div className="px-5 py-3">
+    <div className="px-5 py-3 md:px-28 md:py-3">
       {loading && <LoadingScreen />}
       <div className="flex justify-between">
-        <FontAwesomeIcon icon={faBars} size="2x" color="#F24236" />
-        <img src="/photos/logo.png" className="w-44 h-30 mt-8" alt="Artboard" />
-        <FontAwesomeIcon
-          icon={faCircleInfo}
-          className="text-4xl"
-          color="#F24236"
+        <img
+          src="/photos/red_bar_menu.svg"
+          className="w-10 h-10 md:w-20 md:h-20"
+          alt=""
+        />
+        <img
+          src="/photos/logo.png"
+          className="w-44 h-30 mt-8 md:w-72 "
+          alt="Artboard"
+        />
+        <img
+          src="/photos/red_circle_icon.svg"
+          className="w-10 h-10 md:w-20 md:h-20"
+          alt=""
         />
       </div>
       <form action="" onSubmit={onSubmitAuth}>
         <div className="flex flex-col justify-center mt-32 items-center gap-24 relative">
-          <div className="w-[300px] h-[230px] bg-[#E2D5D0] flex flex-col items-center justify-between px-4 py-6 rounded-xl">
-            <div className="w-[120px] h-[120px] rounded-[80px] bg-white relative">
+          <div className="relative w-[300px] md:w-[500px] h-[230px] md:h-[320px] bg-[#E2D5D0] flex flex-col gap-6 items-center justify-between px-4 py-6 rounded-xl overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-[40px] md:h-[50px] flex">
+              <div className="flex-1 bg-[#477370]"></div>
+              <div className="flex-1 bg-[#BA3B3A]"></div>
+              <div className="flex-1 bg-[#E4A63A]"></div>
+              <div className="flex-1 bg-[#FEFEFE]"></div>
+              <div className="flex-1 bg-[#020100]"></div>
+            </div>
+            <div className="w-[120px] h-[120px] md:w-[180px] md:h-[180px] rounded-[80px] bg-white relative mt-[20px] md:mt-[30px]">
               <img
                 src={userPhoto}
                 alt="user photo"
                 className="w-full h-full rounded-full"
               />
               <button
-                className="bg-black absolute text-white right-[-10px] top-[80px] rounded-3xl w-8 h-8"
+                className="bg-black absolute text-white right-[-10px] top-[80px] rounded-3xl w-8 h-8 md:w-12 md:h-12 md:top-[110px] md:text-2xl"
                 onClick={handlePhotoChange}
               >
                 Go
@@ -116,26 +131,22 @@ const Auth: React.FC = () => {
             <input
               type="text"
               placeholder="Username"
+              maxLength={20}
               name="username"
               id="username"
-              className="w-[100%] h-[35px] px-3 py-3 text-black rounded-xl"
+              className="w-[100%] h-[35px] md:h-[50px] px-3 py-3 text-black rounded-xl"
               required
             />
           </div>
-          <div className="flex justify-center bg-[#E2D5D0] px-4 py-4 rounded-xl bg-opacity-40">
-            <p className="text-xl text-black font-bold opacity-70">
+          <div className="flex justify-center bg-[#E2D5D0] px-4 py-4 rounded-xl bg-opacity-40 md:px-8 md:py-4">
+            <p className="text-xl text-black font-bold opacity-70 md:text-3xl">
               псс правила?
             </p>
           </div>
           <button
             type="submit"
-            className="w-[150px] h-[40px] bg-[#EB3A53] rounded-xl text-right px-6 py-2 text-lg flex gap-4 items-center"
+            className="w-[150px] md:w-[250px] h-[40px] md:h-[50px] bg-[#BA3B3A] rounded-xl text-center px-6 py-2 text-lg  md:text-3xl relative"
           >
-            <FontAwesomeIcon
-              icon={faPlay}
-              style={{ fontSize: "1.3em" }}
-              className=""
-            />
             Начать
           </button>
         </div>

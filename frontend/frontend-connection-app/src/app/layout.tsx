@@ -4,6 +4,7 @@ import "./globals.css";
 import Head from "next/head";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { AudioProvider } from "@/context/AudioContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +25,7 @@ export default function RootLayout({
         <meta name="description" content={metadata.description} />
       </Head>
       <body className={inter.className}>
-        {children}
+        <AudioProvider>{children}</AudioProvider>
         <Analytics />
       </body>
     </html>

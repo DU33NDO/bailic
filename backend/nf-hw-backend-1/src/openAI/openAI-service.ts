@@ -21,32 +21,29 @@ class OpenAIservice {
       const prompt = messages
         .map(
           (msg: any) =>
-            `Ты профессионал в угадывании слов по их ассоциациям. 
-          Твоя цель - понять и написать слово, которое по твоему мнению загадал пользователь. 
-          На данный момент ты являешься ведущим игры. Ты получаешь сообщения от всех пользователей в комнате.
-           Их цель в обратном - сделать всё возможное, чтобы другие игроки поняли их слово кроме тебя через их ассоциации. 
-           В виде ответа пришли текст, который начинается так: "уверенность в ответе: ", после двоеточия должен быть процент 
-           того, насколько ты уверен, что ты отгадал загаданное слово. Запомни, что пользователи загадывает не одно,
-            а несколкьо слов, а также тебе будет дано с какой буквы или букв должно начинаться это слово. Например: 
-            "слово начинается на "Ав". Пользователь1: "синий челик, который живет на Пандоре". Ты высчитываешь насколько
-             процентов ты уверен в правильности ответа и присылаешь следующее: "уверенность в ответе: 90%; аватар" 
-             и отправлешь ответ в виде текста. Твоя задача отвечать только на последнее сообщение, так как все до
-              него являются полноценной историей чата для полного понимания контекста. Знай, что предыдущие сообщения 
-              могут быть нерелевантными, так как они могут относиться к предыдущим словам, которые уже были отгаданы. По этой причине при любых ситуациях после
-              "уверенность в ответе: х%;" пиши только одно слово. Например, 
-              уверенность в ответе: 60%; аватар
-                уверенность в ответе: 90%; карандаш
-                уверенность в ответе: 40%; ручка
+            `Task: Based on the message and chat history, output a single word that players try to guess by associations starting with a specific letter.
+
+              Context: In a web-based game, players gather in a room and start a game against AI. A random word is chosen from a database. Players must guess 
+              words starting with its first letter and try to make another player understand the word they are thinking of through associations. As the host (the model), 
+              you must guess the word based on these messages.
+              Examples:
+              A player writes, "He's a famous cartoon character from the Soviet era." Given that the word starts with "Б" your response is, "уверенность в ответе: 100%; буратино."
+              Another case: "we all write with it",Given that the word starts with "Р" you respond, "уверенность в ответе: 70%; Ручка."
+              Persona: You are the most professional at guessing words based on their associations. You have unlimited access to verbs, nouns, adjectives, slang, etc., as this is a game about guessing words.
+
+              Format: Provide your response in the format "confidence in answer: your percentage%; your word." Double-check that the word starts with the specified letter (initial) and that it fits the associations.
+
+              Tone: Use a casual conversational tone. You are engaging and clever, using a rich vocabulary to interact with the players, enhancing their gaming experience by keeping the guesses interesting and accurate.
               Твоё слово должно начинаться на: ${secretWord.slice(
                 0,
                 countLetter
               )} 
-              ; А вот настоящие сообщения: ${msg.content}`
+              ; А вот настоящие сообщения игроков: ${msg.content}`
         )
         .join("\n");
 
       const aiResponse: any = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini",
         messages: [
           { role: "system", content: "You are a word guessing professional." },
           { role: "user", content: prompt },
@@ -78,38 +75,34 @@ class OpenAIservice {
       const prompt = messages
         .map(
           (msg: any) =>
-            `Ты профессионал в угадывании слов по их ассоциациям. 
-          Твоя цель - понять и написать слово, которое по твоему мнению загадал пользователь. 
-          На данный момент ты являешься ведущим игры. Ты получаешь сообщения от всех пользователей в комнате.
-           Их цель в обратном - сделать всё возможное, чтобы другие игроки поняли их слово кроме тебя через их ассоциации. 
-           В виде ответа пришли текст, который начинается так: "уверенность в ответе: ", после двоеточия должен быть процент 
-           того, насколько ты уверен, что ты отгадал загаданное слово. Запомни, что пользователи загадывает не одно,
-            а несколкьо слов, а также тебе будет дано с какой буквы или букв должно начинаться это слово. Например: 
-            "слово начинается на "Ав". Пользователь1: "синий челик, который живет на Пандоре". Ты высчитываешь насколько
-             процентов ты уверен в правильности ответа и присылаешь следующее: "уверенность в ответе: 90%; аватар" 
-             и отправлешь ответ в виде текста. Твоя задача отвечать только на последнее сообщение, так как все до
-              него являются полноценной историей чата для полного понимания контекста. Знай, что предыдущие сообщения 
-              могут быть нерелевантными, так как они могут относиться к предыдущим словам, которые уже были отгаданы. По этой причине при любых ситуациях после
-              "уверенность в ответе: х%;" пиши только одно слово. Например, 
-              уверенность в ответе: 60%; аватар
-                уверенность в ответе: 90%; карандаш
-                уверенность в ответе: 40%; ручка
+            `Task: Based on the message and chat history, output a single word that players try to guess by associations starting with a specific letter.
+
+              Context: In a web-based game, players gather in a room and start a game against AI. A random word is chosen from a database. Players must guess 
+              words starting with its first letter and try to make another player understand the word they are thinking of through associations. As the host (the model), 
+              you must guess the word based on these messages.
+              Examples:
+              A player writes, "He's a famous cartoon character from the Soviet era." Given that the word starts with "Б" your response is, "уверенность в ответе: 100%; буратино."
+              Another case: "we all write with it",Given that the word starts with "Р" you respond, "уверенность в ответе: 70%; Ручка."
+              Persona: You are the most professional at guessing words based on their associations. You have unlimited access to verbs, nouns, adjectives, slang, etc., as this is a game about guessing words.
+
+              Format: Provide your response in the format "confidence in answer: your percentage%; your word." Double-check that the word starts with the specified letter (initial) and that it fits the associations.
+
+              Tone: Use a casual conversational tone. You are engaging and clever, using a rich vocabulary to interact with the players, enhancing their gaming experience by keeping the guesses interesting and accurate.
               Твоё слово должно начинаться на: ${secretWord.slice(
                 0,
                 countLetter
               )} 
               Акцентируй своё внимание на сообщение, которое в данный момент угадывают другие игроки. Сделай всё возможное, чтобы отгадать его
               тоже. Вот сообщение, после которого люди поняли слово - ${contentAskedUser}
-              ; А вот настоящие сообщения из чата: ${msg.content}`
+              ; А вот остальные сообщения из чата настоящих игроков: ${
+                msg.content
+              }`
         )
         .join("\n");
 
       const aiResponse: any = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          { role: "system", content: "You are a word guessing professional." },
-          { role: "user", content: prompt },
-        ],
+        model: "gpt-4o-mini",
+        messages: [{ role: "system", content: prompt }],
         max_tokens: 150,
         temperature: temperature,
       });
@@ -126,7 +119,7 @@ class OpenAIservice {
       const prompt = `Ты проглотил все словари мира. Твоя задача - дать самый креативные и разнообразные ответы, которые никто никаким образом не сможет предсказать!!!! ОЧЕНЬ ВАЖНО - ДАВАТЬ ОТВЕТ В ВИДЕ СУЩЕСТВИТЕЛЬНОГО ОДНИМ СЛОВОМ в области ${areaOfVocab}. "ИССКУСТВЕННЫЙ ИНТЕЛЕКТ" - ЗАПРЕЩЕН. ЛЮБЫЕ ЗНАКИ ПРЕПИНАНИЯ СТАВИТЬ НЕЛЬЗЯ.`;
       const temperature: number = 0.9;
       const aiResponse: any = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",

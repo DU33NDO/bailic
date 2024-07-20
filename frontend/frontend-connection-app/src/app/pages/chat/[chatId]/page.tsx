@@ -17,6 +17,7 @@ import ModalConnectGameOver from "@/components/ModalConnectGameOver";
 import ModalConnectModeratorCase from "@/components/ModalConnectModeratorCase";
 import ModalResultsSecond from "@/components/ModalResultsSecond";
 import "../../../../../for_scroll.css";
+import { useAudio } from "@/context/AudioContext";
 
 interface Message {
   userId: string;
@@ -96,6 +97,12 @@ const Chat = () => {
 
   const aiPhoto = "/avatar/aiPhoto.jpg";
   const router = useRouter();
+
+  const { isPlaying, toggleAudio, setAudioSource } = useAudio();
+
+  useEffect(() => {
+    setAudioSource("/music/game_music.mp4");
+  }, [setAudioSource]);
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
@@ -235,21 +242,6 @@ const Chat = () => {
               if (difficultyLevelState !== "No AI") {
                 setMessages((prevMessages) => [...prevMessages, message]);
                 console.log("WITH AI VERSION");
-                // try {
-                //   const aiResponse = await axios.post(
-                //     `${process.env.NEXT_PUBLIC_BACKEND_URL}/openAI/sendMessageToAI/${roomId}`,
-                //     { message }
-                //   );
-                //   console.log(`${aiResponse.data} - MAYBE AI MESSAGE?`);
-                //   const aiMessage = aiResponse.data.aiResponse; //NEED TO CHECK
-                //   setModeratorMessages((prevModeratorAIMessages) => [
-                //     ...prevModeratorAIMessages,
-                //     aiMessage,
-                //   ]);
-                //   console.log(`ai messages list: ${moderatorMessages}`);
-                // } catch (error) {
-                //   console.error("Error sending message to AI:", error);
-                // }
               } else {
                 if (data.userId === moderatorId) {
                   setModeratorMessages((prevModeratorMessages) => [
@@ -686,7 +678,6 @@ const Chat = () => {
       setShowModeratorInput(true);
     }
   };
-  //sdkdfskd
 
   const handleCloseContact = () => {
     setShowContact(false);
@@ -931,6 +922,7 @@ const Chat = () => {
           onSubmit={handleSubmitWord}
           revealedLetters={secretWord.slice(0, countLetter)}
           revealedWords={storedWords}
+          difficultyLevel={difficultyLevelState}
         />
       )}
       {showClickedUser && showContact === false && secretWord && (
@@ -938,6 +930,7 @@ const Chat = () => {
           onClose={handleCloseModalAnswerUser}
           revealedLetters={secretWord.slice(0, countLetter)}
           revealedWords={storedWords}
+          difficultyLevel={difficultyLevelState}
         />
       )}
       {showClickedModerator && showContact === false && secretWord && (
@@ -945,6 +938,7 @@ const Chat = () => {
           onClose={handleCloseModalAnswerModerator}
           revealedLetters={secretWord.slice(0, countLetter)}
           revealedWords={storedWords}
+          difficultyLevel={difficultyLevelState}
         />
       )}
       {showAskedUserSecond && showNoContact === false && secretWord && (
@@ -953,6 +947,7 @@ const Chat = () => {
           onSubmit={handleSubmitWordSecondCase}
           revealedLetters={secretWord.slice(0, countLetter)}
           revealedWords={storedWords}
+          difficultyLevel={difficultyLevelState}
         />
       )}
       {showClickedModeratorSecond && showNoContact === false && secretWord && (
@@ -960,6 +955,7 @@ const Chat = () => {
           onClose={handleCloseModalAnswerModeratorSecond}
           revealedLetters={secretWord.slice(0, countLetter)}
           revealedWords={storedWords}
+          difficultyLevel={difficultyLevelState}
         />
       )}
       {showOtherUsers && showContact === false && (
@@ -1018,6 +1014,12 @@ const Chat = () => {
                 )}
               </p>
             </div>
+            <button
+              onClick={toggleAudio}
+              className="focus:outline-none md:w-16 w-10"
+            >
+              <img src={isPlaying ? "/photos/audio.png" : "/photos/mute.png"} />
+            </button>
           </div>
 
           <div className="flex justify-between items-center mt-12 relative">
@@ -1070,6 +1072,7 @@ const Chat = () => {
                 type="text"
                 name="message"
                 id="message"
+                maxLength={70} // good ne good xz
                 placeholder="Send Message..."
                 className="text-gray-700 w-full h-12 md:h-16 rounded-xl pl-5 pr-10 py-2 border focus:border-gray-500"
               />

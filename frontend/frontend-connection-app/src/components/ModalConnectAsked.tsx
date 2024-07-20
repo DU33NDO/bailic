@@ -5,6 +5,7 @@ interface ModalConnectAskedProps {
   onSubmit: (word: string) => void;
   revealedLetters: string;
   revealedWords: string[];
+  difficultyLevel: string;
 }
 
 const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
@@ -12,10 +13,24 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
   onSubmit,
   revealedLetters,
   revealedWords,
+  difficultyLevel,
 }) => {
+  const getInitialTimer = (difficultyLevel: string) => {
+    switch (difficultyLevel) {
+      case "Hard":
+        return 5;
+      case "Medium":
+        return 8;
+      case "Easy":
+        return 10;
+      default:
+        return 8;
+    }
+  };
+
   const [word, setWord] = useState("");
   const [error, setError] = useState("");
-  const [timer, setTimer] = useState(8);
+  const [timer, setTimer] = useState(getInitialTimer(difficultyLevel));
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -53,11 +68,14 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
   };
 
   const handleAutoSubmit = () => {
-    const finalWord = word.trim() === "" ? `${revealedLetters}didNotSend` : word.trim();
+    const finalWord =
+      word.trim() === "" ? `${revealedLetters}didNotSend` : word.trim();
     if (!finalWord.toLowerCase().startsWith(revealedLetters.toLowerCase())) {
       setError(`Слово должно начинаться с "${revealedLetters}"`);
     } else if (revealedWords.includes(finalWord.toLowerCase())) {
-      setError(`Айайай, "${finalWord}" уже было использовано! Напиши другое слово.`);
+      setError(
+        `Айайай, "${finalWord}" уже было использовано! Напиши другое слово.`
+      );
     } else {
       onSubmit(finalWord);
       onClose();

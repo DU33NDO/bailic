@@ -4,15 +4,30 @@ interface ModalConnectAnswerProps {
   onClose: (word: string) => void;
   revealedLetters: string;
   revealedWords: string[];
+  difficultyLevel: string;
 }
 
 const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
   onClose,
   revealedLetters,
   revealedWords,
+  difficultyLevel,
 }) => {
+  const getInitialTimer = (difficultyLevel: string) => {
+    switch (difficultyLevel) {
+      case "Hard":
+        return 5;
+      case "Medium":
+        return 8;
+      case "Easy":
+        return 10;
+      default:
+        return 8;
+    }
+  };
+
   const [word, setWord] = useState("");
-  const [timer, setTimer] = useState(8);
+  const [timer, setTimer] = useState(getInitialTimer(difficultyLevel));
   const [error, setError] = useState("");
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -22,7 +37,9 @@ const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
         if (prevTimer <= 1) {
           clearInterval(countdownRef.current!);
           const trimmedWord = word.trim();
-          onClose(trimmedWord === "" ? `${revealedLetters}didNotSend` : trimmedWord);
+          onClose(
+            trimmedWord === "" ? `${revealedLetters}didNotSend` : trimmedWord
+          );
           return 0;
         }
         return prevTimer - 1;

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import io, { Socket } from "socket.io-client";
 import Difficulty from "@/components/Difficulty";
 import AreaVocab from "@/components/AreaVocab";
@@ -8,6 +8,8 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import LoadingScreen from "@/components/LoadingScreen";
+import DesktopSettings from "@/components/DesktopSettings";
+import { useMediaQuery } from "react-responsive";
 
 interface User {
   userId: string | null;
@@ -44,7 +46,13 @@ const Settings = () => {
   const [roomId, setRoomId] = useState("");
   const [hostId, setHostId] = useState("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
 
+  const isDesktopOrLaptop = useMediaQuery({
+    query: "(min-width: 768px)",
+  });
+
+  const audioRef = useRef<HTMLAudioElement>(null);
   const fetchUsername = async (userId: string) => {
     try {
       const response = await axios.get(
@@ -74,6 +82,8 @@ const Settings = () => {
   };
 
   useEffect(() => {
+    setIsMounted(true);
+
     const currentUserId = localStorage.getItem("userId");
     if (!currentUserId) {
       router.push(`/pages/auth/${roomName}`);
@@ -188,7 +198,7 @@ const Settings = () => {
   }, [joinedUserArray]);
 
   const handleClick = (element: string) => {
-    setActive((prevActive) => (prevActive === element ? null : element));
+    setActive(element);
   };
 
   useEffect(() => {
@@ -243,7 +253,7 @@ const Settings = () => {
   };
 
   const defaultStyle = { fontSize: "18px", color: "gray", fontWeight: "400" };
-  const activeStyle = { fontSize: "20px", color: "black", fontWeight: "900" };
+  const activeStyle = { fontSize: "20px", color: "#BA3B3A", fontWeight: "900" };
 
   const handleCopyUrl = () => {
     const url = `${window.location.origin}/pages/settings/${roomName}`;
@@ -271,12 +281,36 @@ const Settings = () => {
     localStorage.setItem("currentRoomName", roomName);
   }, [roomName]);
 
+  if (!isMounted) {
+    return <div>Loading...</div>;
+  }
+
+  if (isDesktopOrLaptop && active) {
+    return (
+      <div className="px-5 py-3 h-screen md:px-64 md:mt-8">
+        {loading && <LoadingScreen />}
+        <div className="border-solid border-black border-2">
+          <DesktopSettings
+            loading={loading}
+            combinedUsers={combinedUsers}
+            active={active}
+            handleClick={handleClick}
+            handleCopyUrl={handleCopyUrl}
+            handlePlay={handlePlay}
+            setSelectedOptionAreaVocab={setSelectedOptionAreaVocab}
+            setSelectedOptionDifficulty={setSelectedOptionDifficulty}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="px-5 py-3 h-screen">
+    <div className="px-5 py-3 h-screen md:px-64 md:mt-8">
       {loading && <LoadingScreen />}
       <UsersTop combinedUsers={combinedUsers} />
       <div className="w-[100%] h-[70%] bg-[#E9DED9] mt-10 overflow-auto rounded-xl overflow-x-hidden">
-        <div className="flex justify-between sticky top-0 bg-[#E9DED9] z-10 ">
+        <div className="flex justify-between sticky top-0 bg-[#E9DED9] z-10">
           <div
             className={`w-[49%] h-[40px] rounded-xl flex justify-center items-center cursor-pointer ${
               active === "difficulty"
@@ -317,13 +351,13 @@ const Settings = () => {
       </div>
       <div className="flex text-black gap-4 justify-center mt-8">
         <button
-          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white"
+          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-[#d1382e] active:bg-[#b33027]"
           onClick={handleCopyUrl}
         >
           Invite
         </button>
         <button
-          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white"
+          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-[#d1382e] active:bg-[#b33027]"
           onClick={handlePlay}
         >
           Play

@@ -40,7 +40,9 @@ const UsersTop: React.FC<UsersTopProps> = ({ combinedUsers }) => {
                 className="w-full h-full rounded-full"
               />
             </div>
-            <p className="text-[10px] text-[#9A7B6E] font-extrabold">{user.userName || user.username}</p>
+            <p className="text-[10px] text-[#9A7B6E] font-extrabold">
+              {user.userName || user.username}
+            </p>
           </div>
         ))}
         <FontAwesomeIcon

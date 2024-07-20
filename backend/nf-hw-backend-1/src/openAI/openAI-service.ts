@@ -27,8 +27,8 @@ class OpenAIservice {
               words starting with its first letter and try to make another player understand the word they are thinking of through associations. As the host (the model), 
               you must guess the word based on these messages.
               Examples:
-              A player writes, "He's a famous cartoon character from the Soviet era." Given that the word starts with "Б" your response is, "уверенность в ответе: 100%; буратино."
-              Another case: "we all write with it",Given that the word starts with "Р" you respond, "уверенность в ответе: 70%; Ручка."
+              A player writes, "He's a famous cartoon character from the Soviet era." Given that the word starts with "Б" your response is, "уверенность в ответе: 100%; буратино"
+              Another case: "we all write with it",Given that the word starts with "Р" you respond, "уверенность в ответе: 70%; Ручка"
               Persona: You are the most professional at guessing words based on their associations. You have unlimited access to verbs, nouns, adjectives, slang, etc., as this is a game about guessing words.
 
               Format: Provide your response in the format "confidence in answer: your percentage%; your word." Double-check that the word starts with the specified letter (initial) and that it fits the associations.
@@ -81,8 +81,8 @@ class OpenAIservice {
               words starting with its first letter and try to make another player understand the word they are thinking of through associations. As the host (the model), 
               you must guess the word based on these messages.
               Examples:
-              A player writes, "He's a famous cartoon character from the Soviet era." Given that the word starts with "Б" your response is, "уверенность в ответе: 100%; буратино."
-              Another case: "we all write with it",Given that the word starts with "Р" you respond, "уверенность в ответе: 70%; Ручка."
+              A player writes, "He's a famous cartoon character from the Soviet era." Given that the word starts with "Б" your response is, "уверенность в ответе: 100%; буратино"
+              Another case: "we all write with it",Given that the word starts with "Р" you respond, "уверенность в ответе: 70%; Ручка"
               Persona: You are the most professional at guessing words based on their associations. You have unlimited access to verbs, nouns, adjectives, slang, etc., as this is a game about guessing words.
 
               Format: Provide your response in the format "confidence in answer: your percentage%; your word." Double-check that the word starts with the specified letter (initial) and that it fits the associations.

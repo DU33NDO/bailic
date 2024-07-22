@@ -103,6 +103,14 @@ io.on("connection", (socket) => {
   socket.on("join-room", async (roomName, userId, username, userPhoto) => {
     console.log(`User with ID ${userId} (${username}) joined room ${roomName}`);
     try {
+      // const currentRoom = userRooms.get(socket.id)?.roomName;
+      // if (currentRoom) {
+      //   console.log(`выход из бекенда просходит прямо сейчас `);
+      //   await RoomService.leaveRoom(currentRoom, userId);
+      //   socket.leave(currentRoom);
+      //   io.to(currentRoom).emit("userLeft", { userId });
+      // }
+
       const room = await RoomService.joinRoom(roomName, userId);
       if (!room) {
         console.error("Error: Room not found or could not be created");
@@ -128,13 +136,25 @@ io.on("connection", (socket) => {
 
       io.to(roomName).emit("syncUsers");
 
-      const users = io.sockets.adapter.rooms.get(roomName); //WIR WAS roomId DAMN
+      const users = io.sockets.adapter.rooms.get(roomName); // was roomId
       console.log(users);
       if (users) {
         io.to(roomId).emit("NumberOfUsers", { len: users.size });
       }
     } catch (error: any) {
       console.error("Error joining room:", error.message);
+    }
+  });
+
+  socket.on("leave-room", async (roomName) => {
+    console.log(`User is leaving room ${roomName}`);
+    const userRoom = userRooms.get(socket.id);
+    if (userRoom) {
+      const { userId } = userRoom;
+      await RoomService.leaveRoom(roomName, userId);
+      socket.leave(roomName);
+      io.to(roomName).emit("userLeft", { userId });
+      userRooms.delete(socket.id);
     }
   });
 

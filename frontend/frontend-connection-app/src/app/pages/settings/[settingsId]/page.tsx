@@ -52,7 +52,6 @@ const Settings = () => {
     query: "(min-width: 768px)",
   });
 
-  const audioRef = useRef<HTMLAudioElement>(null);
   const fetchUsername = async (userId: string) => {
     try {
       const response = await axios.get(
@@ -86,7 +85,8 @@ const Settings = () => {
 
     const currentUserId = localStorage.getItem("userId");
     if (!currentUserId) {
-      router.push(`/pages/auth/${roomName}`);
+      //добавить проверку на существование юзера в базе данных
+      router.push(`/pages/auth/${roomName}`); //кажется не работает на деплой версии
       return;
     }
 
@@ -143,7 +143,13 @@ const Settings = () => {
 
   useEffect(() => {
     if (socket && roomName && username && userId && userPhoto) {
+      // const currentRoomName = localStorage.getItem("currentRoomName");
+      // if (currentRoomName && currentRoomName !== roomName) {
+      //   socket.emit("leave-room", currentRoomName);
+      // }
       socket.emit("join-room", roomName, userId, username, userPhoto);
+      localStorage.setItem("currentRoomName", roomName);
+
       socket.on("userJoined", (data) => {
         setJoinedUserArray((prevArray) => {
           const userExists = prevArray.some(
@@ -163,6 +169,12 @@ const Settings = () => {
           return prevArray;
         });
       });
+
+      // socket.emit("userLeftRoom", (userId, roomId,))
+
+      // socket.on("userLeft", (userId) => {
+      //   console.log(`выход произошел со стороны фронтенда!`);
+      // });
     }
   }, [socket, roomName, username, userId, userPhoto]);
 

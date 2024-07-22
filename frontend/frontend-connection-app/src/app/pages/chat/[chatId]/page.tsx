@@ -91,6 +91,7 @@ const Chat = () => {
   const [closeImmediately, setCloseImmediately] = useState(false);
   const [closeImmediatelySecond, setCloseImmediatelySecond] = useState(false);
   const [difficultyLevelState, setDifficultyLevelState] = useState("");
+  const difficultyLevelRef = useRef("");
   const [areaOfVocabState, setAreaOfVocabState] = useState("");
   const [isUserConnected, setIsUserConnected] = useState(false);
   const showAIconnectRef = useRef(false);
@@ -127,6 +128,19 @@ const Chat = () => {
     } catch (error) {
       console.error("Error fetching room details:", error);
       return null;
+    }
+  };
+
+  const timerAIresponse = (difficultyLevel: string) => {
+    switch (difficultyLevel) {
+      case "Hard":
+        return 1500;
+      case "Medium":
+        return 2500;
+      case "Easy":
+        return 4000;
+      default:
+        return 1500;
     }
   };
 
@@ -185,6 +199,7 @@ const Chat = () => {
               if (gameDetails) {
                 console.log(`GAME DIFFICULTY: ${gameDetails.difficultyLevel}`); //wfwf
                 setDifficultyLevelState(gameDetails.difficultyLevel);
+                difficultyLevelRef.current = gameDetails.difficultyLevel;
                 setAreaOfVocabState(gameDetails.areaOfVocab);
 
                 if (gameDetails.difficultyLevel === "No AI") {
@@ -236,13 +251,19 @@ const Chat = () => {
             socket.on("newMessage", async (data: any) => {
               console.log("New message received:", data);
               console.log(`Проверка - ${data.userId} отправитель сообщения`);
+              console.log(
+                `${difficultyLevelRef.current} - 2проверка на уровень сложности!!!!`
+              );
 
               const message = { ...data, isExpiring: false };
 
-              if (difficultyLevelState !== "No AI") {
+              if (difficultyLevelRef.current !== "No AI") {
                 setMessages((prevMessages) => [...prevMessages, message]);
                 console.log("WITH AI VERSION");
               } else {
+                console.log(
+                  `ВНИМАНИЕ! ПРОВЕРКА НА USER ID MODERATOR: ${data.userId} AND ${moderatorId}`
+                );
                 if (data.userId === moderatorId) {
                   setModeratorMessages((prevModeratorMessages) => [
                     ...prevModeratorMessages,
@@ -382,12 +403,14 @@ const Chat = () => {
                   .split(";")[1]
                   .trim();
 
+                console.log(`ПРОВЕРКА СЕКРЕТНОГО СЛОВА - ${secretWord}`);
+
                 socket.emit("sendModeratorWordGame", {
                   word: aiResponseWord,
                   roomName: roomName,
                   userName: "AI",
                   userPhoto: aiPhoto,
-                  secretWord: secretWord,
+                  secretWord: data.secretWord,
                 });
               } catch (error) {
                 console.error("Error handling connectToPlayersAI:", error);
@@ -404,34 +427,38 @@ const Chat = () => {
                 activeModal === null &&
                 !showAIconnectRef.current
               ) {
-                setShowNoContact(true);
-                setActiveModal("ModalConnectModeratorCase");
-
                 setTimeout(() => {
-                  setShowNoContact(false);
-                }, 2000);
+                  setShowNoContact(true);
+                  setActiveModal("ModalConnectModeratorCase");
 
-                if (askedUserId === userId) {
-                  setShowAskedUserSecond(true);
-                } else {
-                  setShowOtherUsersSecond(true);
-                }
+                  setTimeout(() => {
+                    setShowNoContact(false);
+                  }, 2000);
 
-                const extractedWord = aiResponse.split(";")[1]?.trim();
-                console.log(`${extractedWord} - фильтрованное слово`);
+                  if (askedUserId === userId) {
+                    setShowAskedUserSecond(true);
+                  } else {
+                    setShowOtherUsersSecond(true);
+                  }
 
-                if (socketRef.current) {
-                  socketRef.current.emit("sendModeratorWordGameSecond", {
-                    word: extractedWord,
-                    roomName: roomName,
-                    userName: "AI",
-                    userPhoto: aiPhoto,
-                    secretWord: secretWord,
-                  });
-                }
+                  const extractedWord = aiResponse.split(";")[1]?.trim();
 
-                console.log(`AI moderator lis: ${moderatorMessages}`);
-                console.log(`AI MESSAGE FROM FRONT 80%>: ${aiResponse}`);
+                  if (socketRef.current) {
+                    socketRef.current.emit("sendModeratorWordGameSecond", {
+                      word: extractedWord,
+                      roomName: roomName,
+                      userName: "AI",
+                      userPhoto: aiPhoto,
+                      secretWord: secretWord,
+                    });
+                  }
+
+                  console.log(`AI moderator lis: ${moderatorMessages}`);
+                  console.log(`AI MESSAGE FROM FRONT 80%>: ${aiResponse}`);
+                  console.log(
+                    `${difficultyLevelState} - проверка на уровень сложности!!!! 1`
+                  );
+                }, timerAIresponse(difficultyLevelState));
               } else {
                 console.log("showContact or activModal are not appropriate");
               }
@@ -709,7 +736,8 @@ const Chat = () => {
   const handleClickMessage = (message: any) => {
     if (message.userId !== userId) {
       setIsClicked(true);
-      if (difficultyLevelState === "No AI") {
+      console.log(`DIFFICULTY LEVEL FRONT - ${difficultyLevelRef.current}`); // ref
+      if (difficultyLevelRef.current === "No AI") {
         if (isClicked === true && socketRef.current && userId === moderatorId) {
           socketRef.current.emit("noConnectStarts", {
             roomId: roomId,
@@ -1037,11 +1065,19 @@ const Chat = () => {
               ))}
             </div>
             <div className="w-[120px] h-[120px] rounded-full bg-red-700">
-              {moderator && (
+              {difficultyLevelState === "No AI" ? (
+                moderator && (
+                  <img
+                    className="w-full h-full object-cover rounded-full"
+                    src={moderator.userPhoto}
+                    alt="Moderator"
+                  />
+                )
+              ) : (
                 <img
                   className="w-full h-full object-cover rounded-full"
-                  src={moderator.userPhoto}
-                  alt="Moderator"
+                  src={aiPhoto}
+                  alt="AI"
                 />
               )}
             </div>

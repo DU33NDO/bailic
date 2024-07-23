@@ -364,13 +364,13 @@ const Settings = () => {
       </div>
       <div className="flex text-black gap-4 justify-center mt-8">
         <button
-          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-[#d1382e] active:bg-[#b33027]"
+          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-[#d1382e] active:bg-[#b33027] hover:bg-[#FF0200]"
           onClick={handleCopyUrl}
         >
           Invite
         </button>
         <button
-          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-[#d1382e] active:bg-[#b33027]"
+          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-[#d1382e] active:bg-[#b33027] hover:bg-[#FF0200]"
           onClick={handlePlay}
         >
           Play

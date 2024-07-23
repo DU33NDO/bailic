@@ -177,7 +177,7 @@ const Auth: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-[150px] md:w-[250px] h-[40px] md:h-[50px] bg-[#BA3B3A] rounded-xl text-center px-6 py-2 text-lg  md:text-3xl hover:bg-[#FF0200] relative"
+                className="w-[150px] md:w-[250px] h-[40px] md:h-[50px] bg-[#F24236] rounded-xl text-center px-6 py-2 text-lg  md:text-3xl hover:bg-red-700 relative"
               >
                 Начать
               </button>

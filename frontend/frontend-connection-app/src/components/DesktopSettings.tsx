@@ -40,7 +40,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
   }, [setAudioSource]);
 
   const handleBackClick = () => {
-    window.location.href = `/pages/auth/${roomName}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_FRONTEND_URL}`;
   };
 
   const defaultStyle = { fontSize: "18px", color: "gray", fontWeight: "400" };
@@ -110,13 +110,13 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
       </div>
       <div className="flex text-black gap-4 justify-center mt-8">
         <button
-          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white"
+          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-red-700"
           onClick={handleCopyUrl}
         >
           Invite
         </button>
         <button
-          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white"
+          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-red-700"
           onClick={handlePlay}
         >
           Play

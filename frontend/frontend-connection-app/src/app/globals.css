@@ -19,6 +19,11 @@
   }
 }
 
+/* .scaled-down {
+  transform: scale(0.7);
+  transform-origin: left;
+} */
+
 body {
   color: rgb(var(--foreground-rgb));
   background: #fff9e3;

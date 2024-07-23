@@ -14,14 +14,15 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       boxShadow: {
-        'custom': '4px 0px 66px 0px rgba(0, 0, 0, 0.2)',
+        custom: "4px 0px 66px 0px rgba(0, 0, 0, 0.2)",
+        "custom-hover": "0px 0px 55px 26px rgba(255, 90, 0, 0.2)",
       },
     },
   },
   plugins: [],
   variants: {
     extend: {
-      boxShadow: ['focus'],
+      boxShadow: ["focus"],
     },
   },
 };

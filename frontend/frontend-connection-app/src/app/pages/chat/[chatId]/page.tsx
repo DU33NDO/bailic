@@ -913,6 +913,32 @@ const Chat = () => {
     }
   };
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    const handleUnload = () => {
+      localStorage.setItem("reloading", "true");
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("unload", handleUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("unload", handleUnload);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (localStorage.getItem("reloading") === "true") {
+      localStorage.removeItem("reloading");
+      window.location.href = `${process.env.NEXT_PUBLIC_FRONTEND_URL}`;
+    }
+  }, []);
+
   return (
     <div className="px-5 md:px-20 md:py-0">
       {showModeratorModal && moderator && (

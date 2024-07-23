@@ -72,6 +72,56 @@ const AreaVocab = ({ setSelectedOptionAreaVocab }: any) => {
           <p className="text-black">Description of this mode</p>
         </div>
       </div>
+      {/* <div
+        className={getDivClasses("Travel")}
+        onClick={() => handleSelect("Travel")}
+      >
+        <img src="/photos/music_vocab.svg" className="rounded-xl" alt="" />
+        <div className="flex flex-col gap-2 ">
+          <p className="text-black font-bold text-2xl">Travel</p>
+          <p className="text-black">Description of this mode</p>
+        </div>
+      </div>
+      <div
+        className={getDivClasses("Health")}
+        onClick={() => handleSelect("Health")}
+      >
+        <img src="/photos/music_vocab.svg" className="rounded-xl" alt="" />
+        <div className="flex flex-col gap-2 ">
+          <p className="text-black font-bold text-2xl">Health</p>
+          <p className="text-black">Description of this mode</p>
+        </div>
+      </div>
+      <div
+        className={getDivClasses("Medicine")}
+        onClick={() => handleSelect("Medicine")}
+      >
+        <img src="/photos/music_vocab.svg" className="rounded-xl" alt="" />
+        <div className="flex flex-col gap-2 ">
+          <p className="text-black font-bold text-2xl">Medicine</p>
+          <p className="text-black">Description of this mode</p>
+        </div>
+      </div>
+      <div
+        className={getDivClasses("business")}
+        onClick={() => handleSelect("business")}
+      >
+        <img src="/photos/music_vocab.svg" className="rounded-xl" alt="" />
+        <div className="flex flex-col gap-2 ">
+          <p className="text-black font-bold text-2xl">Business</p>
+          <p className="text-black">Description of this mode</p>
+        </div>
+      </div>
+      <div
+        className={getDivClasses("fashion")}
+        onClick={() => handleSelect("fashion")}
+      >
+        <img src="/photos/music_vocab.svg" className="rounded-xl" alt="" />
+        <div className="flex flex-col gap-2 ">
+          <p className="text-black font-bold text-2xl">Fashion</p>
+          <p className="text-black">Description of this mode</p>
+        </div>
+      </div> */}
     </div>
   );
 };

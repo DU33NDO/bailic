@@ -36,7 +36,7 @@ const ImageTextSlider = () => {
       header: "6. ОБРЫВАЙ КОНТАКТ",
     },
     {
-      image: "/slider/7.jpg",
+      image: "/slider/8.png",
       text: "Игра заканчивается, когда игроки поймут слово ведущего",
       header: "7. ПОБЕДА",
     },

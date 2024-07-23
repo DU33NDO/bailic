@@ -20,6 +20,7 @@ interface DesktopSettingsProps {
   setSelectedOptionAreaVocab: (option: any) => void;
   setSelectedOptionDifficulty: (option: any) => void;
   roomName: string;
+  hostId: any;
 }
 
 const DesktopSettings: React.FC<DesktopSettingsProps> = ({
@@ -32,6 +33,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
   setSelectedOptionAreaVocab,
   setSelectedOptionDifficulty,
   roomName,
+  hostId,
 }) => {
   const { isPlaying, toggleAudio, setAudioSource } = useAudio();
 
@@ -66,6 +68,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
         <UsersTopDesktop
           combinedUsers={combinedUsers}
           handleCopyUrl={handleCopyUrl}
+          hostId={hostId}
         />
         <div className="w-[60%] h-[70%] bg-[#E9DED9] overflow-auto rounded-xl overflow-x-hidden">
           <div className="flex justify-between sticky top-0 bg-[#E9DED9] z-10 ">

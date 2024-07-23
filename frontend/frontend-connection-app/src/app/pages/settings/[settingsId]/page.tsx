@@ -235,32 +235,45 @@ const Settings = () => {
       alert("Only the host can start the game.");
       return;
     }
-    if (socket) {
-      try {
-        setLoading(true); // LOADING
-        socket.emit("loadingTrue", roomName);
-        await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/game/create`, {
-          difficultyLevel: selectedOptionDifficulty,
-          areaOfVocab: selectedOptionAreaVocab,
-          roomId: roomId,
-          roomName: roomName,
-        });
+    if (socket && selectedOptionDifficulty) {
+      if (
+        (selectedOptionDifficulty !== "No AI" &&
+          selectedOptionAreaVocab !== "") ||
+        selectedOptionDifficulty === "No AI"
+      ) {
+        try {
+          setLoading(true); // LOADING
+          socket.emit("loadingTrue", roomName);
+          await axios.post(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/game/create`,
+            {
+              difficultyLevel: selectedOptionDifficulty,
+              areaOfVocab: selectedOptionAreaVocab,
+              roomId: roomId,
+              roomName: roomName,
+            }
+          );
 
-        const moderatorResponse = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/game/set-moderator`,
-          {
-            roomId: roomId,
-          }
-        );
+          const moderatorResponse = await axios.post(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/game/set-moderator`,
+            {
+              roomId: roomId,
+            }
+          );
 
-        const moderator = moderatorResponse.data;
+          const moderator = moderatorResponse.data;
 
-        socket.emit("play-game", roomName, `/pages/chat/${roomName}`);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error during game setup:", error);
-        setLoading(false);
+          socket.emit("play-game", roomName, `/pages/chat/${roomName}`);
+          setLoading(false);
+        } catch (error) {
+          console.error("Error during game setup:", error);
+          setLoading(false);
+        }
+      } else {
+        alert("Выбери область загадывания слова");
       }
+    } else {
+      alert("Выбери уровень сложности!");
     }
   };
 
@@ -312,6 +325,7 @@ const Settings = () => {
             setSelectedOptionAreaVocab={setSelectedOptionAreaVocab}
             setSelectedOptionDifficulty={setSelectedOptionDifficulty}
             roomName={roomName}
+            hostId={hostId}
           />
         </div>
       </div>

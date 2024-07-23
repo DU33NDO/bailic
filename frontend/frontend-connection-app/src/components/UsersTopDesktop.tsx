@@ -20,11 +20,13 @@ interface UserW {
 interface UserListProps {
   combinedUsers: User[];
   handleCopyUrl: any;
+  hostId: any;
 }
 
 const UserList: React.FC<UserListProps> = ({
   combinedUsers,
   handleCopyUrl,
+  hostId,
 }) => {
   return (
     <div className="w-[40%] bg-[#E9DED9] px-6 py-4 pb-6 rounded-2xl">
@@ -60,6 +62,13 @@ const UserList: React.FC<UserListProps> = ({
               <p className="text-xl font-bold">
                 {user.userName || user.username}
               </p>
+              {/* {hostId && (
+                <img
+                  src="/photos/crown.png"
+                  className="w-7 right-8 absolute"
+                  alt=""
+                />
+              )} */}
             </div>
           ))}
         </div>

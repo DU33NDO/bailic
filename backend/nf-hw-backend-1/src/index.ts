@@ -185,6 +185,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on(
+    // пометка имбуличка
     "sendMessage",
     async (message, roomName, secretWord, countLetter) => {
       const userRoom = userRooms.get(socket.id);
@@ -195,6 +196,7 @@ io.on("connection", (socket) => {
       const { room, userId } = userRoom;
 
       try {
+        console.log(`MESSAGE SAVES In`);
         const newMessage = new Message({
           roomId: room,
           userId: message.userId,
@@ -256,8 +258,17 @@ io.on("connection", (socket) => {
     io.to(roomName).emit("start-game", url);
   });
 
+  socket.on("play-gameChat", (roomName, url) => {
+    console.log(`Starting game in room ${roomName}; url: ${url}`);
+    io.to(roomName).emit("start-gameChat", url);
+  });
+
   socket.on("loadingTrue", (roomName) => {
     io.to(roomName).emit("loadingEveryone");
+  });
+
+  socket.on("loadingTrueChat", (roomName) => {
+    io.to(roomName).emit("loadingEveryoneChat");
   });
 
   socket.on("secretWord", (data) => {
@@ -354,11 +365,28 @@ io.on("connection", (socket) => {
     checkAndEmitGameDataSecond(io, socket, data.roomName);
   });
 
-  socket.on("gameContinue", (roomName) => {
-    io.to(roomName).emit("continueToAll");
+  socket.on("gameContinue", async (roomName, roomId) => {
+    try {
+      await Message.deleteMany({ roomId: roomId });
+      console.log(
+        `All messages deleted for room: ${roomName}б and roomId ${roomId}`
+      );
+    } catch (error) {
+      console.error(`Error deleting messages for room ${roomName}:`, error);
+    }
+
+    io.to(roomName).emit("continueToAll", roomName);
   });
 
-  socket.on("exitToSettings", (roomName) => {
+  socket.on("exitToSettings", async (roomName, roomId) => {
+    try {
+      await Message.deleteMany({ roomId: roomId });
+      console.log(
+        `All messages deleted for room: ${roomName}б and roomId ${roomId}`
+      );
+    } catch (error) {
+      console.error(`Error deleting messages for room ${roomName}:`, error);
+    }
     io.to(roomName).emit("exitToAll", roomName);
   });
 

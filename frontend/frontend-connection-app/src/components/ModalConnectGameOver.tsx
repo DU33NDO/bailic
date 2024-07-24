@@ -8,6 +8,7 @@ interface ModalConnectGameOverProps {
   roomName: string;
   isHost: boolean;
   socket: Socket | null;
+  roomId: any;
 }
 
 const ModalConnectGameOver: React.FC<ModalConnectGameOverProps> = ({
@@ -16,19 +17,20 @@ const ModalConnectGameOver: React.FC<ModalConnectGameOverProps> = ({
   roomName,
   isHost,
   socket,
+  roomId,
 }) => {
   const router = useRouter();
 
   const handleContinue = () => {
     if (socket) {
-      socket.emit("gameContinue", roomName);
+      socket.emit("gameContinue", roomName, roomId);
     }
     onContinue();
   };
 
   const handleExitToSettings = () => {
     if (socket) {
-      socket.emit("exitToSettings", roomName);
+      socket.emit("exitToSettings", roomName, roomId);
     }
   };
 

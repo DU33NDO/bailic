@@ -96,6 +96,7 @@ const Chat = () => {
   const [isUserConnected, setIsUserConnected] = useState(false);
   const [showAIconnect, setShowAIconnect] = useState(false);
   const showAIconnectRef = useRef(false);
+  const moderatorIDRef = useRef("");
 
   const aiPhoto = "/avatar/aiPhoto.jpg";
   const router = useRouter();
@@ -109,14 +110,14 @@ const Chat = () => {
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
     const storedRoomId = localStorage.getItem("roomId");
-    const storedModeratorId = localStorage.getItem("moderatorId");
+    // const storedModeratorId = localStorage.getItem("moderatorId");
     const storedSecretWord = localStorage.getItem("secretWord");
     const storedHostId = localStorage.getItem("hostId");
 
     if (storedUserId) setUserId(storedUserId);
     if (storedRoomId) setRoomId(storedRoomId);
     if (storedHostId) setHostId(storedHostId);
-    if (storedModeratorId) setModeratorId(storedModeratorId);
+    // if (storedModeratorId) setModeratorId(storedModeratorId);
     if (storedSecretWord) setSecretWord(storedSecretWord.toLowerCase());
   }, []);
 
@@ -229,6 +230,10 @@ const Chat = () => {
                             res.data.user._id
                           );
                           setModeratorId(res.data.user._id);
+                          moderatorIDRef.current = res.data.user._id;
+                          console.log(
+                            `ПРОВЕРКА ВЕДУЩЕГО - ${moderatorId};;; ${moderatorIDRef.current}`
+                          );
                           setShowModeratorModal(true);
                         });
                     });
@@ -265,7 +270,10 @@ const Chat = () => {
                 console.log(
                   `ВНИМАНИЕ! ПРОВЕРКА НА USER ID MODERATOR: ${data.userId} AND ${moderatorId}`
                 );
-                if (data.userId === moderatorId) {
+                if (
+                  // data.userId === moderatorId ||
+                  data.userId === moderatorIDRef.current
+                ) {
                   setModeratorMessages((prevModeratorMessages) => [
                     ...prevModeratorMessages,
                     message,
@@ -525,6 +533,8 @@ const Chat = () => {
                 ) {
                   setIsGameWonByUsers(true);
                   console.log(`Game is over congr`);
+                  localStorage.removeItem("secretWord");
+                  localStorage.removeItem("moderatorId");
                 }
               } else if (
                 data.askedWord.toLowerCase() ===
@@ -578,15 +588,7 @@ const Chat = () => {
               if (
                 data.askedWord.toLowerCase() === data.secretWord.toLowerCase()
               ) {
-                if (
-                  data.askedWord.toLowerCase() ===
-                  data.moderatorWord.toLowerCase()
-                ) {
-                  console.log(`АГА связи не будет`);
-                  console.log(`STORED WORDS: ${storedWords}`);
-                } else {
-                  console.log(`о нет хост не так подумал(`);
-                }
+                setIsGameWonByUsers(true); // переделал для Германа
               } else if (
                 (data.askedWord.toLowerCase() !== data.secretWord.toLowerCase(),
                 data.askedWord.toLowerCase() ===
@@ -603,11 +605,13 @@ const Chat = () => {
               }
             });
 
-            socket.on("continueToAll", () => {
+            socket.on("continueToAll", (roomName) => {
               console.log(`socket reload from front to front??`);
               localStorage.removeItem("secretWord");
 
-              window.location.reload();
+              router.push(`/pages/settings/${roomName}`);
+
+              // window.location.reload();
             });
 
             socket.on("exitToAll", (roomName) => {
@@ -1068,6 +1072,7 @@ const Chat = () => {
           onClose={closeIsGameOver}
           onContinue={handleGameContinue}
           roomName={roomName}
+          roomId={roomId}
           isHost={userId === hostId}
           socket={socketRef.current}
         />

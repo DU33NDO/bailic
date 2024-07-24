@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 interface ModalResultsProps {
   moderatorUsername: string;
@@ -21,6 +21,14 @@ const ModalResults: React.FC<ModalResultsProps> = ({
   targetWord,
   onClose,
 }) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 py-5 px-3 z-50"

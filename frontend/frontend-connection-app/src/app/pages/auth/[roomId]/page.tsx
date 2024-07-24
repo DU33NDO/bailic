@@ -191,7 +191,7 @@ const Auth: React.FC = () => {
               <button
                 type="submit"
                 onClick={trackButtonClick}
-                className="w-[150px] md:w-[250px] h-[40px] md:h-[50px] bg-[#F24236] rounded-xl text-center px-6 py-2 text-lg  md:text-3xl hover:bg-red-700 relative"
+                className="w-[150px] md:w-[250px] h-[50px] md:h-[70px] bg-[#F24236] rounded-xl text-center font-bold px-6 py-2 text-xl  md:text-3xl hover:bg-red-700 relative"
               >
                 Начать
               </button>

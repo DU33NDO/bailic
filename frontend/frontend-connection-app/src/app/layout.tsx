@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Head from "next/head";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AudioProvider } from "@/context/AudioContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: any = {
+export const metadata: Metadata = {
   title: "BaiLic",
   description: "Connect People",
 };
@@ -20,13 +20,24 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Head>
-        <title>{metadata.title}</title>
-        <meta name="description" content={metadata.description} />
-      </Head>
+      <head>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=G-LJJPTGCY1M`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-LJJPTGCY1M');
+          `}
+        </Script>
+      </head>
       <body className={inter.className}>
         <AudioProvider>{children}</AudioProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

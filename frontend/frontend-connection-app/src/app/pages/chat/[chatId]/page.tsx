@@ -94,6 +94,7 @@ const Chat = () => {
   const difficultyLevelRef = useRef("");
   const [areaOfVocabState, setAreaOfVocabState] = useState("");
   const [isUserConnected, setIsUserConnected] = useState(false);
+  const [showAIconnect, setShowAIconnect] = useState(false);
   const showAIconnectRef = useRef(false);
 
   const aiPhoto = "/avatar/aiPhoto.jpg";
@@ -359,6 +360,7 @@ const Chat = () => {
 
             socket.on("connectToPlayersAI", async (data) => {
               showAIconnectRef.current = true;
+              setShowAIconnect(true);
               // имбуличка 3
               try {
                 setShowContact(true);
@@ -417,51 +419,64 @@ const Chat = () => {
               }
             });
 
+            socket.on("receiveConnectionAITrue", (data) => {
+              console.log(`ДА! ПРИШЛО ОПОВЕЩЕНИЕ О ПРИБЫТИИ КЛИКА`);
+              showAIconnectRef.current = true;
+              setShowAIconnect(true);
+            });
+
             socket.on("AI_action", (aiResponse: any, askedUserId: any) => {
-              // щас будет имбуличка
-              console.log(
-                `ПРОВЕРКА ${showContact}; showAIconnectRef - ${showAIconnectRef.current}`
-              );
-              if (
-                !showContact &&
-                activeModal === null &&
-                !showAIconnectRef.current
-              ) {
-                setTimeout(() => {
-                  setShowNoContact(true);
-                  setActiveModal("ModalConnectModeratorCase");
-
+              setTimeout(() => {
+                console.log(
+                  `ПРОВЕРКА ${showContact}; showAIconnectRef - ${showAIconnectRef.current}, ${activeModal} - ACTIVE MODAL`
+                );
+                if (
+                  !showContact && // не получается имбуличка
+                  activeModal === null &&
+                  !showAIconnectRef.current
+                  // || (!showAIconnect && activeModal === null && !showContact)
+                ) {
                   setTimeout(() => {
-                    setShowNoContact(false);
-                  }, 2000);
+                    setShowNoContact(true);
+                    setActiveModal("ModalConnectModeratorCase");
 
-                  if (askedUserId === userId) {
-                    setShowAskedUserSecond(true);
-                  } else {
-                    setShowOtherUsersSecond(true);
-                  }
+                    setTimeout(() => {
+                      setShowNoContact(false);
+                    }, 2000);
 
+                    if (askedUserId === userId) {
+                      setShowAskedUserSecond(true);
+                    } else {
+                      setShowOtherUsersSecond(true);
+                    }
+
+                    const extractedWord = aiResponse.split(";")[1]?.trim();
+
+                    if (socketRef.current) {
+                      socketRef.current.emit("sendModeratorWordGameSecond", {
+                        word: extractedWord,
+                        roomName: roomName,
+                        userName: "AI",
+                        userPhoto: aiPhoto,
+                        secretWord: secretWord,
+                      });
+                    }
+
+                    console.log(`AI moderator lis: ${moderatorMessages}`);
+                    console.log(`AI MESSAGE FROM FRONT 80%>: ${aiResponse}`);
+                    console.log(
+                      `${difficultyLevelState} - проверка на уровень сложности!!!! 1`
+                    );
+                  }, timerAIresponse(difficultyLevelRef.current)); //changed
+                } else {
                   const extractedWord = aiResponse.split(";")[1]?.trim();
-
-                  if (socketRef.current) {
-                    socketRef.current.emit("sendModeratorWordGameSecond", {
-                      word: extractedWord,
-                      roomName: roomName,
-                      userName: "AI",
-                      userPhoto: aiPhoto,
-                      secretWord: secretWord,
-                    });
-                  }
-
-                  console.log(`AI moderator lis: ${moderatorMessages}`);
-                  console.log(`AI MESSAGE FROM FRONT 80%>: ${aiResponse}`);
                   console.log(
-                    `${difficultyLevelState} - проверка на уровень сложности!!!! 1`
+                    `${extractedWord} - должно было разорвать контакт с этим словом`
                   );
-                }, timerAIresponse(difficultyLevelState));
-              } else {
-                console.log("showContact or activModal are not appropriate");
-              }
+                  console.log("showContact or activModal are not appropriate");
+                  aiResponse = null;
+                }
+              }, 3000);
             });
 
             // socket.on("DeleteMessage", (targetMessage) => {
@@ -736,7 +751,7 @@ const Chat = () => {
   const handleClickMessage = (message: any) => {
     if (message.userId !== userId) {
       setIsClicked(true);
-      console.log(`DIFFICULTY LEVEL FRONT - ${difficultyLevelRef.current}`); // ref
+      // console.log(`DIFFICULTY LEVEL FRONT - ${difficultyLevelRef.current}`); // ref
       if (difficultyLevelRef.current === "No AI") {
         if (isClicked === true && socketRef.current && userId === moderatorId) {
           socketRef.current.emit("noConnectStarts", {
@@ -763,11 +778,12 @@ const Chat = () => {
         }
       } else {
         if (isClicked && socketRef.current) {
-          // даже не приходит сюда
           //имбуличка
+          showAIconnectRef.current = true;
+          setShowAIconnect(true);
+          socketRef.current.emit("ConnectAITrue", roomName);
           setActiveModal("ModalConnectPopUp");
           setShowContact(true);
-          showAIconnectRef.current = true;
           // setHasShownConnectPopUp(true);
           console.log(
             `ASKEDUSER AI - ${message.userId}, CLICKED USED AI - ${userId}; secretWord: ${secretWord}; countLetter: ${countLetter}; showContact - ${showContact}`
@@ -819,8 +835,10 @@ const Chat = () => {
     setCloseImmediately(false);
     setIsUserConnected(false);
     setIsClicked(false);
-    showAIconnectRef.current = false; //проверка имбулички
-    // setShowAIconnect(false);
+    setTimeout(() => {
+      // showAIconnectRef.current = false;
+      setShowAIconnect(false); // Если нужно обновить состояние
+    }, 3000); // проверка имбулички
   };
 
   const handleCloseModalAllWordsSecond = () => {

@@ -10,6 +10,7 @@ import axios from "axios";
 import LoadingScreen from "@/components/LoadingScreen";
 import DesktopSettings from "@/components/DesktopSettings";
 import { useMediaQuery } from "react-responsive";
+import ReactGA from "react-ga";
 
 interface User {
   userId: string | null;
@@ -178,6 +179,17 @@ const Settings = () => {
     }
   }, [socket, roomName, username, userId, userPhoto]);
 
+  useEffect(() => {
+    ReactGA.initialize("G-LJJPTGCY1M");
+  }, []);
+
+  const trackButtonClick = () => {
+    ReactGA.event({
+      category: "User",
+      action: "Clicked Play Button",
+    });
+  };
+
   const fetchRoomDetails = async () => {
     if (roomId) {
       try {
@@ -242,6 +254,7 @@ const Settings = () => {
         selectedOptionDifficulty === "No AI"
       ) {
         try {
+          trackButtonClick();
           setLoading(true); // LOADING
           socket.emit("loadingTrue", roomName);
           await axios.post(

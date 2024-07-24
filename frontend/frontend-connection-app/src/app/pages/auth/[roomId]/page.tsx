@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from "uuid";
 import LoadingScreen from "@/components/LoadingScreen";
 import ImageTextSlider from "@/components/ImageSlider";
 import ModalShowRules from "@/components/ModalShowRules";
+import ReactGA from "react-ga";
 
 const Auth: React.FC = () => {
   const isDesktop = useMediaQuery({ minWidth: 768 });
@@ -59,8 +60,20 @@ const Auth: React.FC = () => {
     generateRoomId();
   }, []);
 
+  useEffect(() => {
+    ReactGA.initialize("G-LJJPTGCY1M");
+  }, []);
+
+  const trackButtonClick = () => {
+    ReactGA.event({
+      category: "User",
+      action: "Clicked Start Button",
+    });
+  };
+
   const onSubmitAuth = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    trackButtonClick();
     const form = event.currentTarget;
     const data = new FormData(form);
     const username = data.get("username") as string;
@@ -177,6 +190,7 @@ const Auth: React.FC = () => {
 
               <button
                 type="submit"
+                onClick={trackButtonClick}
                 className="w-[150px] md:w-[250px] h-[40px] md:h-[50px] bg-[#F24236] rounded-xl text-center px-6 py-2 text-lg  md:text-3xl hover:bg-red-700 relative"
               >
                 Начать

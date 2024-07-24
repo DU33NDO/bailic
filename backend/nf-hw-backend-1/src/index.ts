@@ -233,6 +233,10 @@ io.on("connection", (socket) => {
     }
   );
 
+  socket.on("ConnectAITrue", (roomName) => {
+    io.to(roomName).emit("receiveConnectionAITrue");
+  });
+
   const handleAIResponse = (aiResponse, roomName, askedUserId) => {
     console.log("AI answer received:", aiResponse);
     const confidenceMatch = aiResponse

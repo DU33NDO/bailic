@@ -11,6 +11,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "BaiLic",
   description: "Connect People",
+  // icons: {
+  //   icon: "/favicon.ico",
+  // },
 };
 
 export default function RootLayout({
@@ -21,7 +24,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico" />
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=G-LJJPTGCY1M`}
           strategy="afterInteractive"

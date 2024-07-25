@@ -17,7 +17,7 @@ import ModalShowRules from "@/components/ModalShowRules";
 import ReactGA from "react-ga";
 
 const Auth: React.FC = () => {
-  const isDesktop = useMediaQuery({ minWidth: 768 });
+  const isDesktop = useMediaQuery({ minWidth: 1530 });
   const router = useRouter();
   const [userPhoto, setUserPhoto] = useState<string>("/avatar/userPhoto.jpg");
   const [roomId, setRoomId] = useState<string>("");
@@ -90,6 +90,10 @@ const Auth: React.FC = () => {
       console.log("Success:", response.data);
       localStorage.setItem("userId", response.data.userId);
       localStorage.setItem("hostId", response.data.userId);
+
+      if (roomName) {
+        localStorage.removeItem("hostId");
+      }
 
       const redirectTo =
         roomName === ""

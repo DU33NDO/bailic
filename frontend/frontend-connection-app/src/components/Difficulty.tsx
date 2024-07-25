@@ -9,7 +9,7 @@ const Difficulty = ({ setSelectedOptionDifficulty }: any) => {
   };
 
   const getDivClasses = (option: string) => {
-    return `flex gap-6 px-2 py-4 w-full justify-center items-center rounded-xl cursor-pointer ${
+    return `flex gap-6 px-8 py-4 w-full justify-start items-center rounded-xl cursor-pointer ${
       selected === option
         ? "bg-[#E1E1E1] border-solid border-2 border-[#E78173]"
         : "bg-white hover:bg-[#E1E1E1]"
@@ -29,7 +29,7 @@ const Difficulty = ({ setSelectedOptionDifficulty }: any) => {
         />
         <div className="flex flex-col gap-2">
           <p className="text-black font-bold text-2xl">Easy</p>
-          <p className="text-black">Description of this mode</p>
+          <p className="text-black">AI mode</p>
         </div>
       </div>
       <div
@@ -43,7 +43,7 @@ const Difficulty = ({ setSelectedOptionDifficulty }: any) => {
         />
         <div className="flex flex-col gap-2">
           <p className="text-black font-bold text-2xl">Medium</p>
-          <p className="text-black">Description of this mode</p>
+          <p className="text-black">AI mode</p>
         </div>
       </div>
       <div
@@ -57,7 +57,7 @@ const Difficulty = ({ setSelectedOptionDifficulty }: any) => {
         />
         <div className="flex flex-col gap-2">
           <p className="text-black font-bold text-2xl">Hard</p>
-          <p className="text-black">Description of this mode</p>
+          <p className="text-black">AI mode</p>
         </div>
       </div>
       <div
@@ -71,7 +71,7 @@ const Difficulty = ({ setSelectedOptionDifficulty }: any) => {
         />
         <div className="flex flex-col gap-2">
           <p className="text-black font-bold text-2xl">No AI</p>
-          <p className="text-black">Description of this mode</p>
+          <p className="text-black">without AI</p>
         </div>
       </div>
       <div className="hidden md:block"></div>

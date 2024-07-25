@@ -17,7 +17,7 @@ const Difficulty = ({ setSelectedOptionDifficulty }: any) => {
   };
 
   return (
-    <div className="flex flex-col gap-6 items-center mt-8 mb-6 md:grid md:grid-cols-2 md:grid-rows-[repeat(6,auto)] md:gap-6 md:h-auto px-6">
+    <div className="flex flex-col gap-6 items-center mt-8 mb-6 lg:grid lg:grid-cols-2 lg:grid-rows-[repeat(6,auto)] lg:gap-6 lg:h-auto px-6">
       <div
         className={getDivClasses("Easy")}
         onClick={() => handleSelect("Easy")}

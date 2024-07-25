@@ -351,7 +351,7 @@ const Settings = () => {
 
   if (isDesktopOrLaptop && active) {
     return (
-      <div className="px-5 py-3 h-screen md:px-64 md:mt-8">
+      <div className="px-5 py-3 h-screen lg:px-32 md:px-32 lg:mt-8 md:mt-8">
         {loading && <LoadingScreen />}
         <div className="border-solid border-black border-2">
           <DesktopSettings
@@ -372,7 +372,7 @@ const Settings = () => {
   }
 
   return (
-    <div className="px-5 py-3 h-screen md:px-64 md:mt-8">
+    <div className="px-5 py-3 h-screen lg:px-32 md:px-32 lg:mt-8 md:mt-8">
       {loading && <LoadingScreen />}
       <UsersTop combinedUsers={combinedUsers} />
       <div className="w-[100%] h-[70%] bg-[#E9DED9] mt-10 overflow-auto rounded-xl overflow-x-hidden">

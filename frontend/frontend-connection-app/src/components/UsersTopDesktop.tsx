@@ -62,13 +62,13 @@ const UserList: React.FC<UserListProps> = ({
               <p className="text-xl font-bold">
                 {user.userName || user.username}
               </p>
-              {hostId && (
+              {/* {hostId && (
                 <img
                   src="/photos/crown.png"
                   className="w-7 right-8 absolute"
                   alt=""
                 />
-              )}
+              )} */}
             </div>
           ))}
         </div>

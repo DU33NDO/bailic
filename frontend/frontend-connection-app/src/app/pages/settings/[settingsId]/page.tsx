@@ -48,6 +48,7 @@ const Settings = () => {
   const [hostId, setHostId] = useState("");
   const [loading, setLoading] = useState<boolean>(true);
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [combinedUsers, setCombinedUsers] = useState<any>([]);
 
   const isDesktopOrLaptop = useMediaQuery({
     query: "(min-width: 768px)",
@@ -87,7 +88,7 @@ const Settings = () => {
     const currentUserId = localStorage.getItem("userId");
     if (!currentUserId) {
       //добавить проверку на существование юзера в базе данных
-      router.push(`/pages/auth/${roomName}`); //кажется не работает на деплой версии
+      router.push(`/pages/auth/${roomName}`);
       return;
     }
 
@@ -171,11 +172,32 @@ const Settings = () => {
         });
       });
 
-      // socket.emit("userLeftRoom", (userId, roomId,))
+      socket.on("userLeft", (data) => {
+        console.log("ПОЛЬЗОВАТЕЛЬ ВЫШЕЛ!!!");
+        setJoinedUserArray((prevArray) => {
+          const index = prevArray.findIndex(
+            (user) => user.userId === data || user._id === data
+          );
+          if (index !== -1) {
+            const newArray = [...prevArray];
+            newArray.splice(index, 1);
+            return newArray;
+          }
+          return prevArray;
+        });
 
-      // socket.on("userLeft", (userId) => {
-      //   console.log(`выход произошел со стороны фронтенда!`);
-      // });
+        setWaitingUsers((prevArray) => {
+          const index = prevArray.findIndex(
+            (user) => user.userId === data || user._id === data
+          );
+          if (index !== -1) {
+            const newArray = [...prevArray];
+            newArray.splice(index, 1);
+            return newArray;
+          }
+          return prevArray;
+        });
+      });
     }
   }, [socket, roomName, username, userId, userPhoto]);
 
@@ -238,13 +260,17 @@ const Settings = () => {
     }
   }, [socket]);
 
-  console.log(
-    `Difficulty: ${selectedOptionDifficulty}, areaOfVocab: ${selectedOptionAreaVocab}`
-  );
+  useEffect(() => {
+    const combinedUsersMap = new Map();
+    [...waitingUsers, ...joinedUserArray].forEach((user) => {
+      combinedUsersMap.set(user.userId || user._id, user);
+    });
+    setCombinedUsers(Array.from(combinedUsersMap.values()));
+  }, [waitingUsers, joinedUserArray]);
 
   const handlePlay = async () => {
     if (userId !== hostId) {
-      alert("Only the host can start the game.");
+      alert("Только хост может начать игру!");
       return;
     }
     if (socket && selectedOptionDifficulty) {
@@ -305,11 +331,11 @@ const Settings = () => {
     );
   };
 
-  const combinedUsersMap = new Map();
-  [...waitingUsers, ...joinedUserArray].forEach((user) => {
-    combinedUsersMap.set(user.userId || user._id, user);
-  });
-  const combinedUsers = Array.from(combinedUsersMap.values());
+  // const combinedUsersMap = new Map();
+  // [...waitingUsers, ...joinedUserArray].forEach((user) => {
+  //   combinedUsersMap.set(user.userId || user._id, user);
+  // });
+  // const combinedUsers = Array.from(combinedUsersMap.values());
 
   useEffect(() => {
     const currentRoomName = localStorage.getItem("currentRoomName");

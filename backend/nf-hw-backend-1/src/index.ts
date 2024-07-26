@@ -196,7 +196,6 @@ io.on("connection", (socket) => {
       const { room, userId } = userRoom;
 
       try {
-        console.log(`MESSAGE SAVES In`);
         const newMessage = new Message({
           roomId: room,
           userId: message.userId,
@@ -390,12 +389,22 @@ io.on("connection", (socket) => {
     io.to(roomName).emit("exitToAll", roomName);
   });
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     console.log("user disconnected");
     const userRoom = userRooms.get(socket.id);
+
     if (userRoom) {
-      const { room, userId } = userRoom;
-      socket.to(room).emit("userLeft", userId);
+      const { roomName, userId } = userRoom;
+
+      try {
+        const updatedRoom = await RoomService.leaveRoom(roomName, userId);
+        if (updatedRoom) {
+          io.to(roomName).emit("userLeft", userId);
+        }
+      } catch (error) {
+        console.error("Error leaving room:", error);
+      }
+
       userRooms.delete(socket.id);
     }
   });

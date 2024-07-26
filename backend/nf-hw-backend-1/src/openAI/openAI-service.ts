@@ -52,7 +52,11 @@ class OpenAIservice {
         temperature: temperature,
       });
 
-      return aiResponse.choices[0].message.content.trim();
+      let content = aiResponse.choices[0].message.content.trim();
+      if (content.endsWith(".")) {
+        content = content.slice(0, -1);
+      }
+      return content;
     } catch (error) {
       console.error("Error with OpenAI API:", error);
       throw error;
@@ -107,7 +111,11 @@ class OpenAIservice {
         temperature: temperature,
       });
 
-      return aiResponse.choices[0].message.content.trim();
+      let content = aiResponse.choices[0].message.content.trim();
+      if (content.endsWith(".")) {
+        content = content.slice(0, -1);
+      }
+      return content;
     } catch (error) {
       console.error("Error with OpenAI API:", error);
       throw error;

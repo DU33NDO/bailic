@@ -24,6 +24,8 @@ import fs from "fs";
 import path from "path";
 
 import russian from "./vocab/russian.json";
+import english from "./vocab/english.json";
+import kazakh from "./vocab/kazakh.json";
 
 const app = express();
 const server = createServer(app);
@@ -165,10 +167,28 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("NewWordFromBack", (areaOfVocab, roomName) => {
+  socket.on("NewWordFromBack", (areaOfVocab, language, roomName) => {
     console.log(`ДОБРАЛСЯ ДО ОТПРАВКИ НОВОГО СЛОВА`);
 
-    const words = russian[areaOfVocab.toLowerCase()];
+    let words;
+
+    switch (language.toLowerCase()) {
+      case "rus":
+        console.log("russian lang");
+        words = russian[areaOfVocab.toLowerCase()];
+        break;
+      case "eng":
+        console.log("english lang");
+        words = english[areaOfVocab.toLowerCase()];
+        break;
+      case "kz":
+        console.log("kazakh lang");
+        words = kazakh[areaOfVocab.toLowerCase()];
+        break;
+      default:
+        console.log("default");
+        break;
+    }
 
     if (!words || words.length === 0) {
       console.error("No words found for the specified area of vocabulary.");

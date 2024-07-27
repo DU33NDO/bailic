@@ -242,6 +242,7 @@ const Chat = () => {
                   socket.emit(
                     "NewWordFromBack",
                     gameDetails.areaOfVocab,
+                    gameDetails.language,
                     roomName
                   );
                 }

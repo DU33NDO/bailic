@@ -9,6 +9,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import UsersTopDesktop from "./UsersTopDesktop";
 import { useRouter } from "next/navigation";
 import { useAudio } from "../context/AudioContext";
+import Language from "./Language";
 
 interface DesktopSettingsProps {
   loading: boolean;
@@ -19,6 +20,7 @@ interface DesktopSettingsProps {
   handlePlay: () => void;
   setSelectedOptionAreaVocab: (option: any) => void;
   setSelectedOptionDifficulty: (option: any) => void;
+  setSelectedOptionLanguage: (option: any) => void;
   roomName: string;
   hostId: any;
 }
@@ -32,6 +34,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
   handlePlay,
   setSelectedOptionAreaVocab,
   setSelectedOptionDifficulty,
+  setSelectedOptionLanguage,
   roomName,
   hostId,
 }) => {
@@ -78,9 +81,9 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
                   ? "border-solid border-4 border-[#FFF9E3] ml-[-5px]"
                   : ""
               }`}
-              onClick={() => handleClick("vocabArea")}
+              onClick={() => handleClick("difficulty")}
             >
-              <p style={active === "vocabArea" ? activeStyle : defaultStyle}>
+              <p style={active === "difficulty" ? activeStyle : defaultStyle}>
                 Difficulty
               </p>
             </div>
@@ -90,23 +93,38 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
                   ? "border-solid border-4 border-[#FFF9E3] mr-[-5px]"
                   : ""
               }`}
-              onClick={() => handleClick("difficulty")}
+              onClick={() => handleClick("vocabArea")}
             >
-              <p style={active === "difficulty" ? activeStyle : defaultStyle}>
+              <p style={active === "vocabArea" ? activeStyle : defaultStyle}>
                 Vocabulary
+              </p>
+            </div>
+            <div
+              className={`w-[49%] h-[40px] rounded-xl flex justify-center items-center cursor-pointer ${
+                active === "language"
+                  ? "border-solid border-4 border-[#FFF9E3] mr-[-5px]"
+                  : ""
+              }`}
+              onClick={() => handleClick("language")}
+            >
+              <p style={active === "language" ? activeStyle : defaultStyle}>
+                Language
               </p>
             </div>
           </div>
           <div className="mt-4">
-            {active === "difficulty" && (
+            {active === "vocabArea" && (
               <AreaVocab
                 setSelectedOptionAreaVocab={setSelectedOptionAreaVocab}
               />
             )}
-            {active === "vocabArea" && (
+            {active === "difficulty" && (
               <Difficulty
                 setSelectedOptionDifficulty={setSelectedOptionDifficulty}
               />
+            )}
+            {active === "language" && (
+              <Language setSelectedOptionLanguage={setSelectedOptionLanguage} />
             )}
           </div>
         </div>

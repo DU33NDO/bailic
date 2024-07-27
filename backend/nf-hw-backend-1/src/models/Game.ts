@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 interface IGame extends Document {
   difficultyLevel: string;
   areaOfVocab: string | null;
+  language: string | null;
   roomId: string;
   moderatorId: string | null; // user id
   secretWord: string | null;
@@ -14,6 +15,7 @@ interface IGame extends Document {
 const GameSchema: Schema = new Schema({
   difficultyLevel: { type: String, required: true },
   areaOfVocab: { type: String },
+  language: { type: String },
   roomId: { type: String },
   moderatorId: { type: String, default: null },
   secretWord: { type: String },

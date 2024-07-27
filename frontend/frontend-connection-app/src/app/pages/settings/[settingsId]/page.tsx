@@ -11,6 +11,7 @@ import LoadingScreen from "@/components/LoadingScreen";
 import DesktopSettings from "@/components/DesktopSettings";
 import { useMediaQuery } from "react-responsive";
 import ReactGA from "react-ga";
+import Language from "@/components/Language";
 
 interface User {
   userId: string | null;
@@ -32,6 +33,9 @@ const Settings = () => {
     string | null
   >("");
   const [selectedOptionAreaVocab, setSelectedOptionAreaVocab] = useState<
+    string | null
+  >("");
+  const [selectedOptionLanguage, setSelectedOptionLanguage] = useState<
     string | null
   >("");
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -288,7 +292,8 @@ const Settings = () => {
     if (socket && selectedOptionDifficulty) {
       if (
         (selectedOptionDifficulty !== "No AI" &&
-          selectedOptionAreaVocab !== "") ||
+          selectedOptionAreaVocab !== "" &&
+          selectedOptionLanguage !== "") ||
         selectedOptionDifficulty === "No AI"
       ) {
         try {
@@ -300,6 +305,7 @@ const Settings = () => {
             {
               difficultyLevel: selectedOptionDifficulty,
               areaOfVocab: selectedOptionAreaVocab,
+              language: selectedOptionLanguage,
               roomId: roomId,
               roomName: roomName,
             }
@@ -401,6 +407,7 @@ const Settings = () => {
             handlePlay={handlePlay}
             setSelectedOptionAreaVocab={setSelectedOptionAreaVocab}
             setSelectedOptionDifficulty={setSelectedOptionDifficulty}
+            setSelectedOptionLanguage={setSelectedOptionLanguage}
             roomName={roomName}
             hostId={rommHostIdRef.current}
           />
@@ -421,9 +428,9 @@ const Settings = () => {
                 ? "border-solid border-4 border-[#FFF9E3] ml-[-5px]"
                 : ""
             }`}
-            onClick={() => handleClick("vocabArea")}
+            onClick={() => handleClick("difficulty")}
           >
-            <p style={active === "vocabArea" ? activeStyle : defaultStyle}>
+            <p style={active === "difficulty" ? activeStyle : defaultStyle}>
               Difficulty
             </p>
           </div>
@@ -433,23 +440,38 @@ const Settings = () => {
                 ? "border-solid border-4 border-[#FFF9E3] mr-[-5px]"
                 : ""
             }`}
-            onClick={() => handleClick("difficulty")}
+            onClick={() => handleClick("vocabArea")}
           >
-            <p style={active === "difficulty" ? activeStyle : defaultStyle}>
+            <p style={active === "vocabArea" ? activeStyle : defaultStyle}>
               Vocabulary
+            </p>
+          </div>
+          <div
+            className={`w-[49%] h-[40px] rounded-xl flex justify-center items-center cursor-pointer ${
+              active === "language"
+                ? "border-solid border-4 border-[#FFF9E3] mr-[-5px]"
+                : ""
+            }`}
+            onClick={() => handleClick("language")}
+          >
+            <p style={active === "language" ? activeStyle : defaultStyle}>
+              Language
             </p>
           </div>
         </div>
         <div className="mt-4">
-          {active === "difficulty" && (
+          {active === "vocabArea" && (
             <AreaVocab
               setSelectedOptionAreaVocab={setSelectedOptionAreaVocab}
             />
           )}
-          {active === "vocabArea" && (
+          {active === "difficulty" && (
             <Difficulty
               setSelectedOptionDifficulty={setSelectedOptionDifficulty}
             />
+          )}
+          {active === "language" && (
+            <Language setSelectedOptionLanguage={setSelectedOptionLanguage} />
           )}
         </div>
       </div>

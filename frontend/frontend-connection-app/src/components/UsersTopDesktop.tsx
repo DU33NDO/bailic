@@ -17,10 +17,11 @@ interface UserW {
   _id: string | null;
   userPhoto: string | null;
 }
+
 interface UserListProps {
   combinedUsers: User[];
   handleCopyUrl: any;
-  hostId: any;
+  hostId: string | null;
 }
 
 const UserList: React.FC<UserListProps> = ({
@@ -62,13 +63,13 @@ const UserList: React.FC<UserListProps> = ({
               <p className="text-xl font-bold">
                 {user.userName || user.username}
               </p>
-              {/* {hostId && (
+              {(user._id === hostId || user.userId === hostId) && (
                 <img
                   src="/photos/crown.png"
                   className="w-7 right-8 absolute"
-                  alt=""
+                  alt="Host"
                 />
-              )} */}
+              )}
             </div>
           ))}
         </div>

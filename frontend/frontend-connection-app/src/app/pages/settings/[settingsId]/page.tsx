@@ -49,6 +49,7 @@ const Settings = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [combinedUsers, setCombinedUsers] = useState<any>([]);
+  const rommHostIdRef = useRef("");
 
   const isDesktopOrLaptop = useMediaQuery({
     query: "(min-width: 768px)",
@@ -151,6 +152,17 @@ const Settings = () => {
       // }
       socket.emit("join-room", roomName, userId, username, userPhoto);
       localStorage.setItem("currentRoomName", roomName);
+
+      // if (hostId) {
+      //   console.log(`хост был отправлен всем`);
+      //   socket.emit("roomHost", userId, roomName);
+      // }
+
+      // socket.on("userHostIdPls", (data) => {
+      //   console.log(`${data} - userID of host room`);
+      //   rommHostIdRef.current = data;
+      //   console.log(`${rommHostIdRef.current} - new hostID`);
+      // });
 
       socket.on("userJoined", (data) => {
         setJoinedUserArray((prevArray) => {
@@ -390,7 +402,7 @@ const Settings = () => {
             setSelectedOptionAreaVocab={setSelectedOptionAreaVocab}
             setSelectedOptionDifficulty={setSelectedOptionDifficulty}
             roomName={roomName}
-            hostId={hostId}
+            hostId={rommHostIdRef.current}
           />
         </div>
       </div>

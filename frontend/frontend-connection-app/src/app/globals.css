@@ -19,10 +19,13 @@
   }
 }
 
-/* .scaled-down {
-  transform: scale(0.7);
-  transform-origin: left;
-} */
+.transition-opacity {
+  transition: opacity 0.3s ease;
+}
+
+.transition-transform {
+  transition: transform 0.3s ease;
+}
 
 body {
   color: rgb(var(--foreground-rgb));

@@ -16,7 +16,7 @@ const ImageTextSlider = () => {
       header: "2. ИИ?",
     },
     {
-      image: "/slider/3.webp",
+      image: "/slider/3new.png",
       text: "Ведущий выбирает случайное слово для игроков. Остальным игрокам известна только первая буква этого слова",
       header: "3. ВЕДУЩИЙ ВЫБИРАЕТ СЛОВО",
     },
@@ -36,7 +36,7 @@ const ImageTextSlider = () => {
       header: "6. ОБРЫВАЙ КОНТАКТ",
     },
     {
-      image: "/slider/8.png",
+      image: "/slider/8new.png",
       text: "Игра заканчивается, когда игроки поймут слово ведущего",
       header: "7. ПОБЕДА",
     },

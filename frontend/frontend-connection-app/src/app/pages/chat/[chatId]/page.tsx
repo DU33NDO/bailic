@@ -18,6 +18,7 @@ import ModalConnectModeratorCase from "@/components/ModalConnectModeratorCase";
 import ModalResultsSecond from "@/components/ModalResultsSecond";
 import "../../../../../for_scroll.css";
 import { useAudio } from "@/context/AudioContext";
+import Toastify from "toastify-js";
 
 interface Message {
   userId: string;
@@ -610,14 +611,24 @@ const Chat = () => {
               localStorage.removeItem("secretWord");
 
               router.push(`/pages/settings/${roomName}`);
-
-              // window.location.reload();
             });
 
             socket.on("exitToAll", (roomName) => {
               console.log(`socket exit from front to front??`);
               router.push(`/pages/settings/${roomName}`); // ????
             });
+
+            // socket.on("userLeft", (data) => {
+            //   console.log(`он вышел с комнаты(((())))`);
+            //   fetchUserDetails(data).then((user) => {
+            //     Toastify({
+            //       text: `User ${user.username} left`,
+            //       duration: 3000,
+            //       close: true,
+            //       position: "right",
+            //     });
+            //   });
+            // });
 
             axios
               .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/messages/${roomId}`)

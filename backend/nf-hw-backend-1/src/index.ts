@@ -146,6 +146,13 @@ io.on("connection", (socket) => {
     }
   });
 
+  // socket.on("roomHost", (userId, roomName) => {
+  //   console.log(
+  //     `${userId} - userID of host and ${roomName} roomName of the room`
+  //   );
+  //   socket.emit("userHostIdPls", userId);
+  // });
+
   socket.on("leave-room", async (roomName) => {
     console.log(`User is leaving room ${roomName}`);
     const userRoom = userRooms.get(socket.id);

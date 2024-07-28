@@ -249,8 +249,9 @@ io.on("connection", (socket) => {
           const aiResponse: any = await OpenAIService.getAIResponse(
             room,
             secretWord,
-            countLetter
-          ); //AI сам должен загадать сначала слово
+            countLetter,
+            gameTarget.language
+          );
           // io.to(roomName).emit("AI_answer", aiResponse);
           console.log(`Took userId who send message - ${userId}`);
           handleAIResponse(aiResponse, roomName, userId);

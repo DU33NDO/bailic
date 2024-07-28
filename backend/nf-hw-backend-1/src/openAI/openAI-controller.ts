@@ -3,14 +3,15 @@ import OpenAIservice from "./openAI-service";
 
 class openAIController {
   handleAIRequest = async (req: Request, res: Response) => {
-    const { message, secretWord, countLetter } = req.body;
+    const { message, secretWord, countLetter, language } = req.body;
     const { roomId } = req.params;
 
     try {
       const aiResponse = await OpenAIservice.getAIResponse(
         roomId,
         secretWord,
-        countLetter
+        countLetter,
+        language
       );
       res.json({ aiResponse });
     } catch (error) {
@@ -19,7 +20,7 @@ class openAIController {
   };
 
   handleAIRequestConnect = async (req: Request, res: Response) => {
-    const { secretWord, countLetter, contentAskedUser } = req.body;
+    const { secretWord, countLetter, contentAskedUser, language } = req.body;
     const { roomId } = req.params;
 
     try {
@@ -27,7 +28,8 @@ class openAIController {
         roomId,
         secretWord,
         countLetter,
-        contentAskedUser
+        contentAskedUser,
+        language
       );
       res.json({ aiResponse });
     } catch (error) {

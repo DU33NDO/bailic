@@ -10,6 +10,7 @@ class OpenAIservice {
     roomId: string,
     secretWord: string,
     countLetter: number,
+    language: string | null,
     temperature: number = 0.7
   ) => {
     try {
@@ -38,7 +39,9 @@ class OpenAIservice {
                 0,
                 countLetter
               )} 
-              ; А вот настоящие сообщения игроков: ${msg.content}`
+              ; А вот настоящие сообщения игроков: ${
+                msg.content
+              }; Твой ответ должен быть на этом языке - ${language}`
         )
         .join("\n");
 
@@ -68,6 +71,7 @@ class OpenAIservice {
     secretWord: string,
     countLetter: number,
     contentAskedUser: string,
+    language: string,
     temperature: number = 0.7
   ) => {
     try {
@@ -100,7 +104,7 @@ class OpenAIservice {
               тоже. Вот сообщение, после которого люди поняли слово - ${contentAskedUser}
               ; А вот остальные сообщения из чата настоящих игроков: ${
                 msg.content
-              }`
+              }; Твой ответ должен быть на этом языке - ${language}`
         )
         .join("\n");
 

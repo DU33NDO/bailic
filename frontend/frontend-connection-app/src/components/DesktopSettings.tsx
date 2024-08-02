@@ -89,8 +89,8 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
               }`}
               onClick={() => handleClick("difficulty")}
             >
-              <p style={active === "difficulty" ? activeStyle : defaultStyle}>
-                {translations.Difficulty}
+              <p style={active === "vocabArea" ? activeStyle : defaultStyle}>
+                Difficulty
               </p>
             </div>
             <div
@@ -101,8 +101,8 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
               }`}
               onClick={() => handleClick("vocabArea")}
             >
-              <p style={active === "vocabArea" ? activeStyle : defaultStyle}>
-                {translations.Vocabulary}
+              <p style={active === "difficulty" ? activeStyle : defaultStyle}>
+                Vocabulary
               </p>
             </div>
             <div
@@ -114,7 +114,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
               onClick={() => handleClick("language")}
             >
               <p style={active === "language" ? activeStyle : defaultStyle}>
-                {translations.Language}
+                Language
               </p>
             </div>
           </div>

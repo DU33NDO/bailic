@@ -40,7 +40,7 @@ const UserList: React.FC<UserListProps> = ({
       <div className="flex flex-col gap-14 relative">
         <div className="flex flex-col gap-2 items-center px-16 py-2 rounded-3xl">
           <button className="flex items-center text-center justify-between w-full px-4 py-4 bg-[#217470] text-white font-bold rounded-lg border-2 border-[#71C0BC] hover:bg-[#25ABA5] focus:outline-none focus:ring-2 focus:ring-[#71C0BC">
-            Add Bot
+            {translations.changeMusic}
           </button>
           <button
             onClick={handleCopyUrl}

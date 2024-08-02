@@ -436,8 +436,8 @@ const Settings = () => {
             }`}
             onClick={() => handleClick("difficulty")}
           >
-            <p style={active === "vocabArea" ? activeStyle : defaultStyle}>
-              Difficulty
+            <p style={active === "difficulty" ? activeStyle : defaultStyle}>
+              {translations.Difficulty}
             </p>
           </div>
           <div
@@ -448,8 +448,8 @@ const Settings = () => {
             }`}
             onClick={() => handleClick("vocabArea")}
           >
-            <p style={active === "difficulty" ? activeStyle : defaultStyle}>
-              Vocabulary
+            <p style={active === "vocabArea" ? activeStyle : defaultStyle}>
+              {translations.Vocabulary}
             </p>
           </div>
           <div
@@ -461,7 +461,7 @@ const Settings = () => {
             onClick={() => handleClick("language")}
           >
             <p style={active === "language" ? activeStyle : defaultStyle}>
-              Language
+              {translations.Language}
             </p>
           </div>
         </div>

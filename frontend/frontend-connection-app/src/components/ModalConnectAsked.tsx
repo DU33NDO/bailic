@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef, FormEvent } from "react";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 interface ModalConnectAskedProps {
   onClose: () => void;
@@ -32,6 +35,9 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
   const [error, setError] = useState("");
   const [timer, setTimer] = useState(getInitialTimer(difficultyLevel));
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
 
   useEffect(() => {
     countdownRef.current = setInterval(() => {
@@ -53,11 +59,11 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
     const lowerCaseWord = word.trim().toLowerCase();
 
     if (!lowerCaseWord.startsWith(revealedLetters.toLowerCase())) {
-      setError(`Слово должно начинаться с "${revealedLetters}"`);
+      setError(`${translations.errorWord} "${revealedLetters}"`); // слово должно начинаться на..
       return;
     } else if (revealedWords.includes(lowerCaseWord)) {
       setError(
-        `Айайай, "${word.trim()}" уже было использовано! Напиши другое слово.`
+        `${translations.oioioi}, "${word.trim()}" ${translations.oioioiSecond}` //айайа уже было использовано
       );
       return;
     } else {
@@ -71,10 +77,10 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
     const finalWord =
       word.trim() === "" ? `${revealedLetters}didNotSend` : word.trim();
     if (!finalWord.toLowerCase().startsWith(revealedLetters.toLowerCase())) {
-      setError(`Слово должно начинаться с "${revealedLetters}"`);
+      setError(`${translations.errorWord} "${revealedLetters}"`);
     } else if (revealedWords.includes(finalWord.toLowerCase())) {
       setError(
-        `Айайай, "${finalWord}" уже было использовано! Напиши другое слово.`
+        `${translations.oioioi}, "${finalWord}" ${translations.oioioiSecond}`
       );
     } else {
       onSubmit(finalWord);
@@ -89,7 +95,7 @@ const ModalConnectAsked: React.FC<ModalConnectAskedProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <p className="text-black font-bold text-center text-3xl mb-4">
-          Какое слово ты загадал?
+          {translations.whichword}
         </p>
         <form onSubmit={handleSubmit} className="flex items-center">
           <input

@@ -1,4 +1,7 @@
 import React, { useEffect } from "react";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 interface ModalResultsProps {
   moderatorUsername: string;
@@ -29,6 +32,10 @@ const ModalResults: React.FC<ModalResultsProps> = ({
     return () => clearTimeout(timer);
   }, [onClose]);
 
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 py-5 px-3 z-50"
@@ -48,10 +55,10 @@ const ModalResults: React.FC<ModalResultsProps> = ({
               />
             </div>
             <div className="">
-              <p className="text-red-700 font-bold">Ведущий</p>
+              <p className="text-red-700 font-bold">{translations.Host}</p>
               <p className="bg-[#FFD2CB] text-black rounded-full font-bold px-4 py-2 w-[100%]">
                 {moderatorWord.endsWith("didnotsend")
-                  ? "юзер не успел"
+                  ? `${translations.userNoTIme}`
                   : moderatorWord}
               </p>
             </div>
@@ -75,7 +82,7 @@ const ModalResults: React.FC<ModalResultsProps> = ({
               </p>
               <p className="bg-[#FFD2CB] text-black font-bold rounded-full px-4 py-2">
                 {clickedWord.endsWith("didnotsend")
-                  ? "юзер не успел"
+                  ? `${translations.userNoTIme}`
                   : clickedWord}
               </p>
             </div>
@@ -87,9 +94,11 @@ const ModalResults: React.FC<ModalResultsProps> = ({
           </div>
         </div>
         <p className="text-black font-bold text-center text-2xl mt-6">
-          Загаданное слово:{" "}
+          {translations.results}{" "}
           <span className="text-red-700">
-            {targetWord === "empty2280945" ? "юзер не успел" : targetWord}
+            {targetWord === "empty2280945"
+              ? `${translations.userNoTIme}`
+              : targetWord}
           </span>
         </p>
       </div>

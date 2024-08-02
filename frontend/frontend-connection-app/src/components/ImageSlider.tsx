@@ -1,44 +1,51 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
+import { useSwipeable } from "react-swipeable";
 
 const ImageTextSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const slides = [
     {
       image: "/slider/1.jpg",
-      text: "Собирайтесь с друзьями в голосовой канал",
-      header: "1. НУЖНЫ ДРУЗЬЯ",
+      text: `${translations.sliderText1}`,
+      header: `1. ${translations.firstHeader}`,
     },
     {
       image: "/slider/2.webp",
-      text: "Вы хотите сыграть сами или против ИИ?",
-      header: "2. ИИ?",
+      text: `${translations.sliderText2}`,
+      header: `2. ${translations.secondHeader}`,
     },
     {
       image: "/slider/3new.png",
-      text: "Ведущий выбирает случайное слово для игроков. Остальным игрокам известна только первая буква этого слова",
-      header: "3. ВЕДУЩИЙ ВЫБИРАЕТ СЛОВО",
+      text: `${translations.sliderText3}`,
+      header: `3. ${translations.thirdHeader}`,
     },
     {
       image: "/slider/5.png",
-      text: "Остальные игроки пишут в чат ассоциации на первую букву этого слова, не называя слово полностью",
-      header: "4. ПИШИ В ЧАТ АССОЦИАЦИИ",
+      text: `${translations.sliderText4}`,
+      header: `4. ${translations.fourthHeader}`,
     },
     {
       image: "/slider/6.jpg",
-      text: "Цель игроков — нажать на сообщение другого игрока, если они поняли его слово",
-      header: "5. НАЖИМАЙ НА СООБЩЕНИЯ",
+      text: `${translations.sliderText5}`,
+      header: `5. ${translations.fifthHeader}`,
     },
     {
       image: "/slider/7.jpg",
-      text: "Цель ведущего — раньше других понять слова игроков и нажимать на их сообщения, чтобы обрывать контакт.",
-      header: "6. ОБРЫВАЙ КОНТАКТ",
+      text: `${translations.sliderText6}`,
+      header: `6. ${translations.sixthHeader}`,
     },
     {
       image: "/slider/8new.png",
-      text: "Игра заканчивается, когда игроки поймут слово ведущего",
-      header: "7. ПОБЕДА",
+      text: `${translations.sliderText7}`,
+      header: `7. ${translations.seventhHeader}`,
     },
   ];
 
@@ -72,12 +79,30 @@ const ImageTextSlider = () => {
     resetInterval();
   };
 
+  const handleSwipe = (direction: "LEFT" | "RIGHT") => {
+    if (direction === "LEFT") {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
+    } else if (direction === "RIGHT") {
+      setCurrentIndex(
+        (prevIndex) => (prevIndex - 1 + slides.length) % slides.length
+      );
+    }
+    resetInterval();
+  };
+
+  const handlers = useSwipeable({
+    onSwipedLeft: () => handleSwipe("LEFT"),
+    onSwipedRight: () => handleSwipe("RIGHT"),
+    preventScrollOnSwipe: true,
+    trackMouse: true,
+  });
+
   return (
     <div className="bg-[#FFF9E3] rounded-3xl p-6 text-black w-[90%] h-[90%] md:w-[500px] md:h-[750px] border-2 border-black border-solid flex flex-col">
       <h2 className="text-4xl font-black mb-4 text-[#FFA200] text-center">
-        КАК ИГРАТЬ
+        {translations.howPlay}
       </h2>
-      <div className="relative flex-grow flex flex-col">
+      <div {...handlers} className="relative flex-grow flex flex-col">
         <img
           src={slides[currentIndex].image}
           alt="Как играть"

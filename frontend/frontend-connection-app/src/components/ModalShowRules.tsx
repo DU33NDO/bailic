@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ImageTextSlider from "@/components/ImageSlider";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 interface ModalShowRulesProps {
   onClose: () => void;
@@ -7,6 +10,9 @@ interface ModalShowRulesProps {
 
 const ModalShowRules: React.FC<ModalShowRulesProps> = ({ onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
 
   useEffect(() => {
     setIsVisible(true);
@@ -16,6 +22,10 @@ const ModalShowRules: React.FC<ModalShowRulesProps> = ({ onClose }) => {
     setIsVisible(false);
     setTimeout(onClose, 300);
   };
+
+  // if (!mounted) {
+  //   return <></>;
+  // }
 
   return (
     <div

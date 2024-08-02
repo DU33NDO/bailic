@@ -1,6 +1,9 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Socket } from "socket.io-client";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 interface ModalConnectGameOverProps {
   onClose: () => void;
@@ -20,6 +23,9 @@ const ModalConnectGameOver: React.FC<ModalConnectGameOverProps> = ({
   roomId,
 }) => {
   const router = useRouter();
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
 
   const handleContinue = () => {
     if (socket) {
@@ -44,7 +50,7 @@ const ModalConnectGameOver: React.FC<ModalConnectGameOverProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <p className="text-black font-bold text-center text-3xl mb-4">
-          GAME OVER
+          {translations.gameOver}
         </p>
         {isHost && (
           <div className="flex gap-4 mt-4">
@@ -52,13 +58,13 @@ const ModalConnectGameOver: React.FC<ModalConnectGameOverProps> = ({
               className="bg-green-500 text-white h-10 rounded-xl px-4"
               onClick={handleContinue}
             >
-              Continue
+              {translations.Continue}
             </button>
             <button
               className="bg-red-500 text-white h-10 rounded-xl px-4"
               onClick={handleExitToSettings}
             >
-              Exit to Settings
+              {translations.exitToSettings}
             </button>
           </div>
         )}

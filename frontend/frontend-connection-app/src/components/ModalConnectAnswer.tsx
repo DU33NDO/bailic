@@ -1,4 +1,7 @@
 import React, { useEffect, useState, useRef, FormEvent } from "react";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 interface ModalConnectAnswerProps {
   onClose: (word: string) => void;
@@ -30,6 +33,9 @@ const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
   const [timer, setTimer] = useState(getInitialTimer(difficultyLevel));
   const [error, setError] = useState("");
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
 
   useEffect(() => {
     countdownRef.current = setInterval(() => {
@@ -54,10 +60,10 @@ const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
     const lowerCaseWord = word.trim().toLowerCase();
 
     if (!lowerCaseWord.startsWith(revealedLetters)) {
-      setError(`Слово должно начинаться с "${revealedLetters}"`);
+      setError(`${translations.errorWord} "${revealedLetters}"`);
     } else if (revealedWords.includes(lowerCaseWord)) {
       setError(
-        `Айайай, "${word.trim()}" уже было использовано! Напиши другое слово.`
+        `${translations.oioioi}, "${word.trim()}" ${translations.oioioiSecond}`
       );
     } else {
       clearInterval(countdownRef.current!);
@@ -72,7 +78,7 @@ const ModalConnectAnswer: React.FC<ModalConnectAnswerProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <p className="text-black font-bold text-center text-3xl mb-4">
-          Быстрее вводи слово!!
+          {translations.faster}
         </p>
         <form onSubmit={handleSubmit} className="flex items-center mb-4">
           <input

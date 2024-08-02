@@ -1,4 +1,7 @@
 import React, { useEffect } from "react";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 interface ModalResultsSecondProps {
   moderatorUsername: string;
@@ -22,6 +25,10 @@ const ModalResultsSecond: React.FC<ModalResultsSecondProps> = ({
 
     return () => clearTimeout(timer);
   }, [onClose]);
+
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 py-5 px-3 z-50"
@@ -50,12 +57,12 @@ const ModalResultsSecond: React.FC<ModalResultsSecondProps> = ({
         </div>
         {targetWord === moderatorWord ? (
           <p className="text-black font-bold text-center text-2xl mt-6">
-            Черт, ведущий был прав:{" "}
+            {translations.hostWasRight}{" "}
             <span className="text-red-700">{targetWord}</span>
           </p>
         ) : (
           <p className="text-black font-bold text-center text-2xl mt-6">
-            Опа, неправильно думаешь, ведущий
+            {translations.hostWasNotRight}
           </p>
         )}
       </div>

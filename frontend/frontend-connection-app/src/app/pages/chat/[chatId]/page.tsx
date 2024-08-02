@@ -18,7 +18,9 @@ import ModalConnectModeratorCase from "@/components/ModalConnectModeratorCase";
 import ModalResultsSecond from "@/components/ModalResultsSecond";
 import "../../../../../for_scroll.css";
 import { useAudio } from "@/context/AudioContext";
-import Toastify from "toastify-js";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 interface Message {
   userId: string;
@@ -99,6 +101,9 @@ const Chat = () => {
   const showAIconnectRef = useRef(false);
   const moderatorIDRef = useRef("");
   const languageRef = useRef("");
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
 
   const aiPhoto = "/avatar/aiPhoto.jpg";
   const router = useRouter();
@@ -1100,7 +1105,7 @@ const Chat = () => {
               <p className="text-[#fff] font-bold text-center text-5xl break-all tracking-[.25em] capitalize max-w-[10ch]">
                 {!secretWord ? (
                   <span className="text-sm tracking-[.2em] opacity-50 block">
-                    Секретное слово
+                    {translations.secretWord}
                   </span>
                 ) : (
                   secretWord && secretWord.slice(0, countLetter)
@@ -1117,7 +1122,7 @@ const Chat = () => {
 
           <div className="flex justify-between items-center mt-12 relative">
             <p className="absolute text-xl text-black font-bold -top-4 left-4">
-              Ведущий
+              {translations.Host}
             </p>
             <div className="w-[50%] h-auto max-h-[90px] bg-[#E2D5D0] rounded-[21px] overflow-y-auto hide-scrollbar">
               {moderatorMessages.map((message, index) => (
@@ -1150,7 +1155,7 @@ const Chat = () => {
           <div className="flex flex-col gap-[24px] mt-14 w-full h-full max-h-[40vh] bg-[#D4C0B8] rounded-xl overflow-y-auto py-5 px-5 md:px-8 hide-scrollbar">
             {messages.length === 0 ? (
               <div className="flex items-center justify-center h-[20vh] text-[#F24236] font-black text-2xl text-center opacity-50 bg-[#EAE5E3] rounded-lg px-6 py-4">
-                Введите свое первое сообщение!
+                {translations.placeholderUser}
               </div>
             ) : (
               messages.map((message) => (

@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 interface ModalConnectModeratorCaseProps {
   onClose: () => void;
@@ -17,6 +20,9 @@ const ModalConnectModeratorCase: React.FC<ModalConnectModeratorCaseProps> = ({
   const [clickedUserPhoto, setClickedUserPhoto] = useState<string | null>(null);
   const [askedUserName, setAskedUserName] = useState<string | null>(null);
   const [clickedUserName, setClickedUserName] = useState<string | null>(null);
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -103,7 +109,9 @@ const ModalConnectModeratorCase: React.FC<ModalConnectModeratorCaseProps> = ({
           </div>
         </div>
         <div className="bg-[#CC0B0D] p-4 rounded-xl flex items-center justify-center">
-          <p className="text-3xl font-bold text-white">МИНУС КОНТАКТ?</p>
+          <p className="text-3xl font-bold text-white">
+            {translations.ConnectionNO}
+          </p>
         </div>
       </div>
     </div>

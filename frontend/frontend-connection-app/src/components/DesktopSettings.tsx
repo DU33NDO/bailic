@@ -10,6 +10,9 @@ import UsersTopDesktop from "./UsersTopDesktop";
 import { useRouter } from "next/navigation";
 import { useAudio } from "../context/AudioContext";
 import Language from "./Language";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 interface DesktopSettingsProps {
   loading: boolean;
@@ -39,6 +42,9 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
   hostId,
 }) => {
   const { isPlaying, toggleAudio, setAudioSource } = useAudio();
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
 
   useEffect(() => {
     setAudioSource("/music/background_music_1.m4a");
@@ -60,7 +66,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
           className="flex items-center px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300"
         >
           <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
-          BACK
+          {translations.settingsBack}
         </button>
         <img src="/photos/logo.png" className="w-52" alt="" />
         <button onClick={toggleAudio} className="focus:outline-none w-16">
@@ -84,7 +90,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
               onClick={() => handleClick("difficulty")}
             >
               <p style={active === "difficulty" ? activeStyle : defaultStyle}>
-                Difficulty
+                {translations.Difficulty}
               </p>
             </div>
             <div
@@ -96,7 +102,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
               onClick={() => handleClick("vocabArea")}
             >
               <p style={active === "vocabArea" ? activeStyle : defaultStyle}>
-                Vocabulary
+                {translations.Vocabulary}
               </p>
             </div>
             <div
@@ -108,7 +114,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
               onClick={() => handleClick("language")}
             >
               <p style={active === "language" ? activeStyle : defaultStyle}>
-                Language
+                {translations.Language}
               </p>
             </div>
           </div>
@@ -140,7 +146,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
           className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-red-700"
           onClick={handlePlay}
         >
-          Play
+          {translations.play}
         </button>
       </div>
     </div>

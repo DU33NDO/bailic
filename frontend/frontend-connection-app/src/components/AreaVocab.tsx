@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 const AreaVocab = ({ setSelectedOptionAreaVocab }: any) => {
   const [selected, setSelected] = useState<string | null>(null);
@@ -16,6 +19,10 @@ const AreaVocab = ({ setSelectedOptionAreaVocab }: any) => {
     }`;
   };
 
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
+
   return (
     <div className="flex flex-col gap-6 items-center mt-8 mb-6 lg:grid lg:grid-cols-2 lg:gap-6 md:h-auto px-6">
       <div
@@ -28,8 +35,10 @@ const AreaVocab = ({ setSelectedOptionAreaVocab }: any) => {
           alt=""
         />
         <div className="flex flex-col gap-2 ">
-          <p className="text-black font-bold text-2xl">All Include</p>
-          <p className="text-black">all words</p>
+          <p className="text-black font-bold text-2xl">
+            {translations.AllInclude}
+          </p>
+          <p className="text-black">{translations.AllIncludeText}</p>
         </div>
       </div>
       <div
@@ -38,8 +47,8 @@ const AreaVocab = ({ setSelectedOptionAreaVocab }: any) => {
       >
         <img src="/photos/food_vocab.svg" className="rounded-xl" alt="" />
         <div className="flex flex-col gap-2 ">
-          <p className="text-black font-bold text-2xl">Food</p>
-          <p className="text-black">yummy</p>
+          <p className="text-black font-bold text-2xl">{translations.Food}</p>
+          <p className="text-black">{translations.FoodText}</p>
         </div>
       </div>
       <div
@@ -48,8 +57,8 @@ const AreaVocab = ({ setSelectedOptionAreaVocab }: any) => {
       >
         <img src="/photos/sport_vocab.svg" className="rounded-xl" alt="" />
         <div className="flex flex-col gap-2 ">
-          <p className="text-black font-bold text-2xl">Sport</p>
-          <p className="text-black">Igor Voitenko </p>
+          <p className="text-black font-bold text-2xl">{translations.Sport}</p>
+          <p className="text-black">{translations.SportText} </p>
         </div>
       </div>
       <div
@@ -58,8 +67,8 @@ const AreaVocab = ({ setSelectedOptionAreaVocab }: any) => {
       >
         <img src="/photos/music_vocab.svg" className="rounded-xl" alt="" />
         <div className="flex flex-col gap-2 ">
-          <p className="text-black font-bold text-2xl">Music</p>
-          <p className="text-black">La-la-la</p>
+          <p className="text-black font-bold text-2xl">{translations.Music}</p>
+          <p className="text-black">{translations.MusicText}</p>
         </div>
       </div>
       <div
@@ -68,8 +77,10 @@ const AreaVocab = ({ setSelectedOptionAreaVocab }: any) => {
       >
         <img src="/photos/academic_vocab.svg" className="rounded-xl" alt="" />
         <div className="flex flex-col gap-2 ">
-          <p className="text-black font-bold text-2xl">Academic</p>
-          <p className="text-black">Damn again?</p>
+          <p className="text-black font-bold text-2xl">
+            {translations.Academic}
+          </p>
+          <p className="text-black">{translations.AcademicText}</p>
         </div>
       </div>
       {/* <div

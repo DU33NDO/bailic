@@ -15,6 +15,10 @@ import LoadingScreen from "@/components/LoadingScreen";
 import ImageTextSlider from "@/components/ImageSlider";
 import ModalShowRules from "@/components/ModalShowRules";
 import ReactGA from "react-ga";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useMounted } from "@/hooks/useMounted";
+import LanguageSelector from "@/components/LanguageSelector";
 
 const Auth: React.FC = () => {
   const isDesktop = useMediaQuery({ minWidth: 1530 });
@@ -26,6 +30,10 @@ const Auth: React.FC = () => {
   const roomName = pathname.split("/").pop();
   const [loading, setLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [locale, setLocale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
+  const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState(false);
 
   console.log(`ROOMNAME - ${roomName}`);
 
@@ -65,7 +73,16 @@ const Auth: React.FC = () => {
   };
 
   useEffect(() => {
-    localStorage.clear();
+    localStorage.removeItem("currentRoomName");
+    localStorage.removeItem("moderatorId");
+    localStorage.removeItem("websocket");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("roomId");
+    localStorage.removeItem("secretWord");
+    localStorage.removeItem("hostId");
+    localStorage.removeItem("reloading");
+
+    // localStorage.clear();
     generateRoomId();
   }, []);
 
@@ -123,16 +140,31 @@ const Auth: React.FC = () => {
   const closeModal = () => {
     setShowModal(false);
   };
+
+  if (!mounted) {
+    return <LoadingScreen />;
+  }
+
   return (
     <div className="px-5 py-3 md:px-28 md:py-3">
       {showModal && <ModalShowRules onClose={closeModal} />}
       {loading && <LoadingScreen />}
+      {/* <p className="text-black">Rus</p>
+      <p className="text-black">Eng</p> */}
+
       <div className="flex justify-between items-center">
-        <img
-          src="/photos/red_bar_menu.svg"
-          className="w-10 h-10 md:w-20 md:h-20"
-          alt=""
-        />
+        <div className="relative">
+          <button
+            className="px-4 py-4 md:px-7 md:py-7 bg-[#BA3B3A] rounded-full text-sm md:text-3xl font-bold hover:bg-red-500 transition-colors duration-200"
+            onClick={() => setIsLanguageSelectorOpen(!isLanguageSelectorOpen)}
+          >
+            {locale.language.toUpperCase()}
+          </button>
+          <LanguageSelector
+            isOpen={isLanguageSelectorOpen}
+            onClose={() => setIsLanguageSelectorOpen(false)}
+          />
+        </div>
         <img
           src="/photos/logo.png"
           className="w-44 h-30 mt-8 md:w-72 "
@@ -182,7 +214,7 @@ const Auth: React.FC = () => {
                 </div>
                 <input
                   type="text"
-                  placeholder="Username"
+                  placeholder={translations.username}
                   maxLength={20}
                   name="username"
                   id="username"
@@ -196,7 +228,7 @@ const Auth: React.FC = () => {
                   onClick={() => setShowModal(true)}
                 >
                   <p className="text-xl text-black font-bold opacity-70 md:text-3xl">
-                    псс правила?
+                    {translations.rules}
                   </p>
                 </div>
               )}
@@ -206,7 +238,7 @@ const Auth: React.FC = () => {
                 onClick={trackButtonClick}
                 className="w-[150px] md:w-[250px] h-[50px] md:h-[70px] bg-[#F24236] rounded-xl text-center font-bold px-6 py-2 text-xl  md:text-3xl hover:bg-red-700 relative"
               >
-                Начать
+                {translations.start}
               </button>
             </div>
             {isDesktop && <ImageTextSlider />}

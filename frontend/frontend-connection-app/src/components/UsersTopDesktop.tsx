@@ -1,6 +1,9 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCrown, faUser } from "@fortawesome/free-solid-svg-icons";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 interface User {
   userId: string | null;
@@ -29,6 +32,9 @@ const UserList: React.FC<UserListProps> = ({
   handleCopyUrl,
   hostId,
 }) => {
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
   return (
     <div className="w-[40%] bg-[#E9DED9] px-6 py-4 pb-6 rounded-2xl">
       <div className="flex flex-col gap-14 relative">
@@ -40,7 +46,7 @@ const UserList: React.FC<UserListProps> = ({
             onClick={handleCopyUrl}
             className="flex items-center text-center justify-between w-full px-4 py-4 bg-[#E4A63A] text-white font-bold rounded-lg border-2 border-[#d7b476] hover:bg-[#ffa200] focus:outline-none focus:ring-2 focus:ring-[#F9A20A"
           >
-            Invite Friend
+            {translations.inviteFriend}
           </button>
         </div>
         <div className="flex flex-col gap-6">

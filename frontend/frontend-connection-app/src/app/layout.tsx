@@ -5,15 +5,14 @@ import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AudioProvider } from "@/context/AudioContext";
+import { LanguageProvider } from "@/context/LanguageContext";
+import { Providers } from "@/components/Providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "BaiLic",
   description: "Connect People",
-  // icons: {
-  //   icon: "/favicon.ico",
-  // },
 };
 
 export default function RootLayout({
@@ -38,7 +37,12 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={inter.className}>
-        <AudioProvider>{children}</AudioProvider>
+        <Providers>
+          <LanguageProvider>
+            <AudioProvider>{children}</AudioProvider>
+          </LanguageProvider>
+        </Providers>
+
         <Analytics />
         <SpeedInsights />
       </body>

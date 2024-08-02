@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 const Difficulty = ({ setSelectedOptionDifficulty }: any) => {
   const [selected, setSelected] = useState<string | null>(null);
@@ -15,6 +18,9 @@ const Difficulty = ({ setSelectedOptionDifficulty }: any) => {
         : "bg-white hover:bg-[#E1E1E1]"
     }`;
   };
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
 
   return (
     <div className="flex flex-col gap-6 items-center mt-8 mb-6 lg:grid lg:grid-cols-2 lg:grid-rows-[repeat(6,auto)] lg:gap-6 lg:h-auto px-6">
@@ -28,8 +34,8 @@ const Difficulty = ({ setSelectedOptionDifficulty }: any) => {
           alt=""
         />
         <div className="flex flex-col gap-2">
-          <p className="text-black font-bold text-2xl">Easy</p>
-          <p className="text-black">AI mode</p>
+          <p className="text-black font-bold text-2xl">{translations.Easy}</p>
+          <p className="text-black">{translations.EasyText}</p>
         </div>
       </div>
       <div
@@ -42,8 +48,8 @@ const Difficulty = ({ setSelectedOptionDifficulty }: any) => {
           alt=""
         />
         <div className="flex flex-col gap-2">
-          <p className="text-black font-bold text-2xl">Medium</p>
-          <p className="text-black">AI mode</p>
+          <p className="text-black font-bold text-2xl">{translations.Medium}</p>
+          <p className="text-black">{translations.MediumText}</p>
         </div>
       </div>
       <div
@@ -56,8 +62,8 @@ const Difficulty = ({ setSelectedOptionDifficulty }: any) => {
           alt=""
         />
         <div className="flex flex-col gap-2">
-          <p className="text-black font-bold text-2xl">Hard</p>
-          <p className="text-black">AI mode</p>
+          <p className="text-black font-bold text-2xl">{translations.Hard}</p>
+          <p className="text-black">{translations.HardText}</p>
         </div>
       </div>
       <div
@@ -70,8 +76,8 @@ const Difficulty = ({ setSelectedOptionDifficulty }: any) => {
           alt=""
         />
         <div className="flex flex-col gap-2">
-          <p className="text-black font-bold text-2xl">No AI</p>
-          <p className="text-black">without AI</p>
+          <p className="text-black font-bold text-2xl">{translations.NoAI}</p>
+          <p className="text-black">{translations.NoAIText}</p>
         </div>
       </div>
     </div>

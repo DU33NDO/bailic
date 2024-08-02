@@ -12,6 +12,9 @@ import DesktopSettings from "@/components/DesktopSettings";
 import { useMediaQuery } from "react-responsive";
 import ReactGA from "react-ga";
 import Language from "@/components/Language";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 interface User {
   userId: string | null;
@@ -54,6 +57,9 @@ const Settings = () => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [combinedUsers, setCombinedUsers] = useState<any>([]);
   const rommHostIdRef = useRef("");
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
 
   const isDesktopOrLaptop = useMediaQuery({
     query: "(min-width: 768px)",
@@ -431,7 +437,7 @@ const Settings = () => {
             onClick={() => handleClick("difficulty")}
           >
             <p style={active === "difficulty" ? activeStyle : defaultStyle}>
-              Difficulty
+              {translations.Difficulty}
             </p>
           </div>
           <div
@@ -443,7 +449,7 @@ const Settings = () => {
             onClick={() => handleClick("vocabArea")}
           >
             <p style={active === "vocabArea" ? activeStyle : defaultStyle}>
-              Vocabulary
+              {translations.Vocabulary}
             </p>
           </div>
           <div
@@ -455,7 +461,7 @@ const Settings = () => {
             onClick={() => handleClick("language")}
           >
             <p style={active === "language" ? activeStyle : defaultStyle}>
-              Language
+              {translations.Language}
             </p>
           </div>
         </div>
@@ -486,7 +492,7 @@ const Settings = () => {
           className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-[#d1382e] active:bg-[#b33027] hover:bg-[#FF0200]"
           onClick={handlePlay}
         >
-          Play
+          {translations.play}
         </button>
       </div>
     </div>

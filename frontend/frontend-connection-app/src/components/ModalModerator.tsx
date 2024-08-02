@@ -1,8 +1,11 @@
 import React from "react";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useMounted } from "@/hooks/useMounted";
 
 interface ModalModeratorProps {
   username: string;
-  userPhoto: string; 
+  userPhoto: string;
   onClose: () => void;
 }
 
@@ -11,6 +14,9 @@ const ModalModerator: React.FC<ModalModeratorProps> = ({
   userPhoto,
   onClose,
 }) => {
+  const [locale] = useLanguage();
+  const translations = useTranslations(locale.language);
+  const mounted = useMounted();
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 py-5 px-3 z-50"
@@ -21,7 +27,7 @@ const ModalModerator: React.FC<ModalModeratorProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <p className="text-black font-black text-center text-3xl mb-4">
-          Ведущий был выбран
+          {translations.HostChoice}
         </p>
         <div className="bg-[#E43027] w-60 h-60 rounded-xl flex items-center justify-center mb-4 flex flex-col gap-6">
           <img
@@ -29,7 +35,9 @@ const ModalModerator: React.FC<ModalModeratorProps> = ({
             alt="User Photo"
             className="bg-gray-400 w-32 h-32 rounded-full"
           />
-          <p className="text-white font-bold text-3xl max-w-[10ch] break-all text-center">{username}</p>
+          <p className="text-white font-bold text-3xl max-w-[10ch] break-all text-center">
+            {username}
+          </p>
         </div>
       </div>
     </div>

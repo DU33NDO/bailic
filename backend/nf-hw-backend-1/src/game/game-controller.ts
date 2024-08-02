@@ -49,10 +49,11 @@ class GameController {
 
   async createGame(req: Request, res: Response): Promise<void> {
     try {
-      const { difficultyLevel, areaOfVocab, roomId } = req.body;
+      const { difficultyLevel, areaOfVocab, language, roomId } = req.body;
       const game = await GameService.createGame(
         difficultyLevel,
         areaOfVocab,
+        language,
         roomId
       );
 

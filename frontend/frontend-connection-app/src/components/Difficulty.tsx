@@ -74,8 +74,6 @@ const Difficulty = ({ setSelectedOptionDifficulty }: any) => {
           <p className="text-black">without AI</p>
         </div>
       </div>
-      <div className="hidden md:block"></div>
-      <div className="hidden md:block"></div>
     </div>
   );
 };

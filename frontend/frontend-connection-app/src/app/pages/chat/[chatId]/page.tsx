@@ -98,6 +98,7 @@ const Chat = () => {
   const [showAIconnect, setShowAIconnect] = useState(false);
   const showAIconnectRef = useRef(false);
   const moderatorIDRef = useRef("");
+  const languageRef = useRef("");
 
   const aiPhoto = "/avatar/aiPhoto.jpg";
   const router = useRouter();
@@ -203,6 +204,7 @@ const Chat = () => {
                 console.log(`GAME DIFFICULTY: ${gameDetails.difficultyLevel}`); //wfwf
                 setDifficultyLevelState(gameDetails.difficultyLevel);
                 difficultyLevelRef.current = gameDetails.difficultyLevel;
+                languageRef.current = gameDetails.language;
                 setAreaOfVocabState(gameDetails.areaOfVocab);
 
                 if (gameDetails.difficultyLevel === "No AI") {
@@ -242,6 +244,7 @@ const Chat = () => {
                   socket.emit(
                     "NewWordFromBack",
                     gameDetails.areaOfVocab,
+                    gameDetails.language,
                     roomName
                   );
                 }
@@ -402,6 +405,7 @@ const Chat = () => {
                     secretWord: data.secretWord,
                     countLetter: data.countLetter,
                     contentAskedUser: data.contentAskedUser,
+                    language: languageRef.current,
                   },
                   {
                     headers: {
@@ -812,6 +816,7 @@ const Chat = () => {
             contentAskedUser: message.content,
             secretWord: secretWord,
             countLetter: countLetter,
+            language: languageRef.current,
           });
 
           setTimeout(() => {

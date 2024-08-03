@@ -11,43 +11,122 @@ const ImageTextSlider = () => {
   const translations = useTranslations(locale.language);
   const mounted = useMounted();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const slides = [
-    {
-      image: "/slider/1.jpg",
-      text: `${translations.sliderText1}`,
-      header: `1. ${translations.firstHeader}`,
-    },
-    {
-      image: "/slider/2.webp",
-      text: `${translations.sliderText2}`,
-      header: `2. ${translations.secondHeader}`,
-    },
-    {
-      image: "/slider/3new.png",
-      text: `${translations.sliderText3}`,
-      header: `3. ${translations.thirdHeader}`,
-    },
-    {
-      image: "/slider/5.png",
-      text: `${translations.sliderText4}`,
-      header: `4. ${translations.fourthHeader}`,
-    },
-    {
-      image: "/slider/6.jpg",
-      text: `${translations.sliderText5}`,
-      header: `5. ${translations.fifthHeader}`,
-    },
-    {
-      image: "/slider/7.jpg",
-      text: `${translations.sliderText6}`,
-      header: `6. ${translations.sixthHeader}`,
-    },
-    {
-      image: "/slider/8new.png",
-      text: `${translations.sliderText7}`,
-      header: `7. ${translations.seventhHeader}`,
-    },
-  ];
+  let slides: any = [];
+  if (locale.language === "ru") {
+    slides = [
+      {
+        image: "/slider/1.jpg",
+        text: `${translations.sliderText1}`,
+        header: `1. ${translations.firstHeader}`,
+      },
+      {
+        image: "/slider/2.webp",
+        text: `${translations.sliderText2}`,
+        header: `2. ${translations.secondHeader}`,
+      },
+      {
+        image: "/slider/3new.png",
+        text: `${translations.sliderText3}`,
+        header: `3. ${translations.thirdHeader}`,
+      },
+      {
+        image: "/slider/5.png",
+        text: `${translations.sliderText4}`,
+        header: `4. ${translations.fourthHeader}`,
+      },
+      {
+        image: "/slider/6.jpg",
+        text: `${translations.sliderText5}`,
+        header: `5. ${translations.fifthHeader}`,
+      },
+      {
+        image: "/slider/7.jpg",
+        text: `${translations.sliderText6}`,
+        header: `6. ${translations.sixthHeader}`,
+      },
+      {
+        image: "/slider/8new.png",
+        text: `${translations.sliderText7}`,
+        header: `7. ${translations.seventhHeader}`,
+      },
+    ];
+  } else if (locale.language === "en") {
+    slides = [
+      {
+        image: "/slider/1.jpg",
+        text: `${translations.sliderText1}`,
+        header: `1. ${translations.firstHeader}`,
+      },
+      {
+        image: "/slider/2.webp",
+        text: `${translations.sliderText2}`,
+        header: `2. ${translations.secondHeader}`,
+      },
+      {
+        image: "/slider/eng5.png",
+        text: `${translations.sliderText3}`,
+        header: `3. ${translations.thirdHeader}`,
+      },
+      {
+        image: "/slider/eng4.png",
+        text: `${translations.sliderText4}`,
+        header: `4. ${translations.fourthHeader}`,
+      },
+      {
+        image: "/slider/eng2.jpeg",
+        text: `${translations.sliderText5}`,
+        header: `5. ${translations.fifthHeader}`,
+      },
+      {
+        image: "/slider/eng1.jpeg",
+        text: `${translations.sliderText6}`,
+        header: `6. ${translations.sixthHeader}`,
+      },
+      {
+        image: "/slider/eng3.png",
+        text: `${translations.sliderText7}`,
+        header: `7. ${translations.seventhHeader}`,
+      },
+    ];
+  } else if (locale.language === "kz") {
+    slides = [
+      {
+        image: "/slider/1.jpg",
+        text: `${translations.sliderText1}`,
+        header: `1. ${translations.firstHeader}`,
+      },
+      {
+        image: "/slider/2.webp",
+        text: `${translations.sliderText2}`,
+        header: `2. ${translations.secondHeader}`,
+      },
+      {
+        image: "/slider/kz3.png",
+        text: `${translations.sliderText3}`,
+        header: `3. ${translations.thirdHeader}`,
+      },
+      {
+        image: "/slider/kz4.png",
+        text: `${translations.sliderText4}`,
+        header: `4. ${translations.fourthHeader}`,
+      },
+      {
+        image: "/slider/kz1.jpeg",
+        text: `${translations.sliderText5}`,
+        header: `5. ${translations.fifthHeader}`,
+      },
+      {
+        image: "/slider/kz2.jpeg",
+        text: `${translations.sliderText6}`,
+        header: `6. ${translations.sixthHeader}`,
+      },
+      {
+        image: "/slider/kz5.png",
+        text: `${translations.sliderText7}`,
+        header: `7. ${translations.seventhHeader}`,
+      },
+    ];
+  }
 
   const resetInterval = () => {
     if (intervalRef.current) {
@@ -102,23 +181,25 @@ const ImageTextSlider = () => {
       <h2 className="text-4xl font-black mb-4 text-[#FFA200] text-center">
         {translations.howPlay}
       </h2>
-      <div {...handlers} className="relative flex-grow flex flex-col">
-        <img
-          src={slides[currentIndex].image}
-          alt="Как играть"
-          className="w-full md:h-[450px] h-[270px] object-cover rounded-xl mb-4"
-        />
-        <h3 className="text-2xl font-bold mb-2 text-center">
-          {slides[currentIndex].header}
-        </h3>
-        <div className="flex-grow overflow-y-auto">
-          <p className="md:text-xl text-m text-center">
-            {slides[currentIndex].text}
-          </p>
+      {slides[currentIndex] && (
+        <div {...handlers} className="relative flex-grow flex flex-col">
+          <img
+            src={slides[currentIndex].image}
+            alt="Как играть"
+            className="w-full md:h-[450px] h-[270px] object-cover rounded-xl mb-4"
+          />
+          <h3 className="text-2xl font-bold mb-2 text-center">
+            {slides[currentIndex].header}
+          </h3>
+          <div className="flex-grow overflow-y-auto">
+            <p className="md:text-xl text-m text-center">
+              {slides[currentIndex].text}
+            </p>
+          </div>
         </div>
-      </div>
+      )}
       <div className="flex justify-center mt-4">
-        {slides.map((_, index) => (
+        {slides.map((_: any, index: any) => (
           <div
             key={index}
             className="relative w-6 h-6 mx-1 cursor-pointer"

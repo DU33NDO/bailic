@@ -20,6 +20,7 @@
   "settingsBack": "НАЗАД",
   "changeMusic": "Изменить Музыку",
   "inviteFriend": "Пригласить Друга",
+  "inviteFriendMonble": "Пригласить",
   "Difficulty": "Сложность",
   "Vocabulary": "Область",
   "Language": "Язык",
@@ -66,5 +67,8 @@
   "hostWasNotRight": "Опа, неправильно думаешь, ведущий",
   "gameOver": "КОНЕЦ ИГРЫ",
   "Continue": "Продолжить",
-  "exitToSettings": "Выйти в настройки"
+  "exitToSettings": "Выйти в настройки",
+  "errorHostSettings": "Только хост может начать игру!",
+  "errorAreaOfVocab": "Выбери область загадывания слова",
+  "errorDifficultySet": "Выбери уровень сложности!"
 }

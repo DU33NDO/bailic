@@ -137,13 +137,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
       </div>
       <div className="flex text-black gap-4 justify-center mt-8">
         <button
-          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-red-700"
-          onClick={handleCopyUrl}
-        >
-          Invite
-        </button>
-        <button
-          className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-red-700"
+          className="font-bold text-2xl bg-[#F24236] w-[200px] h-[60px] rounded-xl text-white hover:bg-red-700"
           onClick={handlePlay}
         >
           {translations.play}

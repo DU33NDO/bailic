@@ -20,6 +20,7 @@
   "settingsBack": "АРТҚА",
   "changeMusic": "Музыканы Өзгерту",
   "inviteFriend": "Дос Шақыру",
+  "inviteFriendMonble": "Шақыру",
   "Difficulty": "Күрделілігі",
   "Vocabulary": "Сөз аймағы",
   "Language": "Тіл",
@@ -63,8 +64,11 @@
   "oioioiSecond": "бұрыннан қолданылған! Басқа сөз жазыңыз.",
   "userNoTIme": "ол үлгермеді",
   "hostWasRight": "Тозақ, жүргізуші дұрыс болды:",
-  "hostWasNotRight": "Опа, дұрыс емес деп ойлайсың, жүргізуші",
+  "hostWasNotRight": "Опа, дұрыс емес, жүргізуші",
   "gameOver": "ОЙЫННЫҢ СОҢЫ",
   "Continue": "Жалғастыру",
-  "exitToSettings": "Параметрлерге шығу"
+  "exitToSettings": "Параметрлерге шығу",
+  "errorHostSettings": "Только хост может начать игру!",
+  "errorAreaOfVocab": "Выбери область загадывания слова",
+  "errorDifficultySet": "Выбери уровень сложности!"
 }

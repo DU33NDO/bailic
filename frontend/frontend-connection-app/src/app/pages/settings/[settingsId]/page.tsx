@@ -31,7 +31,7 @@ interface UserW {
 }
 
 const Settings = () => {
-  const [active, setActive] = useState<string | null>("vocabArea");
+  const [active, setActive] = useState<string | null>("difficulty");
   const [selectedOptionDifficulty, setSelectedOptionDifficulty] = useState<
     string | null
   >("");
@@ -147,7 +147,6 @@ const Settings = () => {
     if (userId) {
       fetchUserDetails(userId).then((user) => {
         if (user) {
-          console.log(`ЭТО ИНФА ПРО ЮЗЕРА -${user.userPhoto}`);
           setUserPhoto(user.userPhoto);
         }
       });
@@ -292,7 +291,7 @@ const Settings = () => {
 
   const handlePlay = async () => {
     if (userId !== hostId) {
-      alert("Только хост может начать игру!");
+      alert(translations.errorHostSettings);
       return;
     }
     if (socket && selectedOptionDifficulty) {
@@ -333,10 +332,10 @@ const Settings = () => {
           setLoading(false);
         }
       } else {
-        alert("Выбери область загадывания слова");
+        alert(translations.errorAreaOfVocab);
       }
     } else {
-      alert("Выбери уровень сложности!");
+      alert(translations.errorDifficultySet);
     }
   };
 
@@ -486,7 +485,7 @@ const Settings = () => {
           className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-[#d1382e] active:bg-[#b33027] hover:bg-[#FF0200]"
           onClick={handleCopyUrl}
         >
-          Invite
+          {translations.inviteFriendMonble}
         </button>
         <button
           className="font-bold text-2xl bg-[#F24236] w-[150px] h-[40px] rounded-xl text-white hover:bg-[#d1382e] active:bg-[#b33027] hover:bg-[#FF0200]"

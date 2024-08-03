@@ -20,6 +20,7 @@
   "settingsBack": "BACK",
   "changeMusic": "Change Music",
   "inviteFriend": "Invite Friends",
+  "inviteFriendMonble": "Invite",
   "Difficulty": "Difficulty",
   "Vocabulary": "Vocabulary",
   "Language": "Language",
@@ -66,5 +67,8 @@
   "hostWasNotRight": "Oops, you're thinking wrong, host.",
   "gameOver": "GAME OVER",
   "Continue": "Continue",
-  "exitToSettings": "Exit to Settings"
+  "exitToSettings": "Exit to Settings",
+  "errorHostSettings": "Only the host can start the game!",
+  "errorAreaOfVocab": "Pick a word riddle area!",
+  "errorDifficultySet": "Choose your level of difficulty!"
 }

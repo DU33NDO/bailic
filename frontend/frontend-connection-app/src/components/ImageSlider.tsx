@@ -73,12 +73,12 @@ const ImageTextSlider = () => {
         header: `4. ${translations.fourthHeader}`,
       },
       {
-        image: "/slider/eng2.jpeg",
+        image: "/slider/eng2.JPEG",
         text: `${translations.sliderText5}`,
         header: `5. ${translations.fifthHeader}`,
       },
       {
-        image: "/slider/eng1.jpeg",
+        image: "/slider/eng1.JPEG",
         text: `${translations.sliderText6}`,
         header: `6. ${translations.sixthHeader}`,
       },
@@ -111,12 +111,12 @@ const ImageTextSlider = () => {
         header: `4. ${translations.fourthHeader}`,
       },
       {
-        image: "/slider/kz1.jpeg",
+        image: "/slider/kz1.JPEG",
         text: `${translations.sliderText5}`,
         header: `5. ${translations.fifthHeader}`,
       },
       {
-        image: "/slider/kz2.jpeg",
+        image: "/slider/kz2.JPEG",
         text: `${translations.sliderText6}`,
         header: `6. ${translations.sixthHeader}`,
       },
